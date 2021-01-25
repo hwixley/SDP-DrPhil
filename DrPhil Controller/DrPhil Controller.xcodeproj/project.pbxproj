@@ -1,0 +1,605 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C06B434525BF5C090017D14B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434425BF5C090017D14B /* AppDelegate.swift */; };
+		C06B434725BF5C090017D14B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434625BF5C090017D14B /* SceneDelegate.swift */; };
+		C06B434925BF5C090017D14B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434825BF5C090017D14B /* ViewController.swift */; };
+		C06B434C25BF5C090017D14B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C06B434A25BF5C090017D14B /* Main.storyboard */; };
+		C06B434E25BF5C0B0017D14B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C06B434D25BF5C0B0017D14B /* Assets.xcassets */; };
+		C06B435125BF5C0B0017D14B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C06B434F25BF5C0B0017D14B /* LaunchScreen.storyboard */; };
+		C06B435C25BF5C0C0017D14B /* DrPhil_ControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B435B25BF5C0C0017D14B /* DrPhil_ControllerTests.swift */; };
+		C06B436725BF5C0C0017D14B /* DrPhil_ControllerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B436625BF5C0C0017D14B /* DrPhil_ControllerUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C06B435825BF5C0C0017D14B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C06B433925BF5C090017D14B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C06B434025BF5C090017D14B;
+			remoteInfo = "DrPhil Controller";
+		};
+		C06B436325BF5C0C0017D14B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C06B433925BF5C090017D14B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C06B434025BF5C090017D14B;
+			remoteInfo = "DrPhil Controller";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		C06B434125BF5C090017D14B /* DrPhil Controller.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DrPhil Controller.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C06B434425BF5C090017D14B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		C06B434625BF5C090017D14B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		C06B434825BF5C090017D14B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		C06B434B25BF5C090017D14B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		C06B434D25BF5C0B0017D14B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C06B435025BF5C0B0017D14B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		C06B435225BF5C0C0017D14B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C06B435725BF5C0C0017D14B /* DrPhil ControllerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "DrPhil ControllerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C06B435B25BF5C0C0017D14B /* DrPhil_ControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrPhil_ControllerTests.swift; sourceTree = "<group>"; };
+		C06B435D25BF5C0C0017D14B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C06B436225BF5C0C0017D14B /* DrPhil ControllerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "DrPhil ControllerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C06B436625BF5C0C0017D14B /* DrPhil_ControllerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrPhil_ControllerUITests.swift; sourceTree = "<group>"; };
+		C06B436825BF5C0C0017D14B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C06B433E25BF5C090017D14B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C06B435425BF5C0C0017D14B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C06B435F25BF5C0C0017D14B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C06B433825BF5C090017D14B = {
+			isa = PBXGroup;
+			children = (
+				C06B434325BF5C090017D14B /* DrPhil Controller */,
+				C06B435A25BF5C0C0017D14B /* DrPhil ControllerTests */,
+				C06B436525BF5C0C0017D14B /* DrPhil ControllerUITests */,
+				C06B434225BF5C090017D14B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C06B434225BF5C090017D14B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C06B434125BF5C090017D14B /* DrPhil Controller.app */,
+				C06B435725BF5C0C0017D14B /* DrPhil ControllerTests.xctest */,
+				C06B436225BF5C0C0017D14B /* DrPhil ControllerUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C06B434325BF5C090017D14B /* DrPhil Controller */ = {
+			isa = PBXGroup;
+			children = (
+				C06B437625BF5C320017D14B /* SupportingFiles */,
+				C06B437425BF5C1A0017D14B /* System */,
+			);
+			path = "DrPhil Controller";
+			sourceTree = "<group>";
+		};
+		C06B435A25BF5C0C0017D14B /* DrPhil ControllerTests */ = {
+			isa = PBXGroup;
+			children = (
+				C06B435B25BF5C0C0017D14B /* DrPhil_ControllerTests.swift */,
+				C06B435D25BF5C0C0017D14B /* Info.plist */,
+			);
+			path = "DrPhil ControllerTests";
+			sourceTree = "<group>";
+		};
+		C06B436525BF5C0C0017D14B /* DrPhil ControllerUITests */ = {
+			isa = PBXGroup;
+			children = (
+				C06B436625BF5C0C0017D14B /* DrPhil_ControllerUITests.swift */,
+				C06B436825BF5C0C0017D14B /* Info.plist */,
+			);
+			path = "DrPhil ControllerUITests";
+			sourceTree = "<group>";
+		};
+		C06B437425BF5C1A0017D14B /* System */ = {
+			isa = PBXGroup;
+			children = (
+				C06B434425BF5C090017D14B /* AppDelegate.swift */,
+				C06B434625BF5C090017D14B /* SceneDelegate.swift */,
+				C06B434825BF5C090017D14B /* ViewController.swift */,
+				C06B434A25BF5C090017D14B /* Main.storyboard */,
+			);
+			path = System;
+			sourceTree = "<group>";
+		};
+		C06B437625BF5C320017D14B /* SupportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				C06B434D25BF5C0B0017D14B /* Assets.xcassets */,
+				C06B434F25BF5C0B0017D14B /* LaunchScreen.storyboard */,
+				C06B435225BF5C0C0017D14B /* Info.plist */,
+			);
+			path = SupportingFiles;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C06B434025BF5C090017D14B /* DrPhil Controller */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C06B436B25BF5C0C0017D14B /* Build configuration list for PBXNativeTarget "DrPhil Controller" */;
+			buildPhases = (
+				C06B433D25BF5C090017D14B /* Sources */,
+				C06B433E25BF5C090017D14B /* Frameworks */,
+				C06B433F25BF5C090017D14B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "DrPhil Controller";
+			productName = "DrPhil Controller";
+			productReference = C06B434125BF5C090017D14B /* DrPhil Controller.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C06B435625BF5C0C0017D14B /* DrPhil ControllerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C06B436E25BF5C0C0017D14B /* Build configuration list for PBXNativeTarget "DrPhil ControllerTests" */;
+			buildPhases = (
+				C06B435325BF5C0C0017D14B /* Sources */,
+				C06B435425BF5C0C0017D14B /* Frameworks */,
+				C06B435525BF5C0C0017D14B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C06B435925BF5C0C0017D14B /* PBXTargetDependency */,
+			);
+			name = "DrPhil ControllerTests";
+			productName = "DrPhil ControllerTests";
+			productReference = C06B435725BF5C0C0017D14B /* DrPhil ControllerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		C06B436125BF5C0C0017D14B /* DrPhil ControllerUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C06B437125BF5C0C0017D14B /* Build configuration list for PBXNativeTarget "DrPhil ControllerUITests" */;
+			buildPhases = (
+				C06B435E25BF5C0C0017D14B /* Sources */,
+				C06B435F25BF5C0C0017D14B /* Frameworks */,
+				C06B436025BF5C0C0017D14B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C06B436425BF5C0C0017D14B /* PBXTargetDependency */,
+			);
+			name = "DrPhil ControllerUITests";
+			productName = "DrPhil ControllerUITests";
+			productReference = C06B436225BF5C0C0017D14B /* DrPhil ControllerUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C06B433925BF5C090017D14B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1160;
+				LastUpgradeCheck = 1160;
+				ORGANIZATIONNAME = Klean;
+				TargetAttributes = {
+					C06B434025BF5C090017D14B = {
+						CreatedOnToolsVersion = 11.6;
+					};
+					C06B435625BF5C0C0017D14B = {
+						CreatedOnToolsVersion = 11.6;
+						TestTargetID = C06B434025BF5C090017D14B;
+					};
+					C06B436125BF5C0C0017D14B = {
+						CreatedOnToolsVersion = 11.6;
+						TestTargetID = C06B434025BF5C090017D14B;
+					};
+				};
+			};
+			buildConfigurationList = C06B433C25BF5C090017D14B /* Build configuration list for PBXProject "DrPhil Controller" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C06B433825BF5C090017D14B;
+			productRefGroup = C06B434225BF5C090017D14B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C06B434025BF5C090017D14B /* DrPhil Controller */,
+				C06B435625BF5C0C0017D14B /* DrPhil ControllerTests */,
+				C06B436125BF5C0C0017D14B /* DrPhil ControllerUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C06B433F25BF5C090017D14B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C06B435125BF5C0B0017D14B /* LaunchScreen.storyboard in Resources */,
+				C06B434E25BF5C0B0017D14B /* Assets.xcassets in Resources */,
+				C06B434C25BF5C090017D14B /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C06B435525BF5C0C0017D14B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C06B436025BF5C0C0017D14B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C06B433D25BF5C090017D14B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C06B434925BF5C090017D14B /* ViewController.swift in Sources */,
+				C06B434525BF5C090017D14B /* AppDelegate.swift in Sources */,
+				C06B434725BF5C090017D14B /* SceneDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C06B435325BF5C0C0017D14B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C06B435C25BF5C0C0017D14B /* DrPhil_ControllerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C06B435E25BF5C0C0017D14B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C06B436725BF5C0C0017D14B /* DrPhil_ControllerUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C06B435925BF5C0C0017D14B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C06B434025BF5C090017D14B /* DrPhil Controller */;
+			targetProxy = C06B435825BF5C0C0017D14B /* PBXContainerItemProxy */;
+		};
+		C06B436425BF5C0C0017D14B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C06B434025BF5C090017D14B /* DrPhil Controller */;
+			targetProxy = C06B436325BF5C0C0017D14B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		C06B434A25BF5C090017D14B /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C06B434B25BF5C090017D14B /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		C06B434F25BF5C0B0017D14B /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C06B435025BF5C0B0017D14B /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C06B436925BF5C0C0017D14B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		C06B436A25BF5C0C0017D14B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C06B436C25BF5C0C0017D14B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "DrPhil Controller/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Klean.DrPhil-Controller";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C06B436D25BF5C0C0017D14B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "DrPhil Controller/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Klean.DrPhil-Controller";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		C06B436F25BF5C0C0017D14B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "DrPhil ControllerTests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Klean.DrPhil-ControllerTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DrPhil Controller.app/DrPhil Controller";
+			};
+			name = Debug;
+		};
+		C06B437025BF5C0C0017D14B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "DrPhil ControllerTests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Klean.DrPhil-ControllerTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DrPhil Controller.app/DrPhil Controller";
+			};
+			name = Release;
+		};
+		C06B437225BF5C0C0017D14B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "DrPhil ControllerUITests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Klean.DrPhil-ControllerUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "DrPhil Controller";
+			};
+			name = Debug;
+		};
+		C06B437325BF5C0C0017D14B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "DrPhil ControllerUITests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.Klean.DrPhil-ControllerUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "DrPhil Controller";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C06B433C25BF5C090017D14B /* Build configuration list for PBXProject "DrPhil Controller" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C06B436925BF5C0C0017D14B /* Debug */,
+				C06B436A25BF5C0C0017D14B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C06B436B25BF5C0C0017D14B /* Build configuration list for PBXNativeTarget "DrPhil Controller" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C06B436C25BF5C0C0017D14B /* Debug */,
+				C06B436D25BF5C0C0017D14B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C06B436E25BF5C0C0017D14B /* Build configuration list for PBXNativeTarget "DrPhil ControllerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C06B436F25BF5C0C0017D14B /* Debug */,
+				C06B437025BF5C0C0017D14B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C06B437125BF5C0C0017D14B /* Build configuration list for PBXNativeTarget "DrPhil ControllerUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C06B437225BF5C0C0017D14B /* Debug */,
+				C06B437325BF5C0C0017D14B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C06B433925BF5C090017D14B /* Project object */;
+}
