@@ -97,7 +97,36 @@
                     <view key="view" contentMode="scaleToFill" id="dCB-G1-do3">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="C1U-DT-Sgn">
+                                <rect key="frame" x="8" y="52" width="398" height="753"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PrC-Nd-0fA">
+                                        <rect key="frame" x="0.0" y="0.0" width="398" height="372.5"/>
+                                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="21"/>
+                                        <state key="normal" title="Schedule Cleaning Times">
+                                            <color key="titleColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </state>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="K2Y-or-O1t">
+                                        <rect key="frame" x="0.0" y="380.5" width="398" height="372.5"/>
+                                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="21"/>
+                                        <state key="normal" title="Stop &amp; Return to the Charging/Refilling Station">
+                                            <color key="titleColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </state>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                        </subviews>
                         <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="Qd4-qz-sbU" firstAttribute="trailing" secondItem="C1U-DT-Sgn" secondAttribute="trailing" constant="8" id="Gyx-zs-y1U"/>
+                            <constraint firstItem="Qd4-qz-sbU" firstAttribute="bottom" secondItem="C1U-DT-Sgn" secondAttribute="bottom" constant="8" id="N2f-do-3SQ"/>
+                            <constraint firstItem="C1U-DT-Sgn" firstAttribute="leading" secondItem="Qd4-qz-sbU" secondAttribute="leading" constant="8" id="lxK-6F-Qjs"/>
+                            <constraint firstItem="C1U-DT-Sgn" firstAttribute="top" secondItem="Qd4-qz-sbU" secondAttribute="top" constant="8" id="miJ-2i-wx0"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="Qd4-qz-sbU"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Control" image="ControlTab" id="sCT-KW-Ni8"/>
