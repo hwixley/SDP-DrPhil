@@ -10,8 +10,8 @@ WorldInfo {
   coordinateSystem "NUE"
 }
 Viewpoint {
-  orientation 0.5241710848428686 -0.7522530877585477 -0.3991991555256364 5.237857372320952
-  position 18.47855902747327 24.892287550949057 19.3009677999029
+  orientation -0.9046563905145303 0.4195034867817353 0.07492422625017899 0.5579176730965189
+  position -6.004493310684014 7.897871933869293 9.995339962312451
 }
 TexturedBackground {
   texture "entrance_hall"
@@ -31,6 +31,9 @@ Floor {
       scale 0.4 0.4
     }
   }
+}
+TurtleBot3Burger {
+  translation -8.53 0.01 0
 }
 Wall {
   translation -6.194 0 2.91001
@@ -368,7 +371,7 @@ Wall {
   translation -12.02 0 -3.6
   rotation 0 1 0 -1.5708003061004252
   name "wall(D)1"
-  size 6.2 2.5 0.06
+  size 6.698 2.5 0.06
 }
 Sofa {
   translation -11.44 0 4.53
@@ -376,7 +379,8 @@ Sofa {
 Door {
   translation -12.01 0 -5.14455e-06
   rotation 0 1 0 -4.712389693899574
-  size 1 2.5 0.06
+  size 0.5 2.5 0.06
+  frameHeight 0.55
   frameSize 0.05 0.05 0.01
   frameAppearance MattePaint {
     baseColor 0.133333 0.0666667 0
@@ -389,7 +393,7 @@ Wall {
   translation -12.02 0 3.35
   rotation 0 1 0 -1.5708003061004252
   name "wall(D)2"
-  size 5.7 2.5 0.06
+  size 6.199 2.5 0.06
 }
 PottedTree {
   translation 2.61 0 -0.35
@@ -735,7 +739,8 @@ OfficeChair {
 Door {
   translation 1.78 0 -6.68
   name "door(1)"
-  size 1 2.5 0.06
+  size 0.5 2.5 0.06
+  frameHeight 0.55
   frameSize 0.05 0.05 0.01
   doorHandle DoorLever {
     canTurn TRUE
