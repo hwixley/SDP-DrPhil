@@ -10,7 +10,7 @@
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="DrPhil_Controller" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController interfaceStyle="dark" id="BYZ-38-t0r" customClass="ViewController" customModule="DrPhil_Controller" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -34,7 +34,7 @@
                                         <rect key="frame" x="0.0" y="459" width="300" height="41"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="24"/>
                                         <state key="normal" title="Get Started">
-                                            <color key="titleColor" red="0.38909316059999999" green="0.1214886978" blue="0.96904164550000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="titleColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
                                     </button>
                                 </subviews>
@@ -44,7 +44,7 @@
                                 </constraints>
                             </stackView>
                         </subviews>
-                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="fqn-nA-wvK" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="AXs-UC-Nkh"/>
                             <constraint firstItem="fqn-nA-wvK" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="s9Y-g2-hvk"/>
@@ -59,11 +59,11 @@
         <!--View Controller-->
         <scene sceneID="qfw-0i-33n">
             <objects>
-                <viewController id="DI9-45-x68" sceneMemberID="viewController">
+                <viewController interfaceStyle="dark" id="DI9-45-x68" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="93L-iJ-tZf">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                         <viewLayoutGuide key="safeArea" id="t2J-CI-B6h"/>
                     </view>
                 </viewController>
@@ -81,7 +81,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <viewLayoutGuide key="safeArea" id="e8u-8b-Rjl"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Stats" id="MYK-F4-Qa9"/>
+                    <tabBarItem key="tabBarItem" title="Stats" image="StatsTab" id="MYK-F4-Qa9"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xkR-3j-4Bu" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -97,7 +97,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <viewLayoutGuide key="safeArea" id="Qd4-qz-sbU"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Control" id="sCT-KW-Ni8"/>
+                    <tabBarItem key="tabBarItem" title="Control" image="ControlTab" id="sCT-KW-Ni8"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JTb-6i-nKU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -113,7 +113,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <viewLayoutGuide key="safeArea" id="LKN-2O-v82"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Home" id="9mV-iJ-hqa"/>
+                    <tabBarItem key="tabBarItem" title="Home" image="HomeTab" id="9mV-iJ-hqa"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="f48-PO-Att" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -122,12 +122,13 @@
         <!--Tab Bar Controller-->
         <scene sceneID="m5p-QS-zAE">
             <objects>
-                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="Fxf-AG-u3o" sceneMemberID="viewController">
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" interfaceStyle="dark" id="Fxf-AG-u3o" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="ngn-ec-B4G">
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" red="0.38909316059999999" green="0.1214886978" blue="0.96904164550000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="barTintColor" systemColor="tertiarySystemGroupedBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="selectedImageTintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </tabBar>
                     <connections>
                         <segue destination="A76-3M-14g" kind="relationship" relationship="viewControllers" id="DEe-r6-dSL"/>
@@ -141,6 +142,9 @@
         </scene>
     </scenes>
     <resources>
+        <image name="ControlTab" width="25" height="25"/>
+        <image name="HomeTab" width="25" height="25"/>
         <image name="Logo" width="510" height="510"/>
+        <image name="StatsTab" width="25" height="25"/>
     </resources>
 </document>
