@@ -27,7 +27,7 @@
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome to the Dr Phil Controller!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HXF-Fe-ujb">
                                         <rect key="frame" x="0.0" y="351" width="300" height="57.5"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
-                                        <nil key="textColor"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XH2-Xb-Tqz">
@@ -36,6 +36,9 @@
                                         <state key="normal" title="Get Started">
                                             <color key="titleColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
+                                        <connections>
+                                            <segue destination="Fxf-AG-u3o" kind="presentation" modalPresentationStyle="fullScreen" id="xLx-iH-Zas"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <constraints>
@@ -78,7 +81,7 @@
                     <view key="view" contentMode="scaleToFill" id="bzc-bI-5xG">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                         <viewLayoutGuide key="safeArea" id="e8u-8b-Rjl"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Stats" image="StatsTab" id="MYK-F4-Qa9"/>
@@ -94,7 +97,7 @@
                     <view key="view" contentMode="scaleToFill" id="dCB-G1-do3">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                         <viewLayoutGuide key="safeArea" id="Qd4-qz-sbU"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Control" image="ControlTab" id="sCT-KW-Ni8"/>
@@ -110,7 +113,7 @@
                     <view key="view" contentMode="scaleToFill" id="cAo-e7-dgi">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                         <viewLayoutGuide key="safeArea" id="LKN-2O-v82"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Home" image="HomeTab" id="9mV-iJ-hqa"/>
@@ -126,8 +129,7 @@
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="ngn-ec-B4G">
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="tintColor" red="0.38909316059999999" green="0.1214886978" blue="0.96904164550000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <color key="barTintColor" systemColor="tertiarySystemGroupedBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="barTintColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                         <color key="selectedImageTintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </tabBar>
                     <connections>
