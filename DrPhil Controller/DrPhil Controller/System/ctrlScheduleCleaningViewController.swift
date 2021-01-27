@@ -18,6 +18,8 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
     @IBOutlet weak var weekendsStack: UIStackView!
     @IBOutlet var tapOutsideKB: UITapGestureRecognizer!
     
+    //MARK: Temporary vars
+    var clickedTxtf: UITextField
     
     
     override func viewDidLoad() {
@@ -27,6 +29,7 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
         weekendsStack.isHidden = true
         weekdaysSwitch.isOn = false
         weekendsSwitch.isOn = false
+        self.tapOutsideKB.isEnabled = false
     }
     
     //MARK: Actions
@@ -51,6 +54,29 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
     
     //MARK: Textfield
     func textFieldDidBeginEditing(_ textField: UITextField) {
+        self.clickedTxtf = textField
         tapOutsideKB.isEnabled = true
+    }
+    
+    //MARK: FOcused keyboard
+    func focusKB() {
+        NotificationCenter.default.addObserver(self, selector: #selector(ctrlScheduleCleaningViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ctrlScheduleCleaningViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
+            return
+        }
+        
+        if self.view.frame.origin.y == 0 {
+            self.view.frame.origin.y -= keyboardSize.height
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if self.view.frame.origin.y != 0 {
+            self.view.frame.origin.y = 0
+        }
     }
 }
