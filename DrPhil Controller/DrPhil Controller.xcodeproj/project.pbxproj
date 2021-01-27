@@ -19,6 +19,7 @@
 		C06B437A25C1BA2E0017D14B /* ControlViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B437925C1BA2E0017D14B /* ControlViewController.swift */; };
 		C06B437C25C1BA3D0017D14B /* StatsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B437B25C1BA3D0017D14B /* StatsViewController.swift */; };
 		C06B437E25C1BA4D0017D14B /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B437D25C1BA4D0017D14B /* MenuViewController.swift */; };
+		C06B438025C1CDBB0017D14B /* ctrlScheduleCleaningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B437F25C1CDBB0017D14B /* ctrlScheduleCleaningViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		C06B437925C1BA2E0017D14B /* ControlViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlViewController.swift; sourceTree = "<group>"; };
 		C06B437B25C1BA3D0017D14B /* StatsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsViewController.swift; sourceTree = "<group>"; };
 		C06B437D25C1BA4D0017D14B /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
+		C06B437F25C1CDBB0017D14B /* ctrlScheduleCleaningViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ctrlScheduleCleaningViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,6 +144,7 @@
 				C06B437B25C1BA3D0017D14B /* StatsViewController.swift */,
 				C06B437D25C1BA4D0017D14B /* MenuViewController.swift */,
 				C06B434A25BF5C090017D14B /* Main.storyboard */,
+				C06B437F25C1CDBB0017D14B /* ctrlScheduleCleaningViewController.swift */,
 			);
 			path = System;
 			sourceTree = "<group>";
@@ -292,6 +295,7 @@
 				C06B434725BF5C090017D14B /* SceneDelegate.swift in Sources */,
 				C06B437E25C1BA4D0017D14B /* MenuViewController.swift in Sources */,
 				C06B437A25C1BA2E0017D14B /* ControlViewController.swift in Sources */,
+				C06B438025C1CDBB0017D14B /* ctrlScheduleCleaningViewController.swift in Sources */,
 				C06B437C25C1BA3D0017D14B /* StatsViewController.swift in Sources */,
 				C06B437825C1BA1D0017D14B /* HomeViewController.swift in Sources */,
 			);
