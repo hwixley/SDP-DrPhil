@@ -19,7 +19,7 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
     @IBOutlet var tapOutsideKB: UITapGestureRecognizer!
     
     //MARK: Temporary vars
-    var clickedTxtf: UITextField
+    var clickedTxtf: UITextField?
     
     
     override func viewDidLoad() {
@@ -50,6 +50,8 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
     }
     
     @IBAction func didTapOutsideKB(_ sender: UITapGestureRecognizer) {
+        clickedTxtf!.resignFirstResponder()
+        tapOutsideKB.isEnabled = false
     }
     
     //MARK: Textfield
