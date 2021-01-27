@@ -25,3 +25,14 @@ If you don't want to run this everytime you start a new shell you can add
 On Ubuntu, and the respective files for other distros
 
 5. To check if this works run `roscd dr-phil`, if you see no errors, you've successfully created a custom ROS workspace and installed the dr-phil ROS package.
+
+
+## Starting a webots ROS controller 
+
+For some reason I cannot get ros controllers to work without special launch files, so in order to start the simulation.wbt world simulation + launch ROS controller nodes do:
+
+1. activate the workspace if you haven't already
+2. start the roscore process with `roscore`
+3. roslaunch dr-phil simulation.launch
+
+This will run webots and start up all the controller nodes, if any errors to do with <extern> appear, simply restart the simulation which will launch the controller again. 
