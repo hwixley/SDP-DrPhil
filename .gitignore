@@ -1,6 +1,7 @@
 # Global rules #
 ################
 
+<<<<<<< HEAD
 # Build directories
 build
 
@@ -13,6 +14,8 @@ ros-workspace/src/CMakeLists.txt
 
 .python-version
 
+=======
+>>>>>>> Added camera sensor, added gitignore
 # Compiled source
 *.exe
 *.o
@@ -62,9 +65,12 @@ Thumbs.db
 
 # Webots generated files
 *.cache
+<<<<<<< HEAD
 
 # IDE files
 .vscode
 
 # Local rules #
 ###############
+=======
+>>>>>>> Added camera sensor, added gitignore
