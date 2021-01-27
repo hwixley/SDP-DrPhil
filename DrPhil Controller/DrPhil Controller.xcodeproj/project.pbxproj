@@ -15,6 +15,10 @@
 		C06B435125BF5C0B0017D14B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C06B434F25BF5C0B0017D14B /* LaunchScreen.storyboard */; };
 		C06B435C25BF5C0C0017D14B /* DrPhil_ControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B435B25BF5C0C0017D14B /* DrPhil_ControllerTests.swift */; };
 		C06B436725BF5C0C0017D14B /* DrPhil_ControllerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B436625BF5C0C0017D14B /* DrPhil_ControllerUITests.swift */; };
+		C06B437825C1BA1D0017D14B /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B437725C1BA1D0017D14B /* HomeViewController.swift */; };
+		C06B437A25C1BA2E0017D14B /* ControlViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B437925C1BA2E0017D14B /* ControlViewController.swift */; };
+		C06B437C25C1BA3D0017D14B /* StatsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B437B25C1BA3D0017D14B /* StatsViewController.swift */; };
+		C06B437E25C1BA4D0017D14B /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B437D25C1BA4D0017D14B /* MenuViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +53,10 @@
 		C06B436225BF5C0C0017D14B /* DrPhil ControllerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "DrPhil ControllerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C06B436625BF5C0C0017D14B /* DrPhil_ControllerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrPhil_ControllerUITests.swift; sourceTree = "<group>"; };
 		C06B436825BF5C0C0017D14B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C06B437725C1BA1D0017D14B /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		C06B437925C1BA2E0017D14B /* ControlViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlViewController.swift; sourceTree = "<group>"; };
+		C06B437B25C1BA3D0017D14B /* StatsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsViewController.swift; sourceTree = "<group>"; };
+		C06B437D25C1BA4D0017D14B /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +137,10 @@
 				C06B434425BF5C090017D14B /* AppDelegate.swift */,
 				C06B434625BF5C090017D14B /* SceneDelegate.swift */,
 				C06B434825BF5C090017D14B /* ViewController.swift */,
+				C06B437725C1BA1D0017D14B /* HomeViewController.swift */,
+				C06B437925C1BA2E0017D14B /* ControlViewController.swift */,
+				C06B437B25C1BA3D0017D14B /* StatsViewController.swift */,
+				C06B437D25C1BA4D0017D14B /* MenuViewController.swift */,
 				C06B434A25BF5C090017D14B /* Main.storyboard */,
 			);
 			path = System;
@@ -278,6 +290,10 @@
 				C06B434925BF5C090017D14B /* ViewController.swift in Sources */,
 				C06B434525BF5C090017D14B /* AppDelegate.swift in Sources */,
 				C06B434725BF5C090017D14B /* SceneDelegate.swift in Sources */,
+				C06B437E25C1BA4D0017D14B /* MenuViewController.swift in Sources */,
+				C06B437A25C1BA2E0017D14B /* ControlViewController.swift in Sources */,
+				C06B437C25C1BA3D0017D14B /* StatsViewController.swift in Sources */,
+				C06B437825C1BA1D0017D14B /* HomeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
