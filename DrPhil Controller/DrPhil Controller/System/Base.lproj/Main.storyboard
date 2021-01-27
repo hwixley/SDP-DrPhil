@@ -74,7 +74,7 @@
             </objects>
             <point key="canvasLocation" x="-58" y="875"/>
         </scene>
-        <!--Stats-->
+        <!--Day Stats-->
         <scene sceneID="QKG-lG-GB3">
             <objects>
                 <viewController id="o9W-xX-KF0" customClass="StatsViewController" customModule="DrPhil_Controller" customModuleProvider="target" sceneMemberID="viewController">
@@ -85,7 +85,7 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="HyI-e8-HLG">
                                 <rect key="frame" x="8" y="96" width="398" height="709"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Cleaning round of the day:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SBv-pE-kuR">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Cleaning round:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SBv-pE-kuR">
                                         <rect key="frame" x="0.0" y="0.0" width="398" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -132,7 +132,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="e8u-8b-Rjl"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Stats" id="Zes-Xb-N6e"/>
+                    <navigationItem key="navigationItem" title="Day Stats" id="Zes-Xb-N6e"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xkR-3j-4Bu" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -146,16 +146,41 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="813"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="wJU-Xz-MpE">
-                                <rect key="frame" x="0.0" y="96" width="414" height="709"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="wJU-Xz-MpE">
+                                <rect key="frame" x="0.0" y="108" width="414" height="137"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZLC-wz-0SX">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="25"/>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <state key="normal" title="About" image="mnAbout">
+                                            <color key="titleColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </state>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bGg-oZ-yby">
+                                        <rect key="frame" x="0.0" y="45" width="414" height="36"/>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                        <state key="normal" title="Help">
+                                            <color key="titleColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </state>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nyU-mX-Wv6">
+                                        <rect key="frame" x="0.0" y="101" width="414" height="36"/>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                        <state key="normal" title="Lifetime Stats">
+                                            <color key="titleColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </state>
+                                    </button>
+                                </subviews>
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="uuc-JQ-a5p" firstAttribute="trailing" secondItem="wJU-Xz-MpE" secondAttribute="trailing" id="GiO-9L-76b"/>
-                            <constraint firstItem="uuc-JQ-a5p" firstAttribute="bottom" secondItem="wJU-Xz-MpE" secondAttribute="bottom" constant="8" id="VkT-6X-jNZ"/>
                             <constraint firstItem="wJU-Xz-MpE" firstAttribute="leading" secondItem="uuc-JQ-a5p" secondAttribute="leading" id="XiX-tl-oaq"/>
-                            <constraint firstItem="wJU-Xz-MpE" firstAttribute="top" secondItem="uuc-JQ-a5p" secondAttribute="top" constant="8" id="aCx-nF-Rc8"/>
+                            <constraint firstItem="wJU-Xz-MpE" firstAttribute="top" secondItem="uuc-JQ-a5p" secondAttribute="top" constant="20" id="aCx-nF-Rc8"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="uuc-JQ-a5p"/>
                     </view>
@@ -447,5 +472,6 @@
         <image name="Logo" width="510" height="510"/>
         <image name="MenuTab" width="25" height="25"/>
         <image name="StatsTab" width="25" height="25"/>
+        <image name="mnAbout" width="25" height="25"/>
     </resources>
 </document>
