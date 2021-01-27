@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ctrlScheduleCleaningViewController: UIViewController {
+class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate {
 
     //MARK: Properties
     @IBOutlet weak var numRoundsTextField: UITextField!
@@ -16,12 +16,12 @@ class ctrlScheduleCleaningViewController: UIViewController {
     @IBOutlet weak var weekendsSwitch: UISwitch!
     @IBOutlet weak var weekdaysStack: UIStackView!
     @IBOutlet weak var weekendsStack: UIStackView!
+    @IBOutlet var tapOutsideKB: UITapGestureRecognizer!
     
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         
         weekdaysStack.isHidden = true
         weekendsStack.isHidden = true
@@ -44,5 +44,13 @@ class ctrlScheduleCleaningViewController: UIViewController {
         } else {
             weekendsStack.isHidden = true
         }
+    }
+    
+    @IBAction func didTapOutsideKB(_ sender: UITapGestureRecognizer) {
+    }
+    
+    //MARK: Textfield
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        tapOutsideKB.isEnabled = true
     }
 }

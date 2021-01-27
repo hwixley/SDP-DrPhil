@@ -462,12 +462,16 @@
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="fPv-fl-Ksg" firstAttribute="leading" secondItem="F4f-gr-Wt8" secondAttribute="leading" constant="8" id="MDT-RP-oon"/>
                             <constraint firstItem="fPv-fl-Ksg" firstAttribute="top" secondItem="F4f-gr-Wt8" secondAttribute="top" constant="8" id="ahm-Js-rbu"/>
                             <constraint firstItem="F4f-gr-Wt8" firstAttribute="trailing" secondItem="fPv-fl-Ksg" secondAttribute="trailing" constant="8" id="c2D-JF-vky"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="F4f-gr-Wt8"/>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="9mP-GK-FBk" appends="YES" id="ifS-Tw-sWC"/>
+                        </connections>
                     </view>
                     <navigationItem key="navigationItem" title="Schedule Cleaning" id="MwO-XA-g6q">
                         <barButtonItem key="leftBarButtonItem" title="&lt; Back" id="6AA-Eb-rDw">
@@ -479,6 +483,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="numRoundsTextField" destination="Ybv-AU-ZU1" id="QRj-tJ-8pR"/>
+                        <outlet property="tapOutsideKB" destination="9mP-GK-FBk" id="Q0k-Fz-g9S"/>
                         <outlet property="weekdaysStack" destination="48Z-pA-5Ym" id="vCK-53-QEP"/>
                         <outlet property="weekdaysSwitch" destination="P7H-CQ-c7y" id="dlU-ap-xSD"/>
                         <outlet property="weekendsStack" destination="UuU-zo-Fcy" id="8hs-e9-DBg"/>
@@ -487,6 +492,11 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Boy-LQ-jHx" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <exit id="XDy-f7-6zx" userLabel="Exit" sceneMemberID="exit"/>
+                <tapGestureRecognizer id="9mP-GK-FBk">
+                    <connections>
+                        <action selector="didTapOutsideKB:" destination="Ily-4L-2bl" id="08Y-64-9bb"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-812" y="3833"/>
         </scene>
