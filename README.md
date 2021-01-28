@@ -12,7 +12,7 @@ The process is not *that* painful:
 1. `cd ros-workspace`
 2. `rosdep install --from-paths src --ignore-src -r -y` - this will install all missing packages 
 3. `catkin_make`
-4. `source devel.sh`
+4. `source devel/setup.sh`
 
 this "activates the workspace" to check if it worked run: `echo $ROS_PACKAGE_PATH`
 you should see the following within the output:
