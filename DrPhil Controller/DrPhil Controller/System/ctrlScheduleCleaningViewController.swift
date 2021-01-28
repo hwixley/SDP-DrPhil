@@ -12,6 +12,10 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
 
     //MARK: Properties
     @IBOutlet weak var numRoundsTextField: UITextField!
+    @IBOutlet weak var weekdaysStartTextField: UITextField!
+    @IBOutlet weak var weekdaysEndTextField: UITextField!
+    @IBOutlet weak var weekendsStartTextField: UITextField!
+    @IBOutlet weak var weekendsEndTextField: UITextField!
     @IBOutlet weak var weekdaysSwitch: UISwitch!
     @IBOutlet weak var weekendsSwitch: UISwitch!
     @IBOutlet weak var weekdaysStack: UIStackView!
@@ -25,6 +29,11 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        numRoundsTextField.delegate = self
+        weekdaysStartTextField.delegate = self
+        weekdaysEndTextField.delegate = self
+        weekendsEndTextField.delegate = self
+        weekendsStartTextField.delegate = self
         weekdaysStack.isHidden = true
         weekendsStack.isHidden = true
         weekdaysSwitch.isOn = false
@@ -71,7 +80,7 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
             return
         }
         
-        if self.view.frame.origin.y == 0 {
+        if self.view.frame.origin.y == 0 || self.clickedTxtf!.isEqual(weekendsEndTextField) {
             self.view.frame.origin.y -= keyboardSize.height
         }
     }

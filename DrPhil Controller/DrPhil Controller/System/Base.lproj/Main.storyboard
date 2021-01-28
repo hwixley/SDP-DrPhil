@@ -11,7 +11,7 @@
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController interfaceStyle="dark" id="BYZ-38-t0r" customClass="ViewController" customModule="DrPhil_Controller" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController interfaceStyle="dark" id="BYZ-38-t0r" customClass="ViewController" customModule="DrPhil" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -78,7 +78,7 @@
         <!--Day Stats-->
         <scene sceneID="QKG-lG-GB3">
             <objects>
-                <viewController id="o9W-xX-KF0" customClass="StatsViewController" customModule="DrPhil_Controller" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="o9W-xX-KF0" customClass="StatsViewController" customModule="DrPhil" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="bzc-bI-5xG">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="813"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -144,7 +144,7 @@
         <!--Menu-->
         <scene sceneID="8R3-WY-X8V">
             <objects>
-                <viewController id="xJm-fR-pyu" customClass="MenuViewController" customModule="DrPhil_Controller" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="xJm-fR-pyu" customClass="MenuViewController" customModule="DrPhil" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="M6h-fj-cNa">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="813"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -207,7 +207,7 @@
         <!--Control-->
         <scene sceneID="hnN-9f-9FN">
             <objects>
-                <viewController id="ck8-Fj-7xq" customClass="ControlViewController" customModule="DrPhil_Controller" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="ck8-Fj-7xq" customClass="ControlViewController" customModule="DrPhil" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="dCB-G1-do3">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="813"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -258,7 +258,7 @@
         <!--Home-->
         <scene sceneID="Jl9-90-OaA">
             <objects>
-                <viewController id="A76-3M-14g" customClass="HomeViewController" customModule="DrPhil_Controller" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="A76-3M-14g" customClass="HomeViewController" customModule="DrPhil" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="cAo-e7-dgi">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="813"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -470,7 +470,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="F4f-gr-Wt8"/>
                         <connections>
-                            <outletCollection property="gestureRecognizers" destination="9mP-GK-FBk" appends="YES" id="ifS-Tw-sWC"/>
+                            <outletCollection property="gestureRecognizers" destination="f0B-8p-nHD" appends="YES" id="RQN-Dn-5jd"/>
                         </connections>
                     </view>
                     <navigationItem key="navigationItem" title="Schedule Cleaning" id="MwO-XA-g6q">
@@ -483,18 +483,22 @@
                     </navigationItem>
                     <connections>
                         <outlet property="numRoundsTextField" destination="Ybv-AU-ZU1" id="QRj-tJ-8pR"/>
-                        <outlet property="tapOutsideKB" destination="9mP-GK-FBk" id="Q0k-Fz-g9S"/>
+                        <outlet property="tapOutsideKB" destination="f0B-8p-nHD" id="ajX-QV-EfN"/>
+                        <outlet property="weekdaysEndTextField" destination="vy6-lA-nZo" id="hyd-SL-oDk"/>
                         <outlet property="weekdaysStack" destination="48Z-pA-5Ym" id="vCK-53-QEP"/>
+                        <outlet property="weekdaysStartTextField" destination="40V-AW-dnQ" id="AeT-3m-BL7"/>
                         <outlet property="weekdaysSwitch" destination="P7H-CQ-c7y" id="dlU-ap-xSD"/>
+                        <outlet property="weekendsEndTextField" destination="jz1-EL-aAp" id="GtI-I6-pru"/>
                         <outlet property="weekendsStack" destination="UuU-zo-Fcy" id="8hs-e9-DBg"/>
+                        <outlet property="weekendsStartTextField" destination="TEd-es-FO3" id="Uqe-zK-Ble"/>
                         <outlet property="weekendsSwitch" destination="dKp-3f-tVZ" id="GZY-fb-iYR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Boy-LQ-jHx" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <exit id="XDy-f7-6zx" userLabel="Exit" sceneMemberID="exit"/>
-                <tapGestureRecognizer id="9mP-GK-FBk">
+                <tapGestureRecognizer id="f0B-8p-nHD">
                     <connections>
-                        <action selector="didTapOutsideKB:" destination="Ily-4L-2bl" id="08Y-64-9bb"/>
+                        <action selector="didTapOutsideKB:" destination="Ily-4L-2bl" id="24n-tL-6zA"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>
