@@ -162,8 +162,10 @@
                                         <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <state key="normal" title="   About">
                                             <color key="titleColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            <color key="titleShadowColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
+                                        <connections>
+                                            <segue destination="brb-sD-6lU" kind="presentation" modalPresentationStyle="fullScreen" id="rV2-NB-VVE"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bGg-oZ-yby">
                                         <rect key="frame" x="0.0" y="70" width="414" height="50"/>
@@ -175,6 +177,9 @@
                                         <state key="normal" title="   Help">
                                             <color key="titleColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
+                                        <connections>
+                                            <segue destination="sz8-Ju-t56" kind="presentation" modalPresentationStyle="fullScreen" id="mR8-3O-9Fd"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nyU-mX-Wv6">
                                         <rect key="frame" x="0.0" y="140" width="414" height="50"/>
@@ -186,6 +191,9 @@
                                         <state key="normal" title="   Lifetime Stats">
                                             <color key="titleColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
+                                        <connections>
+                                            <segue destination="lDv-bC-pTI" kind="presentation" modalPresentationStyle="fullScreen" id="Ozj-SP-u73"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                             </stackView>
@@ -377,14 +385,14 @@
                                                                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                        <textInputTraits key="textInputTraits"/>
+                                                                        <textInputTraits key="textInputTraits" keyboardAppearance="alert"/>
                                                                     </textField>
                                                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="vy6-lA-nZo">
                                                                         <rect key="frame" x="0.0" y="38" width="314" height="34"/>
                                                                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                        <textInputTraits key="textInputTraits"/>
+                                                                        <textInputTraits key="textInputTraits" keyboardAppearance="alert"/>
                                                                     </textField>
                                                                 </subviews>
                                                             </stackView>
@@ -441,14 +449,14 @@
                                                                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                        <textInputTraits key="textInputTraits"/>
+                                                                        <textInputTraits key="textInputTraits" keyboardAppearance="alert"/>
                                                                     </textField>
                                                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="jz1-EL-aAp">
                                                                         <rect key="frame" x="0.0" y="38" width="314" height="34"/>
                                                                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                        <textInputTraits key="textInputTraits"/>
+                                                                        <textInputTraits key="textInputTraits" keyboardAppearance="alert"/>
                                                                     </textField>
                                                                 </subviews>
                                                             </stackView>
@@ -479,6 +487,9 @@
                             <connections>
                                 <segue destination="XDy-f7-6zx" kind="unwind" unwindAction="unwindToControlSegue:" id="5tR-xH-ecN"/>
                             </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Update" id="5xA-L3-eC3">
+                            <color key="tintColor" red="0.99361628290000004" green="1" blue="0.016829108820000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
@@ -536,6 +547,7 @@
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -579,6 +591,7 @@
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -589,16 +602,17 @@
             </objects>
             <point key="canvasLocation" x="-72" y="3833"/>
         </scene>
-        <!--Home-->
+        <!--Navigation Controller-->
         <scene sceneID="l4e-Gh-3RN">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="gxP-qb-sKF" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Home" image="HomeTab" id="9mV-iJ-hqa"/>
+                    <tabBarItem key="tabBarItem" title="" image="HomeTab" id="9mV-iJ-hqa"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" barStyle="black" id="J92-rQ-tIG">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -609,16 +623,17 @@
             </objects>
             <point key="canvasLocation" x="-2999" y="2771"/>
         </scene>
-        <!--Control-->
+        <!--Navigation Controller-->
         <scene sceneID="RAc-EO-Ir9">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="cN5-70-jDm" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Control" image="ControlTab" id="sCT-KW-Ni8"/>
+                    <tabBarItem key="tabBarItem" title="" image="ControlTab" id="sCT-KW-Ni8"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" barStyle="black" id="yEh-51-LHf">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -629,16 +644,17 @@
             </objects>
             <point key="canvasLocation" x="-1228" y="2771"/>
         </scene>
-        <!--Stats-->
+        <!--Navigation Controller-->
         <scene sceneID="FJj-Sn-4HR">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="vuu-Ya-nZz" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Stats" image="StatsTab" id="MYK-F4-Qa9"/>
+                    <tabBarItem key="tabBarItem" title="" image="StatsTab" id="MYK-F4-Qa9"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" barStyle="black" id="yug-aW-CDU">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -649,16 +665,17 @@
             </objects>
             <point key="canvasLocation" x="757" y="2771"/>
         </scene>
-        <!--Menu-->
+        <!--Navigation Controller-->
         <scene sceneID="Tc4-A8-1zc">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Oru-SY-6r5" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Menu" image="MenuTab" id="KOD-Cj-SYT"/>
+                    <tabBarItem key="tabBarItem" title="" image="MenuTab" id="KOD-Cj-SYT"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" barStyle="black" id="won-Uk-tLe">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -668,6 +685,138 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uVe-GU-X6w" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2830" y="2771"/>
+        </scene>
+        <!--Lifetime Stats-->
+        <scene sceneID="qR6-0S-iwQ">
+            <objects>
+                <viewController interfaceStyle="dark" id="kgx-qD-J3d" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="dIQ-1S-wXI">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
+                        <viewLayoutGuide key="safeArea" id="Kjh-81-Jjv"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Lifetime Stats" id="Fqr-yU-Et6">
+                        <barButtonItem key="leftBarButtonItem" title="&lt; Back" id="HGH-zx-tHs">
+                            <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <connections>
+                                <segue destination="vZg-4E-vDh" kind="unwind" unwindAction="unwindToMenuSegue:" id="jrS-Zm-Ucx"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="w40-Tr-df7" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <exit id="vZg-4E-vDh" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="4354" y="4361"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="3uE-NO-pyq">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" interfaceStyle="dark" id="lDv-bC-pTI" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" barStyle="black" id="VQC-vj-rwm">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="kgx-qD-J3d" kind="relationship" relationship="rootViewController" id="OPz-Pz-wuV"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="GFq-fb-skp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3526" y="4361"/>
+        </scene>
+        <!--Help-->
+        <scene sceneID="gMt-Va-R2L">
+            <objects>
+                <viewController interfaceStyle="dark" id="Qc4-KD-sgZ" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="V7b-gy-b3y">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
+                        <viewLayoutGuide key="safeArea" id="h2H-qj-pzI"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Help" id="Wl8-fI-sAz">
+                        <barButtonItem key="leftBarButtonItem" title="&lt; Back" id="Efn-Fj-PGX">
+                            <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <connections>
+                                <segue destination="2Eb-p7-ePo" kind="unwind" unwindAction="unwindToMenuSegue:" id="VtC-yf-X4W"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OBq-aQ-BI3" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <exit id="2Eb-p7-ePo" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="5381" y="3610"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="Qzs-JK-a9z">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" interfaceStyle="dark" id="sz8-Ju-t56" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" barStyle="black" id="ACV-Wd-gbT">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="Qc4-KD-sgZ" kind="relationship" relationship="rootViewController" id="gLj-oc-24v"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="PXK-x9-tum" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4638" y="3610"/>
+        </scene>
+        <!--About-->
+        <scene sceneID="H2w-xo-LvO">
+            <objects>
+                <viewController interfaceStyle="dark" id="nGX-on-3l5" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="kym-oi-K6d">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
+                        <viewLayoutGuide key="safeArea" id="l2b-kI-NW3"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="About" id="1iY-Pi-V8h">
+                        <barButtonItem key="leftBarButtonItem" title="&lt; Back" id="4VU-fE-GoQ">
+                            <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <connections>
+                                <segue destination="TDx-QR-Gcj" kind="unwind" unwindAction="unwindToMenuSegue:" id="dLy-N1-uy0"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WCC-MG-ZvU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <exit id="TDx-QR-Gcj" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="5720" y="2771"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="hzK-7r-CDU">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" interfaceStyle="dark" id="brb-sD-6lU" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" barStyle="black" id="RG7-Yb-ORo">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="nGX-on-3l5" kind="relationship" relationship="rootViewController" id="MUU-Ek-BBk"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OZV-uQ-L2R" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5010" y="2771"/>
         </scene>
     </scenes>
     <resources>

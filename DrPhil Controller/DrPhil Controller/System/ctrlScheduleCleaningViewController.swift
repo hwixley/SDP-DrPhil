@@ -22,6 +22,12 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
     @IBOutlet weak var weekendsStack: UIStackView!
     @IBOutlet var tapOutsideKB: UITapGestureRecognizer!
     
+    //MARK: Pickers
+    var wdStartPicker = UIDatePicker()
+    var wdEndPicker = UIDatePicker()
+    var weStartPicker = UIDatePicker()
+    var weEndPicker = UIDatePicker()
+    
     //MARK: Temporary vars
     var clickedTxtf: UITextField?
     
@@ -34,11 +40,16 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
         weekdaysEndTextField.delegate = self
         weekendsEndTextField.delegate = self
         weekendsStartTextField.delegate = self
+        weekdaysStartTextField.inputView = wdStartPicker
+        weekdaysEndTextField.inputView = wdEndPicker
+        weekendsStartTextField.inputView = weStartPicker
+        weekendsEndTextField.inputView = weEndPicker
         weekdaysStack.isHidden = true
         weekendsStack.isHidden = true
         weekdaysSwitch.isOn = false
         weekendsSwitch.isOn = false
         self.tapOutsideKB.isEnabled = false
+        self.setupDPbounds()
     }
     
     //MARK: Actions
@@ -69,6 +80,18 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
         tapOutsideKB.isEnabled = true
     }
     
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if textField === weekdaysStartTextField {
+            weekdaysStartTextField.text = dateFormatter.string(from: wdStartPicker.date)
+        } else if textField === weekdaysEndTextField {
+            weekdaysEndTextField.text = dateFormatter.string(from: wdEndPicker.date)
+        } else if textField === weekendsStartTextField {
+            weekendsStartTextField.text = dateFormatter.string(from: weStartPicker.date)
+        } else if textField === weekendsEndTextField {
+            weekendsEndTextField.text = dateFormatter.string(from: weEndPicker.date)
+        }
+    }
+    
     //MARK: FOcused keyboard
     func focusKB() {
         NotificationCenter.default.addObserver(self, selector: #selector(ctrlScheduleCleaningViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -90,4 +113,21 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
             self.view.frame.origin.y = 0
         }
     }
+    
+    //MARK: Date picker
+    func setupDPbounds() {
+        let dps = [wdStartPicker, wdEndPicker, weStartPicker, weEndPicker]
+        
+        for dp in dps {
+            dp.datePickerMode = UIDatePicker.Mode.time
+            dp.locale = Locale(identifier: "en_GB")
+        }
+    }
+    
+    lazy var dateFormatter: DateFormatter = {
+        let df = DateFormatter()
+        df.timeStyle = .short
+        df.locale = Locale(identifier: "en_GB")
+        return df
+    }()
 }
