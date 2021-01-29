@@ -4,22 +4,22 @@ import rospy
 from time import time
 
 from devices.Lidar import Lidar
+from robots.waffle import Waffle
+
 import sys
 
 class Webots_bridge:
     def __init__(self,robot_name):
         self.r_name = robot_name
 
-        self.devices = [Lidar(self.r_name)]
+        self.robot = Waffle(self.r_name)
 
 
     def setup(self):
-        for d in self.devices:
-            d.setup_device()
+        self.robot.setup()
 
     def update(self,dt):
-        for d in self.devices:
-            d.update_device(dt)
+        self.robot.update(dt)
 
 if __name__ == '__main__':
 
@@ -36,6 +36,9 @@ if __name__ == '__main__':
 
         # publish messages consistently untill shutdown
         while not rospy.is_shutdown():
-            node.update(1./15.625)
-            rate.sleep()
-
+            try:
+                node.update(1./15.625)
+                rate.sleep()
+            except Exception as e:
+                print("Exception in webots bridge: " + str(e))
+                pass

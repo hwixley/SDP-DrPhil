@@ -7,13 +7,11 @@ import rospy
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 import cv2
-from cv_bridge import CvBridge,CvBridgeError
-from cv_bridge.boost.cv_bridge_boost import getCvType
+# from cv_bridge import CvBridge,CvBridgeError
+# from cv_bridge.boost.cv_bridge_boost import getCvType
 
 class Lidar(Device):
     def __init__(self,robot_unique_name):
-        import sys
-        print(sys.path)
         super().__init__(robot_unique_name,"LDS_01")
 
         self.enable_srv = rospy.ServiceProxy(self.get_service_name("enable"), set_int)
@@ -28,20 +26,20 @@ class Lidar(Device):
         self.min_range = 0 
         self.max_range = 0
 
-        self.bridge = CvBridge()
+        # self.bridge = CvBridge()
 
     def update_device(self,dt):
         # receive and interpret image
         img = self.get_layer_range_image_srv().image
         # print(img)
-        try:
-            cv_image = self.bridge.imgmsg_to_cv2(img, "passthrough")
-            # TODO: fill in rest of fields according to http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/LaserScan.html
-            scan = LaserScan()
-            scan.ranges = cv_image
-            self.scan_pub.publish(scan)
-        except CvBridgeError as e:
-            print(e)
+        # try:
+        #     cv_image = self.bridge.imgmsg_to_cv2(img, "passthrough")
+        #     # TODO: fill in rest of fields according to http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/LaserScan.html
+        #     scan = LaserScan()
+        #     scan.ranges = cv_image
+        #     self.scan_pub.publish(scan)
+        # except CvBridgeError as e:
+        #     print(e)
 
         
 
