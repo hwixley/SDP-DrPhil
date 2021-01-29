@@ -8,6 +8,7 @@ project(dr-phil)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  cv_bridge
   diagnostic_msgs
   hls_lfcd_lds_driver
   joint_state_publisher
@@ -112,7 +113,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES dr-phil
-#  CATKIN_DEPENDS diagnostic_msgs hls_lfcd_lds_driver joint_state_publisher roscpp rospy rosserial_python sensor_msgs std_msgs turtlebot3_msgs webots_ros
+#  CATKIN_DEPENDS cv_bridge diagnostic_msgs hls_lfcd_lds_driver joint_state_publisher roscpp rospy rosserial_python sensor_msgs std_msgs turtlebot3_msgs webots_ros
 #  DEPENDS system_lib
 )
 
