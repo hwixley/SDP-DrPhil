@@ -4,10 +4,10 @@
 # This is a proto file for Webots for the MobilePx100
 # Extracted from: C:\Users\jonah\urdf2webots\interbotix_ros_manipulators\interbotix_ros_xsarms\interbotix_xsarm_descriptions\urdf\mobile_px100.urdf
 
-PROTO MobilePx100 [
+PROTO MobilePx100Standalone [
   field  SFVec3f     translation     0 0 0
   field  SFRotation  rotation        0 1 0 0
-  field  SFString    name            "MobilePx100"  # Is `Robot.name`.
+  field  SFString    name            "MobilePx100Standalone"  # Is `Robot.name`.
   field  SFString    controller      "void"         # Is `Robot.controller`.
   field  MFString    controllerArgs  []             # Is `Robot.controllerArgs`.
   field  SFString    customData      ""             # Is `Robot.customData`.
@@ -16,10 +16,8 @@ PROTO MobilePx100 [
   field  SFBool      selfCollision   FALSE          # Is `Robot.selfCollision`.
 ]
 {
-  Slot{
-    type "roboticArm"
-    endPoint  Robot {
-            translation IS translation
+  Robot {
+          translation IS translation
       rotation IS rotation
       controller IS controller
       controllerArgs IS controllerArgs
@@ -27,9 +25,9 @@ PROTO MobilePx100 [
       supervisor IS supervisor
       synchronization IS synchronization
       selfCollision IS selfCollision
-    translation 0 0.01 1.01962e-08
-    rotation 1 0 0 -1.5707953071795862
-    children [
+  translation 0 0.01 1.01962e-08
+  rotation 1 0 0 -1.5707953071795862
+  children [
 
     DEF BODY Transform {
       rotation 0 0 -1 1.570796
@@ -579,6 +577,4 @@ PROTO MobilePx100 [
     ]
   }
 }
-
-  }
 }
