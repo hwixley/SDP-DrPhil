@@ -10,21 +10,28 @@ import UIKit
 
 class StatsViewController: UIViewController {
 
+    //MARK: Properties
+    @IBOutlet weak var roundLabel: UILabel!
+    @IBOutlet weak var roomLabel: UILabel!
+    @IBOutlet weak var handlesLabel: UILabel!
+    @IBOutlet weak var statsImageView: UIImageView!
+    @IBOutlet weak var batteryUsageLabel: UILabel!
+    @IBOutlet weak var disinfectantUsageLabel: UILabel!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
     }
-    
 
-    /*
-    // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    //MARK: Private methods
+    func setupUI() {
+        if UserInfo.dayStats != nil {
+            if UserInfo.dayStats!.round != nil {
+                
+            }
+        }
     }
-    */
-
 }

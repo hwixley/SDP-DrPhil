@@ -7,11 +7,14 @@
 //
 
 import Foundation
+import UIKit
 
 struct UserInfo {
     static var schedule : CleanSchedule? = nil
     static var dayStats : DailyStats? = nil
     static var resources : ResourceMetrics? = nil
+    static var status : String? = nil
+    static var map : UIImage? = nil
 }
 
 func isWeekday() -> Bool {

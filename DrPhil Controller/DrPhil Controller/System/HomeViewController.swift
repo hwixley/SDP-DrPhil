@@ -17,6 +17,10 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var mapImageView: UIImageView!
     @IBOutlet weak var shiftStack: UIStackView!
     @IBOutlet weak var roundsTextLabel: UILabel!
+    @IBOutlet weak var batteryLabel: UILabel!
+    @IBOutlet weak var disinfectantLabel: UILabel!
+    @IBOutlet weak var statusStack: UIStackView!
+    @IBOutlet weak var mapStack: UIStackView!
     
     
     override func viewDidLoad() {
@@ -25,20 +29,28 @@ class HomeViewController: UIViewController {
         self.setupUI()
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
+    
     //MARK: Private methods
     func setupUI() {
         shiftStack.isHidden = false
         roundsTextLabel.text = "# Cleaning rounds:"
+        
+        statusLabel.text = UserInfo.status ?? "NA"
+        
+        if UserInfo.resources != nil {
+            if UserInfo.resources!.battery != nil {
+                batteryLabel.text = String(UserInfo.resources!.battery!) + "%"
+            }
+            if UserInfo.resources!.disinfectant != nil {
+                disinfectantLabel.text = String(UserInfo.resources!.disinfectant!) + "%"
+            }
+        }
+        
+        if UserInfo.map != nil {
+            mapImageView.image = UserInfo.map!
+        } else {
+            mapStack.isHidden = true
+        }
         
         if UserInfo.schedule != nil {
             if isWeekday() {
@@ -55,7 +67,9 @@ class HomeViewController: UIViewController {
                 }
             }
         }
+        mapStack.isHidden = true
         shiftStack.isHidden = true
+        statusStack.isHidden = true
         roundsTextLabel.text = "No shift today"
         roundsLabel.text = ""
         statusLabel.text = "idle at charging station"
