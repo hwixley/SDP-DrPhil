@@ -38,12 +38,8 @@ class HomeViewController: UIViewController {
         statusLabel.text = UserInfo.status ?? "NA"
         
         if UserInfo.resources != nil {
-            if UserInfo.resources!.battery != nil {
-                batteryLabel.text = String(UserInfo.resources!.battery!) + "%"
-            }
-            if UserInfo.resources!.disinfectant != nil {
-                disinfectantLabel.text = String(UserInfo.resources!.disinfectant!) + "%"
-            }
+            batteryLabel.text = String(UserInfo.resources!.battery) + "%"
+            disinfectantLabel.text = String(UserInfo.resources!.disinfectant) + "%"
         }
         
         if UserInfo.map != nil {

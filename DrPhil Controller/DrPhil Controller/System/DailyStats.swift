@@ -9,16 +9,16 @@
 import Foundation
 
 struct DailyStats {
-    var round : Int? = nil
-    var maxRound : Int? = nil
-    var room : Int? = nil
-    var maxRooms : Int? = nil
-    var numHandles : Int? = nil
-    var batteryUsage : Int? = nil
-    var disinfectantUsage : Int? = nil
+    var round : Int
+    var maxRound : Int
+    var room : Int
+    var maxRooms : Int
+    var numHandles : Int
+    var batteryUsage : Int
+    var disinfectantUsage : Int
 }
 
 struct ResourceMetrics {
-    var battery : Double? = nil
-    var disinfectant : Double? = nil
+    var battery : Double
+    var disinfectant : Double
 }

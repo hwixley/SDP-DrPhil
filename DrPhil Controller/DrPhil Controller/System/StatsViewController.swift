@@ -22,16 +22,18 @@ class StatsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        self.setupUI()
     }
 
 
     //MARK: Private methods
     func setupUI() {
         if UserInfo.dayStats != nil {
-            if UserInfo.dayStats!.round != nil {
-                
-            }
+            roundLabel.text = "Cleaning round: " + String(UserInfo.dayStats!.round) + "/" + String(UserInfo.dayStats!.maxRound)
+            roomLabel.text = "Cleaning round completion status: " + String(UserInfo.dayStats!.room) + "/" + String(UserInfo.dayStats!.maxRooms)
+            handlesLabel.text = "Total door handles disinfected: " + String(UserInfo.dayStats!.numHandles)
+            batteryUsageLabel.text = "Battery usage: " + String(UserInfo.dayStats!.batteryUsage) + "W"
+            disinfectantUsageLabel.text = "Disinfectant usage: " + String(UserInfo.dayStats!.disinfectantUsage) + "ml"
         }
     }
 }
