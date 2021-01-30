@@ -74,6 +74,29 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
         tapOutsideKB.isEnabled = false
     }
     
+    @IBAction func clickUpdate(_ sender: UIBarButtonItem) {
+        if weekdaysSwitch.isOn {
+            if weekdaysStartTextField.text == "" || weekdaysEndTextField.text == "" {
+                self.navigationItem.prompt = "Fill in the highlighted fields or disable weekdays"
+                return
+            } else {
+                UserInfo.schedule.weekdays = TimeFrame(start: weekdaysStartTextField.text!, end: weekdaysEndTextField.text!)
+            }
+        }
+        
+        if weekendsSwitch.isOn {
+            if weekendsStartTextField.text == "" || weekendsEndTextField.text == "" {
+                self.navigationItem.prompt = "Fill in the highlighted fields or disable weekends"
+                return
+            } else {
+                UserInfo.schedule.weekends = TimeFrame(start: weekendsStartTextField.text!, end: weekendsEndTextField.text!)
+            }
+        }
+        
+        self.performSegue(withIdentifier: "updateScheduleSegue", sender: self)
+    }
+    
+    
     //MARK: Textfield
     func textFieldDidBeginEditing(_ textField: UITextField) {
         self.clickedTxtf = textField
