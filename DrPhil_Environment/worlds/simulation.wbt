@@ -35,6 +35,7 @@ Floor {
 Turtlebot3WafflePi {
   translation -10.84 0.01 -3.10382e-08
   rotation -3.3905113482557537e-09 0.707108281185553 0.70710528118436 3.14159
+  controller "ros"
   roboticArm MobilePx100 {
   }
 }
