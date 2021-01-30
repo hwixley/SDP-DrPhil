@@ -11,9 +11,10 @@ import UIKit
 class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate {
 
     //MARK: Properties
-    @IBOutlet weak var numRoundsTextField: UITextField!
+    @IBOutlet weak var numRoundsWDTextField: UITextField!
     @IBOutlet weak var weekdaysStartTextField: UITextField!
     @IBOutlet weak var weekdaysEndTextField: UITextField!
+    @IBOutlet weak var numRoundsWETextField: UITextField!
     @IBOutlet weak var weekendsStartTextField: UITextField!
     @IBOutlet weak var weekendsEndTextField: UITextField!
     @IBOutlet weak var weekdaysSwitch: UISwitch!
@@ -21,6 +22,12 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
     @IBOutlet weak var weekdaysStack: UIStackView!
     @IBOutlet weak var weekendsStack: UIStackView!
     @IBOutlet var tapOutsideKB: UITapGestureRecognizer!
+    @IBOutlet weak var startWDLabel: UILabel!
+    @IBOutlet weak var endWDLabel: UILabel!
+    @IBOutlet weak var roundsWDLabel: UILabel!
+    @IBOutlet weak var startWELabel: UILabel!
+    @IBOutlet weak var endWELabel: UILabel!
+    @IBOutlet weak var roundsWELabel: UILabel!
     
     //MARK: Pickers
     var wdStartPicker = UIDatePicker()
@@ -31,11 +38,15 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
     //MARK: Temporary vars
     var clickedTxtf: UITextField?
     
+    //MARK: Struct vars
+    var schedule = CleanSchedule()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        numRoundsTextField.delegate = self
+        numRoundsWDTextField.delegate = self
+        numRoundsWETextField.delegate = self
         weekdaysStartTextField.delegate = self
         weekdaysEndTextField.delegate = self
         weekendsEndTextField.delegate = self
@@ -50,6 +61,13 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
         weekendsSwitch.isOn = false
         self.tapOutsideKB.isEnabled = false
         self.setupDPbounds()
+    }
+    
+    //MARK: Navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "updateScheduleSegue" {
+            UserInfo.schedule = self.schedule
+        }
     }
     
     //MARK: Actions
@@ -76,20 +94,26 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
     
     @IBAction func clickUpdate(_ sender: UIBarButtonItem) {
         if weekdaysSwitch.isOn {
-            if weekdaysStartTextField.text == "" || weekdaysEndTextField.text == "" {
+            if weekdaysStartTextField.text == "" || weekdaysEndTextField.text == "" || numRoundsWDTextField.text == "" {
                 self.navigationItem.prompt = "Fill in the highlighted fields or disable weekdays"
+                roundsWDLabel.textColor = UIColor.systemPink
+                startWDLabel.textColor = UIColor.systemPink
+                endWDLabel.textColor = UIColor.systemPink
                 return
             } else {
-                UserInfo.schedule.weekdays = TimeFrame(start: weekdaysStartTextField.text!, end: weekdaysEndTextField.text!)
+                schedule.weekdays = TimeFrame(start: weekdaysStartTextField.text!, end: weekdaysEndTextField.text!, numRounds:  Int(numRoundsWDTextField.text ?? "0")!)
             }
         }
         
         if weekendsSwitch.isOn {
-            if weekendsStartTextField.text == "" || weekendsEndTextField.text == "" {
+            if weekendsStartTextField.text == "" || weekendsEndTextField.text == "" || numRoundsWETextField.text == "" {
                 self.navigationItem.prompt = "Fill in the highlighted fields or disable weekends"
+                roundsWELabel.textColor = UIColor.systemPink
+                startWELabel.textColor = UIColor.systemPink
+                endWELabel.textColor = UIColor.systemPink
                 return
             } else {
-                UserInfo.schedule.weekends = TimeFrame(start: weekendsStartTextField.text!, end: weekendsEndTextField.text!)
+                schedule.weekends = TimeFrame(start: weekendsStartTextField.text!, end: weekendsEndTextField.text!, numRounds: Int(numRoundsWETextField.text ?? "0")!)
             }
         }
         

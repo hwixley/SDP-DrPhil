@@ -610,6 +610,14 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="endWDLabel" destination="eAT-yN-re2" id="0Is-If-cNy"/>
+                        <outlet property="endWELabel" destination="t8B-X4-W4O" id="oEL-ze-9uM"/>
+                        <outlet property="numRoundsWDTextField" destination="9Ne-Id-XUv" id="EVq-fr-61Z"/>
+                        <outlet property="numRoundsWETextField" destination="tde-x7-oYe" id="Zbn-S7-GBd"/>
+                        <outlet property="roundsWDLabel" destination="g7Y-BY-zPm" id="BaU-3J-EUd"/>
+                        <outlet property="roundsWELabel" destination="B5E-3R-U74" id="Nl2-8A-yrd"/>
+                        <outlet property="startWDLabel" destination="kSQ-Lo-ons" id="4RI-c8-hNV"/>
+                        <outlet property="startWELabel" destination="TGH-s9-Khq" id="ACt-kt-skC"/>
                         <outlet property="tapOutsideKB" destination="f0B-8p-nHD" id="ajX-QV-EfN"/>
                         <outlet property="weekdaysEndTextField" destination="vy6-lA-nZo" id="hyd-SL-oDk"/>
                         <outlet property="weekdaysStack" destination="48Z-pA-5Ym" id="vCK-53-QEP"/>

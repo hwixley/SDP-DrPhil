@@ -9,5 +9,5 @@
 import Foundation
 
 struct UserInfo {
-    var schedule : CleanSchedule
+    static var schedule : CleanSchedule? = nil
 }
