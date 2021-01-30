@@ -11,3 +11,17 @@ import Foundation
 struct UserInfo {
     static var schedule : CleanSchedule? = nil
 }
+
+func isWeekday() -> Bool {
+    let currentDate = Date()
+    let df = DateFormatter()
+    df.locale = Locale(identifier: "en_GB")
+    df.dateFormat = "ccc"
+    
+    let day = df.string(from: currentDate)
+    if day == "Sat" || day == "Sun" {
+        return false
+    } else {
+        return true
+    }
+}

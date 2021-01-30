@@ -395,6 +395,14 @@
                         <viewLayoutGuide key="safeArea" id="LKN-2O-v82"/>
                     </view>
                     <navigationItem key="navigationItem" title="Home" id="LVn-QK-GAW"/>
+                    <connections>
+                        <outlet property="mapImageView" destination="QMl-ls-aeV" id="xqn-ax-eCz"/>
+                        <outlet property="roundsLabel" destination="lpW-1r-VuW" id="H01-9o-BiB"/>
+                        <outlet property="roundsTextLabel" destination="bnn-ZA-19p" id="VLK-Nx-lzg"/>
+                        <outlet property="shiftLabel" destination="TrK-7e-QyH" id="uTp-ID-noe"/>
+                        <outlet property="shiftStack" destination="HP6-wH-m3P" id="33E-hg-SFg"/>
+                        <outlet property="statusLabel" destination="BeB-4C-cQi" id="yMO-FF-aln"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="f48-PO-Att" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>

@@ -61,6 +61,7 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
         weekendsSwitch.isOn = false
         self.tapOutsideKB.isEnabled = false
         self.setupDPbounds()
+        self.setupUI()
     }
     
     //MARK: Navigation
@@ -177,4 +178,24 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
         df.locale = Locale(identifier: "en_GB")
         return df
     }()
+    
+    //MARK: Private Methods
+    func setupUI() {
+        if UserInfo.schedule != nil {
+            if UserInfo.schedule!.weekdays != nil {
+                weekdaysSwitch.isOn = true
+                weekdaysStack.isHidden = false
+                weekdaysStartTextField.text = UserInfo.schedule!.weekdays!.start
+                weekdaysEndTextField.text = UserInfo.schedule!.weekdays!.end
+                numRoundsWDTextField.text = String(UserInfo.schedule!.weekdays!.numRounds)
+            }
+            if UserInfo.schedule!.weekends != nil {
+                weekendsSwitch.isOn = true
+                weekendsStack.isHidden = false
+                weekendsStartTextField.text = UserInfo.schedule!.weekends!.start
+                weekendsEndTextField.text = UserInfo.schedule!.weekends!.end
+                numRoundsWETextField.text = String(UserInfo.schedule!.weekends!.numRounds)
+            }
+        }
+    }
 }
