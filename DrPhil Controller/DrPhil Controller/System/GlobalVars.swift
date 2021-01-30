@@ -10,6 +10,8 @@ import Foundation
 
 struct UserInfo {
     static var schedule : CleanSchedule? = nil
+    static var dayStats : DailyStats? = nil
+    static var resources : ResourceMetrics? = nil
 }
 
 func isWeekday() -> Bool {

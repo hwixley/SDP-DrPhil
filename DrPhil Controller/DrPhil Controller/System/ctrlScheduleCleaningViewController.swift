@@ -94,6 +94,10 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
     }
     
     @IBAction func clickUpdate(_ sender: UIBarButtonItem) {
+        roundsWELabel.textColor = UIColor.white
+        startWELabel.textColor = UIColor.white
+        endWELabel.textColor = UIColor.white
+        
         if weekdaysSwitch.isOn {
             if weekdaysStartTextField.text == "" || weekdaysEndTextField.text == "" || numRoundsWDTextField.text == "" {
                 self.navigationItem.prompt = "Fill in the highlighted fields or disable weekdays"
@@ -105,6 +109,9 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
                 schedule.weekdays = TimeFrame(start: weekdaysStartTextField.text!, end: weekdaysEndTextField.text!, numRounds:  Int(numRoundsWDTextField.text ?? "0")!)
             }
         }
+        roundsWDLabel.textColor = UIColor.white
+        startWDLabel.textColor = UIColor.white
+        endWDLabel.textColor = UIColor.white
         
         if weekendsSwitch.isOn {
             if weekendsStartTextField.text == "" || weekendsEndTextField.text == "" || numRoundsWETextField.text == "" {

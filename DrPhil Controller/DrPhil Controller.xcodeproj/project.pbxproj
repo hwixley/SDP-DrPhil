@@ -23,6 +23,7 @@
 		C0B1AA3625C590570072D124 /* CleanSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0B1AA3525C590570072D124 /* CleanSchedule.swift */; };
 		C0B1AA3825C591B40072D124 /* GlobalVars.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0B1AA3725C591B40072D124 /* GlobalVars.swift */; };
 		C0B1AA3A25C5983B0072D124 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0B1AA3925C5983B0072D124 /* ContentView.swift */; };
+		C0B1AA3C25C5B93E0072D124 /* DailyStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0B1AA3B25C5B93E0072D124 /* DailyStats.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +66,7 @@
 		C0B1AA3525C590570072D124 /* CleanSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanSchedule.swift; sourceTree = "<group>"; };
 		C0B1AA3725C591B40072D124 /* GlobalVars.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalVars.swift; sourceTree = "<group>"; };
 		C0B1AA3925C5983B0072D124 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		C0B1AA3B25C5B93E0072D124 /* DailyStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyStats.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,6 +154,7 @@
 				C06B434A25BF5C090017D14B /* Main.storyboard */,
 				C0B1AA3525C590570072D124 /* CleanSchedule.swift */,
 				C06B437F25C1CDBB0017D14B /* ctrlScheduleCleaningViewController.swift */,
+				C0B1AA3B25C5B93E0072D124 /* DailyStats.swift */,
 				C0B1AA3925C5983B0072D124 /* ContentView.swift */,
 				C0B1AA3725C591B40072D124 /* GlobalVars.swift */,
 			);
@@ -300,6 +303,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C06B434925BF5C090017D14B /* ViewController.swift in Sources */,
+				C0B1AA3C25C5B93E0072D124 /* DailyStats.swift in Sources */,
 				C0B1AA3A25C5983B0072D124 /* ContentView.swift in Sources */,
 				C06B434525BF5C090017D14B /* AppDelegate.swift in Sources */,
 				C06B434725BF5C090017D14B /* SceneDelegate.swift in Sources */,
