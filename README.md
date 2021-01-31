@@ -14,8 +14,8 @@ The process is not *that* painful:
 
 1. `cd ros-workspace`
 2. `rosdep install --from-paths src --ignore-src -r -y` - this will install all missing packages 
-3. `catkin_make` and if cv_bridge complains try to redo this with `catkin_make --cmake-args -DPYTHON_VERSION=3.8` of course you'd need to have python 3.8 installed
-4. `source devel.sh`
+3. `catkin_make`
+4. `source devel/setup.sh`
 
 this "activates the workspace" to check if it worked run: `echo $ROS_PACKAGE_PATH`
 you should see the following within the output:
@@ -39,4 +39,3 @@ For some reason I cannot get ros controllers to work without special launch file
 3. roslaunch dr-phil simulation.launch
 
 This will run webots and start up all the controller nodes, if any errors to do with <extern> appear, simply restart the simulation which will launch the controller again. 
-

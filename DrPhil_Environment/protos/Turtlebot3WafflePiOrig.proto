@@ -1,0 +1,245 @@
+#VRML_SIM R2020b utf8
+# license: Apache License 2.0
+# license url: http://www.apache.org/licenses/LICENSE-2.0
+# This is a proto file for Webots for the Turtlebot3WafflePi
+# Extracted from: turtlebot3_waffle_pi.urdf
+
+PROTO Turtlebot3WafflePiOrig [
+  field  SFVec3f     translation     0 0 0
+  field  SFRotation  rotation        1 0 0 -1.5708
+  field  SFString    name            "Turtlebot3WafflePi"  # Is `Robot.name`.
+  field  SFString    controller      "void"                # Is `Robot.controller`.
+  field  MFString    controllerArgs  []                    # Is `Robot.controllerArgs`.
+  field  SFString    customData      ""                    # Is `Robot.customData`.
+  field  SFBool      supervisor      FALSE                 # Is `Robot.supervisor`.
+  field  SFBool      synchronization TRUE                  # Is `Robot.synchronization`.
+  field  SFBool      selfCollision   FALSE                 # Is `Robot.selfCollision`.
+  field  SFBool      staticBase      TRUE                  # Defines if the robot base should be pinned to the static environment.
+  field  MFNode      toolSlot        []                    # Extend the robot with new nodes at the end of the arm.
+  field MFNode       extensionSlot   [ RobotisLds01 { } ]  # Extends the robot with new nodes in the extension slot.
+
+]
+{
+  Robot {
+    translation IS translation
+    rotation IS rotation
+    controller IS controller
+    controllerArgs IS controllerArgs
+    customData IS customData
+    supervisor IS supervisor
+    synchronization IS synchronization
+    selfCollision IS selfCollision
+    children [
+      Transform {
+        translation -0.064000 0.000000 0.000000
+        rotation 0.000000 1.000000 0.000000 0.000000
+        children [
+          Turtlebot3WafflePi_waffle_pi_baseMesh {
+          }
+        ]
+      }
+      HingeJoint {
+        jointParameters HingeJointParameters {
+          axis 0.000000 1.000000 0.000796
+          anchor 0.000000 0.144000 0.023000
+          dampingConstant 0.0
+          staticFriction 0.0
+        }
+        device [
+          RotationalMotor {
+            name "wheel_left_joint"
+            maxTorque 10000
+          }
+          PositionSensor {
+            name "wheel_left_joint_sensor"
+          }
+        ]
+        endPoint Solid {
+          translation 0.000000 0.144000 0.023000
+          rotation -1.000000 0.000000 0.000000 1.570000
+          children [
+            Transform {
+              translation 0.000000 0.000000 0.000000
+              rotation 1.000000 0.000000 0.000000 1.570000
+              children [
+                Turtlebot3WafflePi_left_tireMesh {
+                }
+              ]
+            }
+          ]
+          name "wheel_left_link"
+          boundingObject Transform {
+            translation 0.000000 0.000000 0.000000
+            rotation 1.000000 0.000000 0.000000 1.570796
+            children [
+              Cylinder {
+                radius 0.033
+                height 0.018
+              }
+            ]
+          }
+          physics Physics {
+            density -1
+            mass 0.028499
+            inertiaMatrix [
+              1.117558e-05 1.119241e-05 2.071256e-05
+              -4.236978e-11 -5.938172e-09 -1.440011e-11
+            ]
+          }
+        }
+      }
+      HingeJoint {
+        jointParameters HingeJointParameters {
+          axis 0.000000 1.000000 0.000796
+          anchor 0.000000 -0.144000 0.023000
+          dampingConstant 0.0
+          staticFriction 0.0
+        }
+        device [
+          RotationalMotor {
+            name "wheel_right_joint"
+            maxTorque 10000
+          }
+          PositionSensor {
+            name "wheel_right_joint_sensor"
+          }
+        ]
+        endPoint Solid {
+          translation 0.000000 -0.144000 0.023000
+          rotation -1.000000 0.000000 0.000000 1.570000
+          children [
+            Transform {
+              translation 0.000000 0.000000 0.000000
+              rotation 1.000000 0.000000 0.000000 1.570000
+              children [
+                Turtlebot3WafflePi_right_tireMesh {
+                }
+              ]
+            }
+          ]
+          name "wheel_right_link"
+          boundingObject Transform {
+            translation 0.000000 0.000000 0.000000
+            rotation 1.000000 0.000000 0.000000 1.570796
+            children [
+              Cylinder {
+                radius 0.033
+                height 0.018
+              }
+            ]
+          }
+          physics Physics {
+            density -1
+            mass 0.028499
+            inertiaMatrix [
+              1.117558e-05 1.119241e-05 2.071256e-05
+              -4.236978e-11 -5.938172e-09 -1.440011e-11
+            ]
+          }
+        }
+      }
+      Solid {
+        translation -0.177000 -0.064000 -0.004000
+        rotation -1.000000 0.000000 0.000000 1.570000
+        name "caster_back_right_link"
+        boundingObject Box {
+           size 0.030000 0.009000 0.020000
+        }
+        physics Physics {
+          density -1
+          mass 0.005000
+          inertiaMatrix [
+            1.000000e-03 1.000000e-03 1.000000e-03
+            0.000000e+00 0.000000e+00 0.000000e+00
+          ]
+        }
+      }
+      Solid {
+        translation -0.177000 0.064000 -0.004000
+        rotation -1.000000 0.000000 0.000000 1.570000
+        name "caster_back_left_link"
+        boundingObject Box {
+           size 0.030000 0.009000 0.020000
+        }
+        physics Physics {
+          density -1
+          mass 0.005000
+          inertiaMatrix [
+            1.000000e-03 1.000000e-03 1.000000e-03
+            0.000000e+00 0.000000e+00 0.000000e+00
+          ]
+        }
+      }
+      Solid {
+        translation 0.000000 0.000000 0.068000
+        rotation 0.000000 1.000000 0.000000 0.000000
+        name "imu_link"
+      }
+      Solid {
+        translation -0.064000 0.000000 0.122000
+        rotation 0.000000 1.000000 0.000000 0.000000
+        children [
+          Turtlebot3WafflePi_ldsMesh {
+          }
+        ]
+        name "base_scan"
+        boundingObject Transform {
+          translation 0.015000 0.000000 -0.006500
+          rotation 1.000000 0.000000 0.000000 1.570796
+          children [
+            Cylinder {
+              radius 0.055
+              height 0.0315
+            }
+          ]
+        }
+        physics Physics {
+          density -1
+          mass 0.114000
+          inertiaMatrix [
+            1.000000e-03 1.000000e-03 1.000000e-03
+            0.000000e+00 0.000000e+00 0.000000e+00
+          ]
+        }
+      }
+      Solid {
+        translation 0.073000 -0.011000 0.084000
+        rotation 0.000000 1.000000 0.000000 0.000000
+        children [
+          Solid {
+            translation 0.003000 0.011000 0.009000
+            rotation 0.000000 1.000000 0.000000 0.000000
+            children [
+              Solid {
+                translation 0.000000 0.000000 0.000000
+                rotation -0.577503 0.577044 -0.577503 2.093475
+                name "camera_rgb_optical_frame"
+              }
+            ]
+            name "camera_rgb_frame"
+          }
+        ]
+        name "camera_link"
+        boundingObject Box {
+           size 0.015000 0.030000 0.027000
+        }
+        physics Physics {
+        }
+      }
+    ]
+    name IS name 
+    boundingObject Box {
+       size 0.266000 0.266000 0.094000
+    }
+    %{ if fields.staticBase.value == false then }%
+    physics Physics {
+      density -1
+      mass 1.372910
+      inertiaMatrix [
+        8.700272e-03 8.619542e-03 1.461273e-02
+        -4.757658e-05 1.116050e-04 -3.542230e-06
+      ]
+    }
+    %{ end }%
+  }
+}

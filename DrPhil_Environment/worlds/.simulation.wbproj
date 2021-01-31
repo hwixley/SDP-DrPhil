@@ -6,8 +6,7 @@ maximizedDockId: -1
 centralWidgetVisible: 1
 renderingMode: PLAIN
 orthographicViewHeight: 1
-textFiles: 0 "protos/MobilePx100.proto"
-globalOptionalRendering: CoordinateSystem::ContactPoints::AllBoundingObjects
+textFiles: -1
+globalOptionalRendering: CoordinateSystem::ContactPoints
 consoles: Console:All:All
-renderingDevicePerspectives: Turtlebot3WafflePi(1):RasberryPiV2Camera;0;0.384756;0;0
-renderingDevicePerspectives: Turtlebot3WafflePi:RasberryPiV2Camera;0;0.564024;0;0
+renderingDevicePerspectives: Turtlebot3WafflePi:RasberryPiV2Camera;0;0.542683;0;0
