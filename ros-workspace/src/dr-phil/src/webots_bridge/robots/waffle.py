@@ -25,6 +25,7 @@ class Waffle:
     def update(self,dt):
         self.r_motor.update_device(dt)
         self.l_motor.update_device(dt)
+        self.lidar.update_device(dt)
 
     def cmd_vel_callback(self,twist):
         fwd = twist.linear.x
