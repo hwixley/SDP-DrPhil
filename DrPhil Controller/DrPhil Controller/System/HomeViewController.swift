@@ -33,7 +33,7 @@ class HomeViewController: UIViewController {
     //MARK: Private methods
     func setupUI() {
         shiftStack.isHidden = false
-        roundsTextLabel.text = "# Cleaning rounds:"
+        roundsTextLabel.text = "Interval between cleaning rounds (minutes):"
         
         statusLabel.text = UserInfo.status ?? "NA"
         
