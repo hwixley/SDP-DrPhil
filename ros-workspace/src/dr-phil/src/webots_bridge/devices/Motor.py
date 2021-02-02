@@ -21,7 +21,7 @@ class RotationalMotor(Device):
     def set_position(self,pos):
         self.pos = pos 
 
-    def update_device(self,dt):
+    def update_device(self,time):
         if self.last_vel != self.vel:
             self.set_velocity_srv(self.vel)
             self.last_vel = self.vel

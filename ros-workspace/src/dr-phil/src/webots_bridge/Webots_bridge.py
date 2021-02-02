@@ -18,14 +18,15 @@ class Webots_bridge:
     def setup(self):
         self.robot.setup()
 
-    def update(self,dt):
-        self.robot.update(dt)
+    def update(self,time):
+        self.robot.update(time)
 
 if __name__ == '__main__':
 
     if len(sys.argv) != 2:
         print("You need to run this node with <robot unique name> argument!")
     else:
+        time = 0
         rospy.init_node('webots_bridge',anonymous=True)
         
         node = Webots_bridge(sys.argv[1])
@@ -36,9 +37,11 @@ if __name__ == '__main__':
 
         # publish messages consistently untill shutdown
         while not rospy.is_shutdown():
-            try:
-                node.update(1./15.625)
-                rate.sleep()
-            except Exception as e:
-                print("Exception in webots bridge: " + str(e))
-                pass
+            # try:
+            step = 1./15.625
+            time += step
+            node.update(time)
+            rate.sleep()
+                # except Exception as e:
+                #     print("Exception in webots bridge: " + str(e))
+                #     pass

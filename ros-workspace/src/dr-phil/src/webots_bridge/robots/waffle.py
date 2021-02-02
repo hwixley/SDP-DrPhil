@@ -8,7 +8,7 @@ class Waffle:
     
     def __init__(self,r_name):
         self.r_name = r_name
-        self.lidar = Lidar(r_name)
+        self.lidar = Lidar(r_name,"LDS_01")
         self.r_motor = RotationalMotor(r_name,"right_wheel_motor")
         self.l_motor = RotationalMotor(r_name,"left_wheel_motor")
 
