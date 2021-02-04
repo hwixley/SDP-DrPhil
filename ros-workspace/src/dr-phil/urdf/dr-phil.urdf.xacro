@@ -3,7 +3,15 @@
   <xacro:include filename="$(find dr-phil)/urdf/common_properties.xacro"/>
   <xacro:include filename="$(find dr-phil)/urdf/dr-phil.gazebo.xacro"/>
 
-  <link name="base_footprint"/>
+  <xacro:property name="attachment_frame" value="base_footprint"/>
+  <xacro:property name="arm_base_frame" value="base_footprint"/>
+
+
+  <xacro:include filename="$(find dr-phil)/urdf/px100.urdf.xacro" />
+
+  <link name="base_footprint">
+    <child link="" />
+  </link>
 
   <joint name="base_joint" type="fixed">
     <parent link="base_footprint"/>
