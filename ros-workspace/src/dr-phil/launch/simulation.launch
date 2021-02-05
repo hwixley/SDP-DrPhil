@@ -26,9 +26,10 @@
   <param name="robot_description" command="$(find xacro)/xacro --inorder $(find dr-phil)/urdf/dr-phil.urdf.xacro" />
 
   <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model dr-phil -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+  <node name="px100_control_merger" pkg="dr-phil" type="px100_joint_controller_merger.py" respawn="true" />
 
   <!-- spawn arm controllers -->
-  
+
   <include file="$(find dr-phil)/launch/arm/arm.launch">
   </include>
 
