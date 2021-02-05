@@ -34,7 +34,7 @@ On Ubuntu, and the respective files for other distros
 2. `roscore`
 3. roslaunch dr-phil simulation.launch
 
-# Interfacing with the robot
+### Interfacing with the robot
 
 see docs https://emanual.robotis.com/docs/en/platform/turtlebot3/simulation/#gazebo-simulation
 
@@ -47,12 +47,12 @@ see docs https://emanual.robotis.com/docs/en/platform/turtlebot3/simulation/#gaz
 - Information on a topic
     - e.g. `rostopic info /cmd_vel`
 
-# Visualising sensor data 
+### Visualising sensor data 
 
 Run `rviz`
 You can visualise the data by loading the config in `dr-phil/rviz/model.rviz` from rviz when running the gazebo simulation
 
-# using SLAM and other launch files
+### using SLAM and other launch files
 
 if you want to follow the instructions provided on the docs, that's fine
 however the launch files in their packages point to the model within the actual turtlebot packages, so in order to use those launchfiles correctly you must do something similar to what was done in the simulation.launch file ,i.e. look into the package 
@@ -60,6 +60,19 @@ however the launch files in their packages point to the model within the actual 
 say `roscd turtlebot3_gazebo/launch` check out the launch files and traverse the tree to see what they're actually launching (most of the time it's plugins from other packages with some arguments) we need our own versions of those launch files which point to our models in /urdf 
 
 slam functionality is actually provided via external node, which simply must be launched with the appropriate arguments, again have a look at the launch files
+
+
+### simple commands
+
+see: http://www.inf.ed.ac.uk/teaching/courses/sdp/SDP2020/turtlebot3_docs.pdf
+for usage of `/cmd_vel` and `/joint_trajectory_point` for manually controlling the bot and arm
+
+
+### Decreasing performance issues
+
+If your simulation is very slow, and you don't need all the features of the simulation (just the robot) then change the world to `field.world` like so:
+
+`roslaunch dr-phil simulation.launch world:=field`
 
 ## Starting webots simulation 
 

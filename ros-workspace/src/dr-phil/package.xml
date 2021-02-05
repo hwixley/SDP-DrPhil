@@ -59,7 +59,10 @@
   <build_depend>std_msgs</build_depend>
   <build_depend>turtlebot3_msgs</build_depend>
   <build_depend>turtlebot3</build_depend>
+  <build_depend>turtlebot3_gazebo</build_depend>
   <build_depend>webots_ros</build_depend>
+  <build_depend>effort_controllers</build_depend>
+  <build_depend>joint_trajectory_controller</build_depend>
   <build_export_depend>diagnostic_msgs</build_export_depend>
   <build_export_depend>hls_lfcd_lds_driver</build_export_depend>
   <build_export_depend>joint_state_publisher</build_export_depend>
@@ -70,7 +73,10 @@
   <build_export_depend>std_msgs</build_export_depend>
   <build_export_depend>turtlebot3_msgs</build_export_depend>
   <build_export_depend>turtlebot3</build_export_depend>
+  <build_export_depend>turtlebot3_gazebo</build_export_depend>
   <build_export_depend>webots_ros</build_export_depend>
+  <build_export_depend>effort_controllers</build_export_depend>
+  <build_export_depend>joint_trajectory_controller</build_export_depend>
   <exec_depend>diagnostic_msgs</exec_depend>
   <exec_depend>hls_lfcd_lds_driver</exec_depend>
   <exec_depend>joint_state_publisher</exec_depend>
@@ -82,7 +88,9 @@
   <exec_depend>turtlebot3_msgs</exec_depend>
   <exec_depend>webots_ros</exec_depend>
   <exec_depend>turtlebot3</exec_depend>
-
+  <exec_depend>turtlebot3_gazebo</exec_depend>
+  <exec_depend>effort_controllers</exec_depend>
+  <exec_depend>joint_trajectory_controller</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
