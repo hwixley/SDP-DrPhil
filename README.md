@@ -67,6 +67,13 @@ slam functionality is actually provided via external node, which simply must be 
 see: http://www.inf.ed.ac.uk/teaching/courses/sdp/SDP2020/turtlebot3_docs.pdf
 for usage of `/cmd_vel` and `/joint_trajectory_point` for manually controlling the bot and arm
 
+
+### Decreasing performance issues
+
+If your simulation is very slow, and you don't need all the features of the simulation (just the robot) then change the world to `field.world` like so:
+
+`roslaunch dr-phil simulation.launch world:=field`
+
 ## Starting webots simulation 
 
 For some reason I cannot get ros controllers to work without special launch files, so in order to start the simulation.wbt world simulation + launch ROS controller nodes do:
