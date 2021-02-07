@@ -74,6 +74,14 @@ If your simulation is very slow, and you don't need all the features of the simu
 
 `roslaunch dr-phil simulation.launch world:=field`
 
+
+### Gazebo simulation testing
+
+You can find the various different Gazebo worlds in the /ros-workspace/src/dr-phil/worlds directory
+
+Each world has a version with and without obstacles
+
+
 ## Starting webots simulation 
 
 For some reason I cannot get ros controllers to work without special launch files, so in order to start the simulation.wbt world simulation + launch ROS controller nodes do:
@@ -82,6 +90,6 @@ For some reason I cannot get ros controllers to work without special launch file
 2. start the roscore process with `roscore`
 3. roslaunch dr-phil simulation-webots.launch
 
-This will run webots and start up all the controller nodes, if any errors to do with <extern> appear, simply restart the simulation which will launch the controller again. 
+This will run webots and start up all the controller nodes, if any errors to do with <extern> appear, simply restart the simulation which will launch the controller again.
 
 
