@@ -12,7 +12,11 @@ class ProximityLDS():
         # input
         self.input_sub = rospy.Subscriber('scan',LaserScan,self.callback) 
 
+    #TODO: Given an angle and range of nearest obstacle, instruct the robot to go to it
+    def move_to_closest_obstacle(self,range,angle):
+        pass
     
+
     def move_motor(self,fwd,ang):
         pub = rospy.Publisher('cmd_vel',Twist,queue_size = 10)
         mc = Twist()
@@ -20,35 +24,27 @@ class ProximityLDS():
         mc.angular.z = ang
         pub.publish(mc)
 
-    #TODO: Given an angle and position of nearest obstacle, instruct the robot to go to it
-    def move_to_closest_obstacle(self,position,angle):
-        pass
-
-
-    def read_laser_scan_data(self):
-        rospy.Subscriber('scan',LaserScan,laser_scan_callback)
 
     #Test to move it 
     def move_example(self):
-         self.move_motor(forward_speed,turn_speed)
-
-
-      
-        forward_speed = 1    
+        forward_speed = 1   
         turn_speed = 1
-        # start_time = time()
-        # duration = 5 #in seconds
-        # while time()<start_time+duration:
-        #     try:
-        #         read_laser_scan_data()
-        #         move_motor(forward_speed,turn_speed)
-        #     except rospy.ROSInterruptException:
-        #         pass
-        # else:
-        #     move_motor(0,0)
+        self.move_motor(forward_speed,turn_speed)
+
+     
+     
 
     def callback(self,data):
         self.move_example()
+        print(len(data.ranges))
+        min = 3.6
+        minIndex = 0 
+        for i in range(0,len(data.ranges)):
+            if data.ranges[i] < min:
+                min = data.ranges[i]
+                minIndex = i
+        print(minIndex)
+        print(min)
 
 
 # when started as a script
