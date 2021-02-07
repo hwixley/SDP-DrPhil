@@ -1,0 +1,38 @@
+<launch>
+
+  <!-- setup arguments -->
+  <arg name="model" default="waffle_pi" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="x_pos" default="-2.0"/>
+  <arg name="y_pos" default="-0.5"/>
+  <arg name="z_pos" default="0.0"/>
+  <arg name="world" default="house-doors"/>
+
+  <env name="GAZEBO_MODEL_PATH" value="$(find dr-phil)/models" />
+
+  <!-- setup world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find dr-phil)/worlds/$(arg world).world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <!-- spawn up dr-phil, save robot_description -->
+
+  <include file="$(find dr-phil)/launch/dr-phil_remote.launch">
+    <arg name="model" value="$(arg model)"/>
+  </include>
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find dr-phil)/urdf/dr-phil.urdf.xacro" />
+
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model dr-phil -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+  <node name="px100_control_merger" pkg="dr-phil" type="px100_joint_controller_merger.py" respawn="true" />
+
+  <!-- spawn arm controllers -->
+
+  <include file="$(find dr-phil)/launch/arm/arm.launch">
+  </include>
+
+</launch>
