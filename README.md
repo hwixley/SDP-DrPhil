@@ -77,7 +77,7 @@ If your simulation is very slow, and you don't need all the features of the simu
 
 ### Gazebo simulation testing
 
-You can find the various different Gazebo worlds in the /ros-workspace/src/dr-phil/worlds directory
+You can find the various different Gazebo worlds in the `<path to this repo>/ros-workspace/src/dr-phil/worlds` directory
 
 Each world has a version with and without obstacles
 
