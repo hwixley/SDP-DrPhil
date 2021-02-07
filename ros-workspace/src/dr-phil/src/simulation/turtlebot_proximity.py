@@ -14,8 +14,11 @@ class ProximityLDS():
 
     #TODO: Given an angle and range of nearest obstacle, instruct the robot to go to it
     def move_to_closest_obstacle(self,range,angle):
-        pass
-    
+        #turn to forward-face obstacle
+        #move forward to the obstacle
+        #stop when in range of obstacle
+        #if not(angle > 10 and angle < 15):
+        self.move_motor(0, -0.5) 
 
     def move_motor(self,fwd,ang):
         pub = rospy.Publisher('cmd_vel',Twist,queue_size = 10)
@@ -35,17 +38,18 @@ class ProximityLDS():
      
 
     def callback(self,data):
-        self.move_example()
-        print(len(data.ranges))
-        min = 3.6
-        minIndex = 0 
+        #print(len(data.ranges))
+        minRange = data.ranges[0]
+        minRangeAngle = 0 
         for i in range(0,len(data.ranges)):
-            if data.ranges[i] < min:
-                min = data.ranges[i]
-                minIndex = i
-        print(minIndex)
-        print(min)
-
+            if data.ranges[i] < minRange:
+                minRange = data.ranges[i]
+                minRangeAngle = i
+        print(minRangeAngle)
+        print(minRange)
+        
+        if minRange > 0.02:
+            self.move_to_closest_obstacle(minRange, minRangeAngle)
 
 # when started as a script
 if __name__ == '__main__':
