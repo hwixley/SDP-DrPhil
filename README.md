@@ -75,7 +75,7 @@ If your simulation is very slow, and you don't need all the features of the simu
 `roslaunch dr-phil simulation.launch world:=field`
 
 
-### Gazebo simulation testing
+## Gazebo simulation testing
 
 You can find the various different Gazebo worlds in the `<path to this repo>/ros-workspace/src/dr-phil/worlds` directory. Each world has a version with and without obstacles. The uris point to locations in my file system so you must do the following to amend this:
 
@@ -83,17 +83,16 @@ You can find the various different Gazebo worlds in the `<path to this repo>/ros
 2. Execute the command `python3 fix-world-uris.py`
 
 
-**FURTHER NOTES:
+###Further notes:
 
 1) These uris might be changed again after pulling changes from the SDP repo, if so just execute the python file again.
 
 
-2) This error **alone** upon launch is fine:\\
+2) This error **alone** upon launch is fine:
 `[spawn_urdf-4] process has died [pid 27330, exit code 1, cmd /opt/ros/noetic/lib/gazebo_ros/spawn_model -urdf -model dr-phil -x -2.0 -y -0.5 -z 0.0 -param robot_description __name:=spawn_urdf __log:=/home/<username>/.ros/log/d0f6ea0e-6a38-11eb-8b01-c9c2a073f777/spawn_urdf-4.log].`
 `log file: /home/<username>/.ros/log/d0f6ea0e-6a38-11eb-8b01-c9c2a073f777/spawn_urdf-4*.log`
 
-
-
+\n\n
 
 ## Starting webots simulation 
 
