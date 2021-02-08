@@ -75,7 +75,7 @@ If your simulation is very slow, and you don't need all the features of the simu
 `roslaunch dr-phil simulation.launch world:=field`
 
 
-## Gazebo simulation testing
+## Gazebo simulation world testing
 
 You can find the various different Gazebo worlds in the `<path to this repo>/ros-workspace/src/dr-phil/worlds` directory. Each world has a version with and without obstacles. The uris point to locations in my file system so you must do the following to amend this:
 
