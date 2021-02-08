@@ -83,7 +83,7 @@ You can find the various different Gazebo worlds in the `<path to this repo>/ros
 2. Execute the command `python3 fix-world-uris.py`
 
 
-###Further notes:
+### Further notes:
 
 1) These uris might be changed again after pulling changes from the SDP repo, if so just execute the python file again.
 
@@ -91,8 +91,7 @@ You can find the various different Gazebo worlds in the `<path to this repo>/ros
 2) This error **alone** upon launch is fine:
 `[spawn_urdf-4] process has died [pid 27330, exit code 1, cmd /opt/ros/noetic/lib/gazebo_ros/spawn_model -urdf -model dr-phil -x -2.0 -y -0.5 -z 0.0 -param robot_description __name:=spawn_urdf __log:=/home/<username>/.ros/log/d0f6ea0e-6a38-11eb-8b01-c9c2a073f777/spawn_urdf-4.log].`
 `log file: /home/<username>/.ros/log/d0f6ea0e-6a38-11eb-8b01-c9c2a073f777/spawn_urdf-4*.log`
-
-\n\n
+<br /><br />
 
 ## Starting webots simulation 
 
