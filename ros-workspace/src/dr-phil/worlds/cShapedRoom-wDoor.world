@@ -726,7 +726,7 @@
           <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/hwixley/Documents/Year3/SDP/GitRepo/ros-workspace/src/dr-phil/models/door-model/./FinalDoorHopefully-HHandles.stl</uri>
+              <uri>model://door-model/./FinalDoorHopefully-HHandles.stl</uri>
               <scale>0.001 0.001 0.001</scale>
             </mesh>
           </geometry>
@@ -1738,7 +1738,7 @@
           <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/hwixley/Documents/Year3/SDP/GitRepo/ros-workspace/src/dr-phil/models/door-model/./FinalDoorHopefully-HHandles.stl</uri>
+              <uri>model://door-model/./FinalDoorHopefully-HHandles.stl</uri>
               <scale>0.001 0.001 0.001</scale>
             </mesh>
           </geometry>
@@ -1765,7 +1765,7 @@
           <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/hwixley/Documents/Year3/SDP/GitRepo/ros-workspace/src/dr-phil/models/door-model/./FinalDoorHopefully-HHandles.stl</uri>
+              <uri>model://door-model/./FinalDoorHopefully-HHandles.stl</uri>
               <scale>0.001 0.001 0.001</scale>
             </mesh>
           </geometry>
