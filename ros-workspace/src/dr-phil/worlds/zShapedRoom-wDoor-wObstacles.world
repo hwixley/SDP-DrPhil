@@ -897,70 +897,7 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
-      <model name='dr-phil'>
-        <pose>-2.0003 -0.490862 -0.001006 -5e-06 0.003143 0.05673</pose>
-        <scale>1 1 1</scale>
-        <link name='base_footprint'>
-          <pose>-2.0003 -0.490862 -0.001006 -5e-06 0.003143 0.05673</pose>
-          <velocity>-1.7e-05 3.3e-05 -5.5e-05 -6.8e-05 -5.5e-05 0.000202</velocity>
-          <acceleration>0.012396 0.012225 -0.235156 -0.094034 0.74361 0.082934</acceleration>
-          <wrench>0.026899 0.026527 -0.510263 0 -0 0</wrench>
-        </link>
-        <link name='px100/forearm_link'>
-          <pose>-1.8859 -0.4841 0.223007 -2.9e-05 1.28282 0.059231</pose>
-          <velocity>0.001696 0.00011 -0.005055 -0.000338 0.015662 -8.7e-05</velocity>
-          <acceleration>1.40027 0.09059 -11.0121 -2.17779 0.478405 -2.85116</acceleration>
-          <wrench>0.102301 0.006618 -0.804522 0 -0 0</wrench>
-        </link>
-        <link name='px100/gripper_link'>
-          <pose>-1.85754 -0.482419 0.127126 -3e-05 1.2776 0.059231</pose>
-          <velocity>-6.6e-05 5e-05 -0.00565 -0.000417 0.014985 5.2e-05</velocity>
-          <acceleration>-1.58521 -0.03689 -12.3622 2.10674 0.510672 2.90264</acceleration>
-          <wrench>-0.16982 -0.003952 -1.32434 0 -0 0</wrench>
-        </link>
-        <link name='px100/gripper_prop_link'>
-          <pose>-1.83778 -0.481247 0.061549 -0.000661 1.2776 0.05923</pose>
-          <velocity>-0.001058 2.4e-05 -0.005942 -0.000392 0.015036 6.2e-05</velocity>
-          <acceleration>-2.17144 -0.053326 -12.2059 1.74305 -1.00576 -2.93657</acceleration>
-          <wrench>-0.009424 -0.000231 -0.052974 0 -0 0</wrench>
-        </link>
-        <link name='px100/left_finger_link'>
-          <pose>-1.83441 -0.45265 0.0448 1.8e-05 1.27776 0.059271</pose>
-          <velocity>-0.001141 0.000265 -0.00691 -0.003906 -0.027854 -0.000443</velocity>
-          <acceleration>-1.64083 0.30488 -13.9187 2.27987 -1.53367 0.851644</acceleration>
-          <wrench>-0.026657 0.004953 -0.226123 0 -0 0</wrench>
-        </link>
-        <link name='px100/right_finger_link'>
-          <pose>-1.83103 -0.509536 0.0448 -0.000113 1.27776 0.059245</pose>
-          <velocity>-0.001224 -0.00029 -0.006853 0.010617 -0.025469 -0.022436</velocity>
-          <acceleration>-1.90757 -0.615636 -13.8183 -0.425751 -1.10428 0.711159</acceleration>
-          <wrench>-0.03099 -0.010002 -0.224492 0 -0 0</wrench>
-        </link>
-        <link name='px100/shoulder_link'>
-          <pose>-1.98968 -0.490258 0.201812 -3e-06 0.003167 0.059263</pose>
-          <velocity>0.000542 8.7e-05 -0.0003 -0.002171 0.038797 -0.000605</velocity>
-          <acceleration>3.01206 0.203402 -0.765831 -0.167875 -0.443763 -1.54785</acceleration>
-          <wrench>0.218636 0.014764 -0.055589 0 -0 0</wrench>
-        </link>
-        <link name='px100/upper_arm_link'>
-          <pose>-1.98955 -0.49025 0.244065 -4.3e-05 1.43422 0.059219</pose>
-          <velocity>0.00153 0.000124 -0.002198 -0.001024 0.025765 -0.000158</velocity>
-          <acceleration>2.69049 0.102699 -9.2502 -3.01513 0.946134 2.17324</acceleration>
-          <wrench>0.223104 0.008516 -0.767054 0 -0 0</wrench>
-        </link>
-        <link name='wheel_left_link'>
-          <pose>-2.00836 -0.34709 0.031993 -1.57018 -0.240158 0.05659</pose>
-          <velocity>-7.9e-05 4.4e-05 0.000312 -0.000677 -4e-05 8.6e-05</velocity>
-          <acceleration>-0.052158 0.036643 0.474799 -1.33893 1.01442 -0.314573</acceleration>
-          <wrench>-0.001486 0.001044 0.013531 0 -0 0</wrench>
-        </link>
-        <link name='wheel_right_link'>
-          <pose>-1.99203 -0.634627 0.031994 -1.57018 0.298264 0.056904</pose>
-          <velocity>2.8e-05 7.1e-05 0.000241 -0.001265 -0.000809 0.001552</velocity>
-          <acceleration>0.030685 0.095859 0.268136 -2.92439 -0.865747 2.32816</acceleration>
-          <wrench>0.000875 0.002732 0.007642 0 -0 0</wrench>
-        </link>
-      </model>
+
       <model name='ground_plane'>
         <pose>0 0 0 0 -0 0</pose>
         <scale>1 1 1</scale>
