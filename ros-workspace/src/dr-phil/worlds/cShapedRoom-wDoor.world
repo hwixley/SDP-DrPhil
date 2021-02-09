@@ -676,6 +676,7 @@
       </link>
       <static>1</static>
     </model>
+<<<<<<< HEAD
     <model name='door-model'>
       <link name='door'>
         <inertial>
@@ -911,6 +912,14 @@
       <allow_auto_disable>1</allow_auto_disable>
       <pose>-7.09795 6.7317 0 0 -0 0</pose>
     </model>
+=======
+    
+    <include>
+      <pose>-6.93634 6.40157 0 0 -0 1.3093</pose>
+      <uri>model://door-model</uri>
+    </include>
+
+>>>>>>> f6a1c563874e639bd4f5f7c6c0164d1c23115130
     <state world_name='default'>
       <sim_time>213 806000000</sim_time>
       <real_time>226 907444314</real_time>
@@ -993,22 +1002,6 @@
         </link>
         <link name='Wall_9'>
           <pose>-4.13343 3.34702 0 0 -0 3.14159</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='door-model'>
-        <pose>-6.93634 6.40157 0 0 -0 1.3093</pose>
-        <scale>1 1 1</scale>
-        <link name='door'>
-          <pose>-6.93634 6.40157 0 0 -0 1.3093</pose>
-          <velocity>0 0 -0 0 -0 0</velocity>
-          <acceleration>0 0 -0 0 -0 0</acceleration>
-          <wrench>0 0 -0 0 -0 0</wrench>
-        </link>
-        <link name='pole'>
-          <pose>-6.9403 6.37555 0.308096 0 -0 1.41963</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
