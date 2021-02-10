@@ -33,5 +33,9 @@
 
   <include file="$(find dr-phil)/launch/arm/arm.launch">
   </include>
+  
+  <!-- include file="$(find dr-phil)/launch/slam.launch"> -->
+ <!-- </include> -->
+ 
 
 </launch>

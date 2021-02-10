@@ -1,0 +1,17 @@
+<launch>
+
+<!--<node pkg="tf" type="static_transform_publisher" name="base_link_to_base_scan" args="0.058 0 0.125 0.0 0.0 3.1416 /base_link /base_scan 100"/> -->
+
+<node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+<rosparam>
+odom_frame: odom
+base_frame: base_link
+map_update_interval: 0.1
+delta: 0.1
+particles: 1
+linearUpdate: 0.1
+angularUpdate: 0.1
+</rosparam>
+<remap from="base_scan" to="scan"/>
+</node>
+</launch>
