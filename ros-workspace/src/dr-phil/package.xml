@@ -94,6 +94,8 @@
   <exec_depend>effort_controllers</exec_depend>
   <exec_depend>joint_trajectory_controller</exec_depend>
   <exec_depend>gmapping</exec_depend>
+  <exec_depend>py_trees</exec_depend>
+  <exec_depend>py_trees_ros</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

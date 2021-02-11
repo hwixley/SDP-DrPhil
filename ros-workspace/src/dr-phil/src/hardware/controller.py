@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-
 import rospy
 import py_trees
 import py_trees_ros
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import LaserScan
-from idle import create_idle
+from trees import create_idle,create_face_closest_obstacle
+import functools 
 
 class Controller:
     """ the controller responsible for dictating behaviours to dr-phil. Every node is to be controlled via this script and no node should command behaviours without going through the controller """
@@ -16,6 +16,17 @@ class Controller:
         # issue setup cycle on the tree with 10 ms timeout
         # not sure what the timeout does TODO: make sure this parameter is okay
         self.root.setup(10)
+
+        # visualisation
+        visitor = py_trees.visitors.SnapshotVisitor()
+        self.root.add_post_tick_handler(
+            functools.partial(self.post_tick_handler,visitor))
+        self.root.visitors.append(visitor)
+
+
+    def post_tick_handler(self,snapshot_visitor,behaviour_tree):
+        print(py_trees.display.ascii_tree(behaviour_tree.root,
+            snapshot_information=snapshot_visitor))
 
     def update(self):
 
@@ -35,7 +46,7 @@ class Controller:
         # this means we do not have to deal with asynchronous behaviour locally
 
         topics2bb = py_trees.composites.Sequence("topics2bb")
-        camera2bb = py_trees_ros.subscribers.ToBlackboard( name="camera2bb",
+        camera2bb = py_trees_ros.subscribers.ToBlackboard(name="camera2bb",
                                                             topic_name="/image",
                                                             topic_type=Image,
                                                             blackboard_variables={'image':None})
@@ -48,6 +59,8 @@ class Controller:
         # priorities  branch for main tasks, the rest of the tree is to go here
         priorities = py_trees.composites.Selector("priorities")
 
+        faceClosest = create_face_closest_obstacle()
+
         # for convenience we keep granular behaviours in their own python files
         # this will promote the re-use of behaviours
         idle = create_idle()
@@ -57,7 +70,7 @@ class Controller:
         topics2bb.add_child(scan2bb)
 
         root.add_child(priorities)
-        priorities.add_child(idle)
+        priorities.add_children([faceClosest,idle])
         
         return py_trees_ros.trees.BehaviourTree(root=root)
 
@@ -68,7 +81,7 @@ class Controller:
 if __name__ == "__main__":
     rospy.init_node("controller",anonymous=True)
     controller = Controller()
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(1)
     while not rospy.is_shutdown():
         controller.update()
         rate.sleep()
