@@ -34,6 +34,12 @@ On Ubuntu, and the respective files for other distros
 2. `roscore`
 3. roslaunch dr-phil simulation.launch
 
+### Running behaviours
+
+to run the behaviour tree launch `rosrun dr-phil controller.py`, The tree will be printed to the console along with its status.
+
+This will initialize the main behaviour tree, see example behaviours for tips on building other behaviours.
+
 ### Interfacing with the robot
 
 see docs https://emanual.robotis.com/docs/en/platform/turtlebot3/simulation/#gazebo-simulation
