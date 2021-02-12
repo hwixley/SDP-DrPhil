@@ -21,7 +21,7 @@ class KillSubprocess(py_trees.behaviour.Behaviour):
                 subprocess_variable_name: the blackboard variable name containing subprocess to kill
         """
     
-        super().__init__(name=name)
+        super(KillSubprocess, self).__init__(name=name) 
         self.blackboard = py_trees.Blackboard()
         self.subprocess_variable_name = subprocess_variable_name
 
@@ -55,7 +55,7 @@ class RunRos(py_trees.behaviour.Behaviour):
                 subprocess_variable_name: the blackboard variable name under which to save subprocess following a SUCCESS
                 watch_time: the time in seconds to "babysit" the process for before deciding it's launched successfully
         """
-        super().__init__(name=name)
+        super(RunRos, self).__init__(name=name) 
         self.subprocess_variable_name = subprocess_variable_name
         self.watch_time = watch_time
         self.package = package
@@ -163,7 +163,7 @@ class ClosestObstacle(py_trees.behaviour.Behaviour):
                 name: name of the behaviour
         """
 
-        super().__init__(name=name)    
+        super(ClosestObstacle, self).__init__(name=name) 
 
         self.blackboard = py_trees.Blackboard()    
     
@@ -194,7 +194,7 @@ class PublishTopic(py_trees.behaviour.Behaviour):
             queue_size: the publisher queue size
         """
 
-        super().__init__(name=name)
+        super(PublishTopic, self).__init__(name=name) 
         self.msg = msg
 
 
