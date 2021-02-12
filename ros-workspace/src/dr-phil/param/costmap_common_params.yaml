@@ -9,7 +9,7 @@ global_frame: map
 robot_base_frame: base_link
 always_send_full_costmap: true
 
-inflation_radius: 1.0
+inflation_radius: 1
 cost_scaling_factor: 3.0
 map_type: costmap
 
