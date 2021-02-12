@@ -8,7 +8,7 @@ from visualization_msgs.msg import MarkerArray
 import os
 
 
-def create_explore_frontier_and_save_map(map_path=None):
+def create_explore_frontier_and_save_map(map_path=None,timeout=120):
     """ creates subtree which executes frontier exploration, generates a map and saves it to the given map_name """
     sequence = py_trees.composites.Sequence()
 
@@ -31,7 +31,7 @@ def create_explore_frontier_and_save_map(map_path=None):
 
 
     idle = create_idle()
-    timeout = py_trees.decorators.Timeout(idle,duration=120)
+    timeout = py_trees.decorators.Timeout(idle,duration=timeout)
     inverter = py_trees.decorators.Inverter(timeout)
     oneShotTimeout = py_trees.decorators.OneShot(inverter)
     
@@ -44,7 +44,19 @@ def create_explore_frontier_and_save_map(map_path=None):
     killExplorationNodes = KillSubprocess(name="killExplorationNodes",
         subprocess_variable_name="subprocess/explore")
 
-    sequence2.add_children([oneShotTimeout,saveMap,killExplorationNodes])
+    haltMsg = Twist()
+    haltMsg.linear.x = 0
+    haltMsg.angular.z = 0 
+
+    halt = PublishTopic(
+        name="haltCmdVel",
+        msg=haltMsg,
+        msg_type=Twist,
+        topic="/cmd_vel",
+    )
+    timeoutHalt = py_trees.decorators.Timeout(halt,duration=1)
+
+    sequence2.add_children([oneShotTimeout,saveMap,killExplorationNodes,timeoutHalt])
 
     sequence.add_children([startExplorationNodes,sequence2])
 

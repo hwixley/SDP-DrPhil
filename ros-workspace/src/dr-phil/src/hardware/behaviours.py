@@ -3,9 +3,13 @@ import rospy
 import numpy as np
 import subprocess
 import os 
+import signal
 
 def dummy_nearest_obstacle(scan):
     return(np.argmin(scan.ranges),0)
+
+
+
 
 class KillSubprocess(py_trees.behaviour.Behaviour):
     """ kills a subprocess previously started by some node stored on the blackboard, either returns SUCCESS if there process existed and was successfully killed, and FAILURE otherwise """
@@ -26,9 +30,12 @@ class KillSubprocess(py_trees.behaviour.Behaviour):
     
     def update(self):
         process = self.blackboard.get(self.subprocess_variable_name)
-
+        print(process)
         if process is not None:
-            process.kill()
+            os.killpg(os.getpgid(process.pid), signal.SIGTERM)
+            (out,err) = process.communicate()
+            print("ASDASD:" + str(out) + str(err) )
+            self.blackboard.set(self.subprocess_variable_name,None)
             return py_trees.Status.SUCCESS
         else:
             return py_trees.Status.FAILURE
@@ -64,7 +71,9 @@ class RunRos(py_trees.behaviour.Behaviour):
         launch_process = self.blackboard.get(self.subprocess_variable_name)
         
         if launch_process is not None:
-            launch_process.kill()
+            os.killpg(os.getpgid(launch_process.pid), signal.SIGTERM)
+
+
             self.blackboard.set(self.subprocess_variable_name,None)
 
     def update(self):
@@ -123,10 +132,8 @@ class RunRos(py_trees.behaviour.Behaviour):
 
         FNULL = open(os.devnull, 'w')
         
-        launch_process = subprocess.Popen(command, shell=True,
-            stdout=FNULL,
-            stderr=FNULL)
-
+        launch_process = subprocess.Popen(command, 
+                stdout=FNULL,stderr=FNULL, shell=True,preexec_fn=os.setsid)
         self.blackboard.set(self.subprocess_variable_name,launch_process)
 
     def is_subprocess_ok(self):
