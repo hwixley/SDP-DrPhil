@@ -98,6 +98,7 @@
   <exec_depend>gmapping</exec_depend>
   <exec_depend>py_trees</exec_depend>
   <exec_depend>py_trees_ros</exec_depend>
+  <depend>image_geometry</depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
