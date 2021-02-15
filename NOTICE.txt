@@ -1,0 +1,3 @@
+This work contains code under the Apache 2.0 license from this repository: https://github.com/ROBOTIS-GIT/turtlebot3
+
+The licensed content is the turtlebot waffle model and urdf files together with world files, which were all modified.
