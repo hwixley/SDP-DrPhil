@@ -80,6 +80,18 @@ If your simulation is very slow, and you don't need all the features of the simu
 
 `roslaunch dr-phil simulation.launch world:=field`
 
+
+## Gazebo simulation world files
+
+You can find the various different Gazebo worlds in the `<path to this repo>/ros-workspace/src/dr-phil/worlds` directory. Each world has a version with and without obstacles. 
+
+
+### Further notes:
+
+1. This error **alone** upon launch is fine:
+`[spawn_urdf-4] process has died [pid 27330, exit code 1, cmd /opt/ros/noetic/lib/gazebo_ros/spawn_model -urdf -model dr-phil -x -2.0 -y -0.5 -z 0.0 -param robot_description __name:=spawn_urdf __log:=/home/<username>/.ros/log/d0f6ea0e-6a38-11eb-8b01-c9c2a073f777/spawn_urdf-4.log]. log file: /home/<username>/.ros/log/d0f6ea0e-6a38-11eb-8b01-c9c2a073f777/spawn_urdf-4*.log`
+<br /><br />
+
 ## Starting webots simulation 
 
 For some reason I cannot get ros controllers to work without special launch files, so in order to start the simulation.wbt world simulation + launch ROS controller nodes do:
@@ -88,7 +100,7 @@ For some reason I cannot get ros controllers to work without special launch file
 2. start the roscore process with `roscore`
 3. roslaunch dr-phil simulation-webots.launch
 
-This will run webots and start up all the controller nodes, if any errors to do with <extern> appear, simply restart the simulation which will launch the controller again. 
+This will run webots and start up all the controller nodes, if any errors to do with <extern> appear, simply restart the simulation which will launch the controller again.
 
 ## Behaviours
 
