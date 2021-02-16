@@ -4,8 +4,10 @@ import py_trees
 import py_trees_ros
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import LaserScan
-from trees import create_idle,create_face_closest_obstacle
+from trees import create_idle,create_face_closest_obstacle,create_explore_frontier_and_save_map
 import functools 
+from visualization_msgs.msg import MarkerArray
+import os
 
 class Controller:
     """ the controller responsible for dictating behaviours to dr-phil. Every node is to be controlled via this script and no node should command behaviours without going through the controller """
@@ -45,7 +47,7 @@ class Controller:
         # placed on the blackboard first before being used further down the tree
         # this means we do not have to deal with asynchronous behaviour locally
 
-        topics2bb = py_trees.composites.Sequence("topics2bb")
+        topics2bb = py_trees.composites.Parallel("topics2bb")
         camera2bb = py_trees_ros.subscribers.ToBlackboard(name="camera2bb",
                                                             topic_name="/image",
                                                             topic_type=Image,
@@ -54,12 +56,11 @@ class Controller:
                                                             topic_name="/scan",
                                                             topic_type=LaserScan,
                                                             blackboard_variables={'scan':None})
-       
+        
 
         # priorities  branch for main tasks, the rest of the tree is to go here
         priorities = py_trees.composites.Selector("priorities")
-
-        faceClosest = create_face_closest_obstacle()
+        runMapper = create_explore_frontier_and_save_map()
 
         # for convenience we keep granular behaviours in their own python files
         # this will promote the re-use of behaviours
@@ -70,7 +71,7 @@ class Controller:
         topics2bb.add_child(scan2bb)
 
         root.add_child(priorities)
-        priorities.add_children([faceClosest,idle])
+        priorities.add_children([runMapper])
         
         return py_trees_ros.trees.BehaviourTree(root=root)
 

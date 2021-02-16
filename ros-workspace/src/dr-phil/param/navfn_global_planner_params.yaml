@@ -1,0 +1,5 @@
+NavfnROS:
+  visualize_potential: false
+  allow_unknown: true
+  cost_factor: 0.55
+  neutral_cost: 66

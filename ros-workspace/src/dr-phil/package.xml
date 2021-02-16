@@ -79,6 +79,8 @@
   <build_export_depend>webots_ros</build_export_depend>
   <build_export_depend>effort_controllers</build_export_depend>
   <build_export_depend>joint_trajectory_controller</build_export_depend>
+  <build_export_depend>nav_msgs</build_export_depend>
+  <build_export_depend>nodelet</build_export_depend>
   <build_export_depend>py_trees_ros</build_export_depend>
   <build_export_depend>gmapping</build_export_depend>
   <exec_depend>diagnostic_msgs</exec_depend>
@@ -95,9 +97,10 @@
   <exec_depend>turtlebot3_gazebo</exec_depend>
   <exec_depend>effort_controllers</exec_depend>
   <exec_depend>joint_trajectory_controller</exec_depend>
-  <exec_depend>gmapping</exec_depend>
   <exec_depend>py_trees</exec_depend>
   <exec_depend>py_trees_ros</exec_depend>
+  <exec_depend>dwa_local_planner</exec_depend>
+  <exec_depend>explore_lite</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
