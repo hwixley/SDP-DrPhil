@@ -1779,7 +1779,7 @@
           <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>model://door-model/./FinalDoorHopefully-VHandles.stl</uri>
+              <uri>model://door-model/./Door-VHandles-noFrame.stl</uri>
               <scale>0.001 0.001 0.001</scale>
             </mesh>
           </geometry>
@@ -1806,7 +1806,7 @@
           <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>model://door-model/./FinalDoorHopefully-VHandles.stl</uri>
+              <uri>model://door-model/./Door-VHandles-noFrame.stl</uri>
               <scale>0.001 0.001 0.001</scale>
             </mesh>
           </geometry>
