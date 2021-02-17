@@ -72,7 +72,7 @@ class RunRos(py_trees.behaviour.Behaviour):
     def initialise(self):
         self.time_start = rospy.get_time()
 
-        self.feedback_message = ""
+        self.feedback_message = "starting process"
 
         # clear existing subprocesses
         
@@ -114,6 +114,7 @@ class RunRos(py_trees.behaviour.Behaviour):
         # if newState == py_trees.Status.INVALID:
         #     self.kill_subprocess()
         pass
+
     def kill_subprocess(self):
         """ kills subprocess started if it was started, otherwise does nothing """
 
@@ -142,7 +143,6 @@ class RunRos(py_trees.behaviour.Behaviour):
             self.package,
             file,
             arg)
-        print(command)
 
         FNULL = open(os.devnull, 'w')
         
@@ -161,11 +161,14 @@ class RunRos(py_trees.behaviour.Behaviour):
             # ok
             return True
 
-        elif state != 0:
+        elif state == 0:
+            return True
+        else:
             # terminated with error
             (out,_) = launch_process.communicate()
             self.feedback_message = "process interrupted with state of: {0}".format(state)
             self.logger.warning("process interrupted, stdout +err is: {0}".format(out))
+            return False
 
             
 class ClosestObstacle(py_trees.behaviour.Behaviour):
