@@ -1,4 +1,6 @@
+from numpy.core.fromnumeric import std
 import py_trees
+from py_trees.common import Status
 import rospy
 import numpy as np
 import subprocess
@@ -26,18 +28,21 @@ class KillSubprocess(py_trees.behaviour.Behaviour):
         self.subprocess_variable_name = subprocess_variable_name
 
     def initialise(self):
-        pass
+        self.feedback_message = ""
     
     def update(self):
+
         process = self.blackboard.get(self.subprocess_variable_name)
-        print(process)
         if process is not None:
+
             os.killpg(os.getpgid(process.pid), signal.SIGTERM)
             (out,err) = process.communicate()
-            print("ASDASD:" + str(out) + str(err) )
             self.blackboard.set(self.subprocess_variable_name,None)
+
+            self.feedback_message = "killed process: {0}".format(process)
             return py_trees.Status.SUCCESS
         else:
+            self.feedback_message = "no process at {0} not found!".format(self.subprocess_variable_name)
             return py_trees.Status.FAILURE
 
 class RunRos(py_trees.behaviour.Behaviour):
@@ -66,15 +71,12 @@ class RunRos(py_trees.behaviour.Behaviour):
 
     def initialise(self):
         self.time_start = rospy.get_time()
+
+        self.feedback_message = ""
+
         # clear existing subprocesses
-
-        launch_process = self.blackboard.get(self.subprocess_variable_name)
         
-        if launch_process is not None:
-            os.killpg(os.getpgid(launch_process.pid), signal.SIGTERM)
-
-
-            self.blackboard.set(self.subprocess_variable_name,None)
+        self.kill_subprocess()
 
     def update(self):
         # check if there is already a subprocess running, i.e. if we started it
@@ -84,7 +86,7 @@ class RunRos(py_trees.behaviour.Behaviour):
             time_now = rospy.get_time()
             time_left = self.watch_time - (time_now - self.time_start)
             if time_left > 0:
-                self.feedback_message = "on watch - {0}(s) left".format(str(time_left))
+                self.feedback_message = "watching process for {0}s ".format(str(time_left))
 
                 # check on the process
                 ok = self.is_subprocess_ok()
@@ -92,26 +94,38 @@ class RunRos(py_trees.behaviour.Behaviour):
                 if ok:
                     return py_trees.Status.RUNNING
                 else:
-                    self.feedback_message = "startup failed"
                     return py_trees.Status.FAILURE
 
             else:
-                self.feedback_message = "completed watch"
+                self.feedback_message = "successfully started process"
 
                 # we've babysat long enough
                 return py_trees.Status.SUCCESS
         else:
-            self.feedback_message = "starting launch process"
             # start a subprocess
             self.start_subprocess()
 
-            self.feedback_message = "started launch subprocess"
 
             return py_trees.Status.RUNNING
 
     def terminate(self,newState):
-        pass # TODO: make sure this is fine empty
-    
+        # we only need to clean up if we are interrupted in the middle 
+        # of starting the process, in which case, just halt it, don't want hanging processes
+        # if newState == py_trees.Status.INVALID:
+        #     self.kill_subprocess()
+        pass
+    def kill_subprocess(self):
+        """ kills subprocess started if it was started, otherwise does nothing """
+
+        # find process
+        launch_process = self.blackboard.get(self.subprocess_variable_name)
+        
+        # if it exists kill it and clear the blackboard
+        if launch_process is not None:
+            os.killpg(os.getpgid(launch_process.pid), signal.SIGTERM)
+
+            self.blackboard.set(self.subprocess_variable_name,None)
+
     def start_subprocess(self):
 
         file = self.launch_file if self.node_file is None else self.node_file
@@ -133,7 +147,7 @@ class RunRos(py_trees.behaviour.Behaviour):
         FNULL = open(os.devnull, 'w')
         
         launch_process = subprocess.Popen(command, 
-                stdout=FNULL,stderr=FNULL, shell=True,preexec_fn=os.setsid)
+                stdout=subprocess.PIPE,stderr=subprocess.STDOUT, shell=True,preexec_fn=os.setsid)
         self.blackboard.set(self.subprocess_variable_name,launch_process)
 
     def is_subprocess_ok(self):
@@ -142,16 +156,18 @@ class RunRos(py_trees.behaviour.Behaviour):
         launch_process = self.blackboard.get(self.subprocess_variable_name)
 
         state = launch_process.poll()
+
         if state is None:
             # ok
             return True
-        elif state < 0:
-            # terminated with error
-            return False
-        else:
-            # terminated without error
-            return True
 
+        elif state != 0:
+            # terminated with error
+            (out,_) = launch_process.communicate()
+            self.feedback_message = "process interrupted with state of: {0}".format(state)
+            self.logger.warning("process interrupted, stdout +err is: {0}".format(out))
+
+            
 class ClosestObstacle(py_trees.behaviour.Behaviour):
     """ a behaviour which analyses the "/scan" blackboard variable and sets "closest_obstacle/angle" and "closest_obstacle/distance".
         returns FAILURE if no data available
@@ -185,13 +201,15 @@ class ClosestObstacle(py_trees.behaviour.Behaviour):
 class PublishTopic(py_trees.behaviour.Behaviour):
     """ a behaviour which publishes a certain message and always returning RUNNING on success"""
 
-    def __init__(self,name,msg,msg_type,topic,queue_size=1,):
+    def __init__(self,name,msg,msg_type,topic,queue_size=1,success_on_publish=False,success_after_n_publishes=None):
         """ 
         Args:
             name: the name of the behaviour
             msg_type: the type of message to be published
             topic: the topic on which to publish the message
             queue_size: the publisher queue size
+            success_on_publish: when true, will return SUCCESS after publishing each time
+            success_after_n_publishes: when set to any integer, will return success after publishing n times without failure
         """
 
         super().__init__(name=name)
@@ -199,7 +217,8 @@ class PublishTopic(py_trees.behaviour.Behaviour):
 
 
         self.publisher = rospy.Publisher(topic,msg_type,queue_size=queue_size)
-        
+        self.success_on_publish = success_on_publish    
+        self.n_target = -1 if success_after_n_publishes is None else success_after_n_publishes
 
     def initialise(self):
         pass
@@ -212,5 +231,12 @@ class PublishTopic(py_trees.behaviour.Behaviour):
         except:
             self.feedback_message = "Publisher failure"
             return py_trees.common.Status.FAILURE
-        return py_trees.common.Status.RUNNING
-       
+
+        if self.success_on_publish or self.n_target >= 0:
+            self.n_target -= 1
+            if self.n_target > 0:
+                return py_trees.common.Status.RUNNING
+            else:
+                return py_trees.common.Status.SUCCESS
+        else:
+            return py_trees.common.Status.RUNNING       
