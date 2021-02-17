@@ -4,9 +4,6 @@
 } 
 
 body {
-<!--
-background: url("./hrp2hyq.png") ;
--->
 background-position: 0 0;
 font-family: Verdana, Arial, Helvetica, sans-serif;
 font-size: 12px;
@@ -48,9 +45,6 @@ padding: 0 0 0 11px;
 letter-spacing: -1px;
 line-height: 15px;
 }
-p {
-  padding: 25px;
-}
 
 #menu {
 height: 40px;
@@ -89,6 +83,9 @@ text-decoration: none;
 font-weight: 100;
 font-size: 14px;
 letter-spacing: -1px;
+display: block; 
+overflow: auto;
+font-weight: bold;
 }
 #menu ul li a:hover {
 color: #eee;
@@ -174,12 +171,6 @@ font-size: 11px;
 padding: 10px;
 }
 
-table{
-  border: 1px solid black;
-}
-th, td {
-  border: 1px solid black;
-}
 
 
 .navitem{
@@ -197,6 +188,16 @@ th, td {
   padding-bottom: 1rem;
 }
 
-li > a{
-  display: block; overflow: auto;
+
+.team-card-name{
+  padding: 0 !important;
+}
+
+.card-body{
+  padding: 0.5rem;
+}
+
+.team-card-subroles{
+  font-size: 1rem;
+  color:#57626a;
 }
