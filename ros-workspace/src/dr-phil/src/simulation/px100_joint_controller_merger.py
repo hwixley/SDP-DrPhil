@@ -15,7 +15,7 @@ class px100JointControllerMerger():
         self.waist_pub = rospy.Publisher("/waist_controller/command",Float64,queue_size=10)
         self.shoulder_pub = rospy.Publisher("/shoulder_controller/command",Float64,queue_size=10)
         self.elbow_pub = rospy.Publisher("/elbow_controller/command",Float64,queue_size=10)
-        self.wrist_pub = rospy.Publisher("/wrist_controller/command",Float64,queue_size=10)
+        self.wrist_pub = rospy.Publisher("/wrist_angle_controller/command",Float64,queue_size=10)
         self.fingerL_pub = rospy.Publisher("/left_finger_controller/command",Float64,queue_size=10)
         self.fingerR_pub = rospy.Publisher("/right_finger_controller/command",Float64,queue_size=10)
         
