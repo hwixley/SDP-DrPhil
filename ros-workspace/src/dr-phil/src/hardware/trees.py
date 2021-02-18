@@ -114,7 +114,7 @@ def create_run_ros_once(package,subprocess_variable_name,launch_file=None,node_f
 
     runName = launch_file if launch_file is not None else node_file
 
-    launchBeh = RunRos(name="Run {0}, with args: {1}".format(runName,args),
+    launchBeh = RunRos(name="Run {0}".format(runName,args),
                                 launch_file=launch_file,
                                 node_file=node_file,
                                 package=package,
