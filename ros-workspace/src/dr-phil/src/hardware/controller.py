@@ -30,9 +30,6 @@ class Controller:
         self.root.add_post_tick_handler(
             functools.partial(self.tree_display,snapshot_visitor))
 
-        # self.root.add_post_tick_handler(
-        #     functools.partial(self.logger,snapshot_visitor)
-        # )
 
         self.root.visitors.append(snapshot_visitor)
 
@@ -109,7 +106,7 @@ class Controller:
         # priorities  branch for main tasks, the rest of the tree is to go here
         priorities = py_trees.composites.Selector("priorities")
 
-        runMapper = create_explore_frontier_and_save_map(timeout=600,no_data_timeout=30)
+        runMapper = create_explore_frontier_and_save_map(timeout=600,no_data_timeout=60)
         mapperOneShot = py_trees.decorators.OneShot(runMapper)
 
         # for convenience we keep granular behaviours in their own python files

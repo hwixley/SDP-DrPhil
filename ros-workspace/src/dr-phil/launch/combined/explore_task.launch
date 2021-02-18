@@ -2,7 +2,8 @@
 
 <launch>
     <!-- launch map creation  -->
-    <include file="$(find dr-phil)/launch/slam_stack/gmapping.launch" />
+    <!-- <include file="$(find dr-phil)/launch/slam_stack/gmapping.launch" /> -->
+    <include file="$(find dr-phil)/launch/slam_stack/hector.launch" />
     <!-- launch navigation  -->
     <include file="$(find dr-phil)/launch/navigation_stack/move_base.launch" />
     <!-- launch exploration node -->

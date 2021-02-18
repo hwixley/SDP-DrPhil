@@ -6,8 +6,8 @@ global_costmap:
   transform_tolerance: 0.5
 
   # Rate parameters
-  update_frequency: 1
-  publish_frequency: 1
+  update_frequency: 15
+  publish_frequency: 15
 
 
   plugins: 

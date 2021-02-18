@@ -12,19 +12,19 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 import os
 import numpy as np
 from std_msgs.msg import Float64MultiArray
+from actionlib_msgs.msg import GoalStatusArray
 
-
-def create_frontier_empty_for_duration_check(duration=60):
-    """ creates subtree which returns SUCCESS if no data has been received on the `/explore/frontiers` topic for the given duration.
+def create_exploration_completed_check(duration=60):
+    """ creates subtree which returns SUCCESS if no data has been received from the exploration nodes for the given duration.
         Returns FAILURE if data comes through in this time. RUNNING is propagated whenever waiting for message
 
         Args:
             duration: the time after which if no data is received on `/explore/frontiers` to return SUCCESS
     """
 
-    fail_no_data = py_trees_ros.subscribers.WaitForData(name="FrontierDataArrived?",
-                                        topic_name="explore/frontiers",
-                                        topic_type=MarkerArray,
+    fail_no_data = py_trees_ros.subscribers.WaitForData(name="MoveBaseHasCommand?",
+                                        topic_name="/move_base/status",
+                                        topic_type=GoalStatusArray,
                                         clearing_policy=py_trees.common.ClearingPolicy.ON_SUCCESS)
 
     return HoldStateForDuration(fail_no_data,"HoldRunning",duration,state=py_trees.common.Status.RUNNING)
@@ -66,8 +66,9 @@ def create_explore_frontier_and_save_map(map_path=None,timeout=120,no_data_timeo
     """
     sequence = py_trees.composites.Sequence()
 
+    neutral_pos = [0,0,0,0,0,0] # [0,0,-1.57,1.57,-1.57,-1]
     resetArmPosition = py_trees.decorators.OneShot(
-        create_set_positions_arm([0,0,-1.57,1.57,-1.57,-1],name="clearArmPosition"))
+        create_set_positions_arm(neutral_pos,name="clearArmPosition"))
 
     startExplorationNodes = create_run_ros_once(
         launch_file="explore_task.launch",
@@ -77,7 +78,7 @@ def create_explore_frontier_and_save_map(map_path=None,timeout=120,no_data_timeo
     sequence2 = py_trees.composites.Sequence()
     oneshot_sequence2 = py_trees.decorators.OneShot(sequence2)
 
-    frontierEmptyCheck = create_frontier_empty_for_duration_check(duration=no_data_timeout)
+    frontierEmptyCheck = create_exploration_completed_check(duration=no_data_timeout)
 
     map_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"map")if map_path is None else map_path  
 
