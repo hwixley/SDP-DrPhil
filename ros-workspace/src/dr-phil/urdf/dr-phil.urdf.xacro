@@ -3,14 +3,47 @@
   <xacro:include filename="$(find dr-phil)/urdf/common_properties.xacro"/>
   <xacro:include filename="$(find dr-phil)/urdf/dr-phil.gazebo.xacro"/>
 
-  <xacro:property name="attachment_frame" value="base_link"/>
-  <xacro:property name="arm_base_frame" value="base_arm"/>
 
+
+  <!-- strut measurements -->
+  <xacro:property name="strut_short_length" value="0.035"/>
+  <xacro:property name="strut_long_length" value="0.045"/>
+  <xacro:property name="strut_screw_depth" value="0.0045"/>
+  <xacro:property name="layer_3_strut_length" value="${strut_long_length}"/>
+  <xacro:property name="layer_2_strut_length" value="${strut_long_length}"/>
+  <xacro:property name="layer_1_strut_length" value="${strut_long_length}"/>
+  <xacro:property name="plate_z" value="0.009"/>
+
+  <xacro:property name="diameter_base" value="0.256"/>
+  <xacro:property name="base_footprint_to_front_strut_plane" value="0.06405"/>
+  <xacro:property name="base_footprint_to_back_strut_plane" value="${diameter_base - base_footprint_to_front_strut_plane}"/>
+  <xacro:property name="base_footprint_to_side_strut_plane" value="0.115"/>
+  <xacro:property name="base_footprint_to_3rd_layer_z" value="0.09140"/>
+  <xacro:property name="base_footprint_to_geometric_centre" value="0.064"/>
+  <xacro:property name="front_to_strut_1" value="0.012"/>
+  <xacro:property name="front_to_strut_2" value="0.024"/>
+  <xacro:property name="side_to_strut_3" value="${diameter_base / 4}"/>
+
+  <!-- plate measurements -->
+  <xacro:property name="layer_3_z" value="${(plate_z * 2) + (layer_1_strut_length + layer_2_strut_length + layer_3_strut_length) - (2 * 2 * strut_screw_depth)}"/>
+
+  <!-- arm measurements -->
+  <xacro:property name="px100_from_centre_to_back_box" value="0.04678"/>
+  <xacro:property name="px100_back_box_width" value="0.08107"/>
+
+  <xacro:property name="attachment_frame" value="base_link"/>
+
+  <xacro:property name="arm_origin">
+      <origin xyz="${-base_footprint_to_geometric_centre + px100_from_centre_to_back_box + (px100_back_box_width / 2)} 0 ${layer_3_z + plate_z}" rpy="0 0 0"/>
+  </xacro:property>
+
+  <xacro:property name="arm_base_frame" value="base_arm"/>
 
   <xacro:include filename="$(find dr-phil)/urdf/px100.urdf.xacro" />
 
+
+  <!-- dr-phil -->
   <link name="base_footprint">
-    <child link="" />
   </link>
 
   <joint name="base_joint" type="fixed">
@@ -18,6 +51,7 @@
     <child link="base_link" />
     <origin xyz="0 0 0.010" rpy="0 0 0"/>
   </joint>
+
 
   <link name="base_link">
     <visual>
@@ -27,20 +61,37 @@
       </geometry>
       <material name="light_black"/>
     </visual>
+
+    <!-- 3rd layer -->
     <visual>
-      <origin xyz="-0.064 0 0.05" rpy="0 0 0"/>
+      <origin xyz="-0.064 0 ${layer_3_z}" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://dr-phil/meshes/bases/waffle_pi_base_layer.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="light_black"/>
     </visual>
-    <collision>
-      <origin xyz="-0.064 0 0.047" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.266 0.266 0.094"/>
-      </geometry>
-    </collision>
 
+    <!-- strut 1 - front left -->
+    <xacro:strut xyz="${base_footprint_to_front_strut_plane} ${front_to_strut_1} ${base_footprint_to_3rd_layer_z + (layer_3_strut_length/2)}" rpy="0 0 0" length="${layer_3_strut_length}"/>
+    <!-- strut 2 - front right -->
+    <xacro:strut xyz="${base_footprint_to_front_strut_plane} ${-front_to_strut_2} ${base_footprint_to_3rd_layer_z + (layer_3_strut_length/2)}" rpy="0 0 0" length="${layer_3_strut_length}"/>
+    
+    <!-- strut 3 - right side front -->
+    <xacro:strut xyz="${-base_footprint_to_geometric_centre + side_to_strut_3} ${-base_footprint_to_side_strut_plane} ${base_footprint_to_3rd_layer_z + (layer_3_strut_length/2)}" rpy="0 0 0" length="${layer_3_strut_length}"/>
+    <!-- strut 4 - right side back -->
+    <xacro:strut xyz="${-base_footprint_to_geometric_centre - side_to_strut_3} ${-base_footprint_to_side_strut_plane} ${base_footprint_to_3rd_layer_z + (layer_3_strut_length/2)}" rpy="0 0 0" length="${layer_3_strut_length}"/>
+
+    <!-- strut 5 - back right -->
+    <xacro:strut xyz="${-base_footprint_to_back_strut_plane} ${-front_to_strut_1} ${base_footprint_to_3rd_layer_z + (layer_3_strut_length/2)}" rpy="0 0 0" length="${layer_3_strut_length}"/>
+    <!-- strut 6 - back left -->
+    <xacro:strut xyz="${-base_footprint_to_back_strut_plane} ${front_to_strut_2} ${base_footprint_to_3rd_layer_z + (layer_3_strut_length/2)}" rpy="0 0 0" length="${layer_3_strut_length}"/>
+    
+    <!-- strut 7 - left side front -->
+    <xacro:strut xyz="${-base_footprint_to_geometric_centre + side_to_strut_3} ${base_footprint_to_side_strut_plane} ${base_footprint_to_3rd_layer_z + (layer_3_strut_length/2)}" rpy="0 0 0" length="${layer_3_strut_length}"/>
+    <!-- strut 8 - left side back -->
+    <xacro:strut xyz="${-base_footprint_to_geometric_centre - side_to_strut_3} ${base_footprint_to_side_strut_plane} ${base_footprint_to_3rd_layer_z + (layer_3_strut_length/2)}" rpy="0 0 0" length="${layer_3_strut_length}"/>
+
+   
     <inertial>
       <!-- original value: xyz: 0,0,0 -->
       <origin xyz="-0.064 0 0" rpy="0 0 0"/>

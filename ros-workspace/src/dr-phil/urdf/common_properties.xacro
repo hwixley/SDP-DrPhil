@@ -1,6 +1,24 @@
 <?xml version="1.0" ?>
 
 <robot name="xacro_properties" xmlns:xacro="http://ros.org/wiki/xacro">
+  
+  <!-- struts for testing lidar collisions -->
+  <xacro:macro name="strut" params="xyz rpy length">
+    <visual>
+      <origin xyz="${xyz}" rpy="${rpy}" />
+      <geometry> 
+        <cylinder radius="0.003" length="${length}"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="${xyz}" rpy="${rpy}"/>
+      <geometry> 
+        <cylinder radius="0.003" length="${length}"/>
+      </geometry>
+    </collision>
+  </xacro:macro>
+
+
 
   <!-- Init colour -->  
   <material name="black">

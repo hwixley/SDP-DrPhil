@@ -14,15 +14,8 @@
   <xacro:arg name="load_gazebo_configs" default="false"/>
   <xacro:property name="pi_offset" value="0.00001"/>
 
-  <!-- <xacro:if value="$(arg use_world_frame)">
-    <link name="world"/>
-    <joint name="fixed" type="fixed">
-      <parent link="world"/>
-      <child link="$(arg robot_name)/$(arg base_link_frame)"/>
-    </joint>
-  </xacro:if> -->
   <joint name="arm_attachment" type="fixed" >
-    <origin xyz="0.01 0 0.142" rpy="0 0 0"/>
+    <xacro:insert_block name="arm_origin" />
     <parent link="${attachment_frame}"/>
     <child link="$(arg robot_name)/$(arg base_link_frame)"/>
   </joint>
