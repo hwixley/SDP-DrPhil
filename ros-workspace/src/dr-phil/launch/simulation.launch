@@ -36,4 +36,7 @@
   <include file="$(find dr-phil)/launch/arm/arm.launch">
   </include>
 
+  <!-- launch hardware scripts -->
+  <include file="$(find dr-phil)/launch/hardware.launch"/>
+
 </launch>
