@@ -1,9 +1,12 @@
 from time import time
+
+from numpy.core.fromnumeric import var
 import py_trees
+from py_trees.composites import Parallel
 from py_trees.decorators import FailureIsRunning
 from py_trees.meta import oneshot
 import py_trees_ros
-from behaviours import ClosestObstacle,PublishTopic,RunRos,KillSubprocess
+from behaviours import ClosestObstacle,PublishTopic,RunRos
 from decorators import HoldStateForDuration
 import operator
 from geometry_msgs.msg import Twist
@@ -16,18 +19,30 @@ from actionlib_msgs.msg import GoalStatusArray
 
 def create_exploration_completed_check(duration=60):
     """ creates subtree which returns SUCCESS if no data has been received from the exploration nodes for the given duration.
-        Returns FAILURE if data comes through in this time. RUNNING is propagated whenever waiting for message
+        Returns RUNNING if data comes through in this time. 
 
         Args:
             duration: the time after which if no data is received on `/explore/frontiers` to return SUCCESS
     """
 
-    fail_no_data = py_trees_ros.subscribers.WaitForData(name="MoveBaseHasCommand?",
-                                        topic_name="/move_base/status",
-                                        topic_type=GoalStatusArray,
-                                        clearing_policy=py_trees.common.ClearingPolicy.ON_SUCCESS)
+    # fail_no_data = py_trees_ros.subscribers.CheckData(name="MoveBaseHasNoCommand?",
+    #                                     topic_name="/move_base/status",
+    #                                     topic_type=GoalStatusArray,
+    #                                     variable_name="status_list",
+    #                                     clearing_policy=py_trees.common.ClearingPolicy.ON_SUCCESS,
+    #                                     fail_if_bad_comparison=True,
+    #                                     expected_value=[])
+    # hold_state = HoldStateForDuration(fail_no_data,"HoldSuccess",duration,state=py_trees.common.Status.SUCCESS)
 
-    return HoldStateForDuration(fail_no_data,"HoldRunning",duration,state=py_trees.common.Status.RUNNING)
+    fail_no_data = py_trees_ros.subscribers.WaitForData(name="NewFrontiersReceived?",
+                                    topic_name="/explore/frontiers",
+                                    topic_type=GoalStatusArray,
+                                    clearing_policy=py_trees.common.ClearingPolicy.ON_SUCCESS)
+
+    hold_state = HoldStateForDuration(fail_no_data,"HoldRunning",duration,state=py_trees.common.Status.RUNNING)
+
+    f2rHold_state = py_trees.decorators.FailureIsRunning(hold_state)
+    return f2rHold_state
 
 
     
@@ -70,24 +85,35 @@ def create_explore_frontier_and_save_map(map_path=None,timeout=120,no_data_timeo
     resetArmPosition = py_trees.decorators.OneShot(
         create_set_positions_arm(neutral_pos,name="clearArmPosition"))
 
-    startExplorationNodes = create_run_ros_once(
+    exploration_kill_key = "/explore/kill"
+
+    # won't return success until exploration is killed and returns success
+    parallel_process = py_trees.composites.Parallel()
+
+    startExplorationNodes = RunRos(name="runExplorationNodes",
+        blackboard_alive_key="/explore/alive",
+        blackboard_kill_trigger_key=exploration_kill_key,
         launch_file="explore_task.launch",
-        package="dr-phil",
-        subprocess_variable_name="subprocess/explore")
-    
-    sequence2 = py_trees.composites.Sequence()
-    oneshot_sequence2 = py_trees.decorators.OneShot(sequence2)
+    )
+
+
+    exitSequence = py_trees.composites.Sequence()
 
     frontierEmptyCheck = create_exploration_completed_check(duration=no_data_timeout)
 
     map_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"map")if map_path is None else map_path  
 
-    saveMap = create_run_ros_once(node_file="map_saver",
-                                    package="map_server",
-                                    subprocess_variable_name="subprocess/map_saver",
-                                    args=["-f",map_path])
-    killExplorationNodes = KillSubprocess(name="killExplorationNodes",
-        subprocess_variable_name="subprocess/explore")
+    saveMap = RunRos(name="runSaveMap",
+        blackboard_alive_key="map/alive",
+        blackboard_kill_trigger_key="map/kill",
+        node_file="map_saver",
+        package="map_server",
+        args=["-f",map_path],
+        success_on_non_error_exit=True) 
+
+    killExplorationNodes = py_trees.blackboard.SetBlackboardVariable(name="SetKillTrigger",
+        variable_name=exploration_kill_key,
+        variable_value="night night")
 
     haltMsg = Twist()
     haltMsg.linear.x = 0
@@ -98,31 +124,21 @@ def create_explore_frontier_and_save_map(map_path=None,timeout=120,no_data_timeo
         msg=haltMsg,
         msg_type=Twist,
         topic="/cmd_vel",
-        success_on_publish=True
+        success_after_n_publishes=2
     )
+    
+    wait = py_trees.timers.Timer(duration=5)
 
-    sequence2.add_children([frontierEmptyCheck,saveMap,killExplorationNodes,halt])
+    exitSequence.add_children([frontierEmptyCheck,saveMap,killExplorationNodes,halt,wait])
+    
+    parallel_process.add_children([startExplorationNodes,exitSequence])
 
-    sequence.add_children([resetArmPosition,startExplorationNodes,oneshot_sequence2])
+    sequence.add_children([resetArmPosition,parallel_process])
 
     timeout = py_trees.decorators.Timeout(sequence,duration=timeout)
 
     return timeout
 
-@oneshot
-def create_run_ros_once(package,subprocess_variable_name,launch_file=None,node_file=None,watch_time=5,time_out=10,args=[]):
-    """ creates subtree which attempts to launch a launchfile/node just once, after successful launch never runs again. """
-
-    runName = launch_file if launch_file is not None else node_file
-
-    launchBeh = RunRos(name="Run {0}".format(runName,args),
-                                launch_file=launch_file,
-                                node_file=node_file,
-                                package=package,
-                                subprocess_variable_name=subprocess_variable_name,
-                                watch_time=watch_time,
-                                args=args)
-    return launchBeh
 
 def create_idle(): 
     """ creates a subtree which causes the robot to idle on each tick, with status of RUNNING """

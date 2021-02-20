@@ -11,13 +11,13 @@ from visualization_msgs.msg import MarkerArray
 import os
 from py_trees import console 
 import json 
-
+from rospy.exceptions import ROSException
 class Controller:
     """ the controller responsible for dictating behaviours to dr-phil. Every node is to be controlled via this script and no node should command behaviours without going through the controller """
 
     def __init__(self):
 
-        py_trees.logging.level = py_trees.logging.Level.WARN # set this to info for more information
+        py_trees.logging.level = py_trees.logging.Level.INFO # set this to info for more information
 
         self.root = self.create_tree() 
         # issue setup cycle on the tree with 10 ms timeout
@@ -106,7 +106,7 @@ class Controller:
         # priorities  branch for main tasks, the rest of the tree is to go here
         priorities = py_trees.composites.Selector("priorities")
 
-        runMapper = create_explore_frontier_and_save_map(timeout=600,no_data_timeout=60)
+        runMapper = create_explore_frontier_and_save_map(timeout=600,no_data_timeout=120)
         mapperOneShot = py_trees.decorators.OneShot(runMapper)
 
         # for convenience we keep granular behaviours in their own python files
@@ -128,7 +128,12 @@ class Controller:
 if __name__ == "__main__":
     rospy.init_node("controller",anonymous=True)
     controller = Controller()
-    rate = rospy.Rate(1)
+    rate = rospy.Rate(10)
+
     while not rospy.is_shutdown():
-        controller.update()
-        rate.sleep()
+        try:
+            controller.update()
+            rate.sleep()
+        except (KeyboardInterrupt,ROSException):
+            rospy.logwarn("Calling stop() on root behaviour")
+            controller.root.destroy()

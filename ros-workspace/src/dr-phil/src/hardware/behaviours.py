@@ -6,101 +6,111 @@ import numpy as np
 import subprocess
 import os 
 import signal
+from threading  import Thread
+import sys
+
+try:
+    from queue import Queue, Empty
+except ImportError:
+    from Queue import Queue, Empty  # python 2.x
 
 def dummy_nearest_obstacle(scan):
     return(np.argmin(scan.ranges),0)
 
 
 
-
-class KillSubprocess(py_trees.behaviour.Behaviour):
-    """ kills a subprocess previously started by some node stored on the blackboard, either returns SUCCESS if there process existed and was successfully killed, and FAILURE otherwise """
-
-    def __init__(self, name, subprocess_variable_name="/subprocess"):
-        """
-            Args:
-                name: name of behaviour
-                subprocess_variable_name: the blackboard variable name containing subprocess to kill
-        """
-    
-        super().__init__(name=name)
-        self.blackboard = py_trees.Blackboard()
-        self.subprocess_variable_name = subprocess_variable_name
-
-    def initialise(self):
-        self.feedback_message = ""
-    
-    def update(self):
-
-        process = self.blackboard.get(self.subprocess_variable_name)
-        if process is not None:
-
-            os.killpg(os.getpgid(process.pid), signal.SIGTERM)
-            (out,err) = process.communicate()
-            self.blackboard.set(self.subprocess_variable_name,None)
-
-            self.feedback_message = "killed process: {0}".format(process)
-            return py_trees.Status.SUCCESS
-        else:
-            self.feedback_message = "no process at {0} not found!".format(self.subprocess_variable_name)
-            return py_trees.Status.FAILURE
-
 class RunRos(py_trees.behaviour.Behaviour):
-    """ Attempts to start up a launch/node file, returns SUCCESS if successfully started a program and FAILURE otherwise, will wait for the given amount of time to see if the child 
-        terminates early and return RUNNING in this time.
-        On success, saves the subprocess object to blackboard on the given variable_name.
-        Should only be run once, if run while subprocess is running will return failure.
+    """ Runs and returns RUNNING status for as long as given process is running, will return FAILURE whenever it halts, and if killed via blackboard kill key will return SUCCESS and
+        won't reset untill this key is cleared (i.e. will keep returning SUCCESS ). Optionally can serve as short process launcher
     """
-    def __init__(self,name,launch_file=None,node_file=None,package="dr-phil",subprocess_variable_name="/subprocess", watch_time=0,args=[]):
+    def __init__(self,name,blackboard_alive_key,blackboard_kill_trigger_key,launch_file=None,node_file=None,package="dr-phil",args=[],success_on_non_error_exit=False):
         """
             Args: 
                 name: name of the behaviour
+                blackboard_alive_key: the key which will be set as long as the process is running
+                blackboard_kill_trigger_key: the key which if set will cause the node to kill the process and keep returning SUCCESS as long as it's set (on the next tick of this node)
                 launch_file: the full filename of the launchfile
                 package: the package containing the launch file (DEFAULT: "dr-phil")
-                subprocess_variable_name: the blackboard variable name under which to save subprocess following a SUCCESS
-                watch_time: the time in seconds to "babysit" the process for before deciding it's launched successfully
+                success_on_non_error_exit: will not return FAILURE if process exits with successfull return code (i.e. completes), use for running single-use launchfiles/nodes
         """
         super().__init__(name=name)
-        self.subprocess_variable_name = subprocess_variable_name
-        self.watch_time = watch_time
         self.package = package
         self.launch_file = launch_file
         self.node_file = node_file
         self.blackboard = py_trees.Blackboard()
+
+        self.alive_key = blackboard_alive_key
+        self.kill_key = blackboard_kill_trigger_key
+        self.success_on_non_error_exit = success_on_non_error_exit
         self.args = args
 
+        self.process = None
+        self.last_success = False 
+        self.stdout_queue = None
+        self.stderr_queue = None
+
     def initialise(self):
-        self.time_start = rospy.get_time()
 
-        self.feedback_message = "starting process"
 
-        # clear existing subprocesses
-        
-        self.kill_subprocess()
+        # if we previously succeeded, i.e. either:
+        # 1) another node killed us on purpose
+        # 2) we run a single-use node/launchfile to completion
+        if self.last_success:
+            self.feedback_message = "completed" 
+            if self.blackboard.get(self.kill_key) is None:
+                self.last_success = False
+                self.feedback_message = "re-starting process"
+            else:
+                self.feedback_message += " , kill key set, not-starting new processes"
+                
+        else: # if we were just started, or previously failed
+            self.feedback_message = "starting process"
+            
+            # TODO: check this is not redundant cosnidering terminate() calls it too
+            # AFAIK terminate will trigger a kill before each initialization anyway
+            self.kill_subprocess()
 
     def update(self):
+
+        # if we were killed successfully last time
+        # keep returning SUCCESS
+        if self.last_success:
+            return py_trees.Status.SUCCESS
+
         # check if there is already a subprocess running, i.e. if we started it
-        launch_process = self.blackboard.get(self.subprocess_variable_name)
         # if already running, check on it untill watch time is over
-        if launch_process is not None:            
-            time_now = rospy.get_time()
-            time_left = self.watch_time - (time_now - self.time_start)
-            if time_left > 0:
-                self.feedback_message = "watching process for {0}s ".format(str(time_left))
+        if self.process is not None:          
 
-                # check on the process
-                ok = self.is_subprocess_ok()
+            self.feedback_message= "running process"
 
-                if ok:
-                    return py_trees.Status.RUNNING
-                else:
-                    return py_trees.Status.FAILURE
+            # check on the process
+            ok = self.is_subprocess_ok()
 
+
+            # log output of program as it's running
+            self.subprocess_log_output()
+
+            # if process is still running successfully
+            if ok == 0:
+                # check kill trigger
+                if self.blackboard.get(self.kill_key) is not None:
+                    # kill
+                    self.kill_subprocess()
+                    self.last_success = True
+
+                    return py_trees.Status.SUCCESS
+
+                return py_trees.Status.RUNNING
+
+            # if process died when not expected
+            elif ok == 2 or (ok == 1 and not self.success_on_non_error_exit):
+                return py_trees.Status.FAILURE
+
+            # if process died but we expected it
             else:
-                self.feedback_message = "successfully started process"
-
-                # we've babysat long enough
                 return py_trees.Status.SUCCESS
+                self.last_success = True
+
         else:
             # start a subprocess
             self.start_subprocess()
@@ -109,23 +119,48 @@ class RunRos(py_trees.behaviour.Behaviour):
             return py_trees.Status.RUNNING
 
     def terminate(self,newState):
-        # we only need to clean up if we are interrupted in the middle 
-        # of starting the process, in which case, just halt it, don't want hanging processes
-        # if newState == py_trees.Status.INVALID:
-        #     self.kill_subprocess()
-        pass
+
+        # before we enter each initialize or after we are pre-empted
+        # we make sure to not leave hanging processes
+        self.kill_subprocess()
+
+
+
+    def subprocess_log_output(self):
+        try:  line = self.stdout_queue.get_nowait() # or q.get(timeout=.1)
+        except Empty:
+            self.logger.debug("No stdout yet")
+        else: # got line
+            self.logger.debug(str(line))
+
+        try:  line = self.stderr_queue.get_nowait() # or q.get(timeout=.1)
+        except Empty:
+            pass # do nothing
+        else: # got line
+            self.logger.error(str(line))
+
+    def subprocess_store_output(self,stdout,stderr,stdout_q,stderr_q):
+        
+        for line in iter(stdout.readline, b''):
+            stdout_q.put(line)
+
+        for line in iter(stderr.readline, b''):
+            stderr_q.put(line)
 
     def kill_subprocess(self):
         """ kills subprocess started if it was started, otherwise does nothing """
-
-        # find process
-        launch_process = self.blackboard.get(self.subprocess_variable_name)
+        
         
         # if it exists kill it and clear the blackboard
-        if launch_process is not None:
-            os.killpg(os.getpgid(launch_process.pid), signal.SIGTERM)
+        if self.process is not None:
+            try:
+                os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
+            except Exception as e:
+                print("COULD NOT KILL, {0}".format(self.process))
+                raise e
+                
 
-            self.blackboard.set(self.subprocess_variable_name,None)
+        self.blackboard.set(self.alive_key,None)
 
     def start_subprocess(self):
 
@@ -144,31 +179,55 @@ class RunRos(py_trees.behaviour.Behaviour):
             file,
             arg)
 
-        FNULL = open(os.devnull, 'w')
-        
+        ON_POSIX = 'posix' in sys.builtin_module_names
+
         launch_process = subprocess.Popen(command, 
-                stdout=subprocess.PIPE,stderr=subprocess.STDOUT, shell=True,preexec_fn=os.setsid)
-        self.blackboard.set(self.subprocess_variable_name,launch_process)
+                stdout=subprocess.PIPE,stderr=subprocess.PIPE, shell=True,preexec_fn=os.setsid,close_fds=ON_POSIX)
+        
+        # make sure not to overflow the output, i learned this the hard way
+        # subprocess will freeze if you do 
+        # want to have a nonblocking way of reading output, start a separate thread
+
+        self.stdout_queue = Queue()
+        self.stderr_queue = Queue()
+        thread = Thread(target=self.subprocess_store_output,args=(launch_process.stdout,launch_process.stderr,self.stdout_queue,self.stderr_queue))
+        thread.daemon=True # die with parent
+        thread.start()
+
+        self.process = launch_process
+        self.blackboard.set(self.alive_key,True)
+ 
 
     def is_subprocess_ok(self):
-        """ returns False if subprocess died"""
+        """ returns 0 if  subprocess alive, 1 if terminated without error and 2 if terminated with error. Updates state accordingly """
 
-        launch_process = self.blackboard.get(self.subprocess_variable_name)
 
-        state = launch_process.poll()
+        state = self.process.poll()
 
         if state is None:
             # ok
-            return True
+            return 0
 
         elif state == 0:
-            return True
+            # terminated without error
+            self.feedback_message = "process exit with return code 0"
+            self.process = None
+            self.blackboard.set(self.alive_key,None)
+
+            return 1 
+            
         else:
             # terminated with error
-            (out,_) = launch_process.communicate()
-            self.feedback_message = "process interrupted with state of: {0}".format(state)
-            self.logger.warning("process interrupted, stdout +err is: {0}".format(out))
-            return False
+            (out,err) = self.process.communicate()
+            self.feedback_message = "process terminated"
+            self.logger.warning("process terminated with sig: {0}".format(-state))
+            self.subprocess_log_output()
+            self.logger.warning("stderr: {0}".format(err))
+            self.logger.warning("stdout: {0}".format(out))
+
+            self.process = None 
+            self.blackboard.set(self.alive_key,None)
+            return 2
 
             
 class ClosestObstacle(py_trees.behaviour.Behaviour):
