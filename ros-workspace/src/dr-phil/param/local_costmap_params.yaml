@@ -3,11 +3,11 @@ local_costmap:
   #Coordinate frame and tf parameters
   global_frame: odom
   robot_base_frame: base_footprint
-  transform_tolerance: 1
+  transform_tolerance: 0.5
 
   # Rate parameters
-  update_frequency: 15
-  publish_frequency: 15
+  update_frequency: 10.0
+  publish_frequency: 10.0
 
 
   # Map management parameters
@@ -40,7 +40,7 @@ local_costmap:
     # combination_method: 1
 
   inflation_layer:
-    inflation_radius: 0.55
+    inflation_radius: 0.25
     cost_scaling_factor: 1
 
 

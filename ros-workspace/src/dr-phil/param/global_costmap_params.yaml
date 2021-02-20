@@ -6,8 +6,9 @@ global_costmap:
   transform_tolerance: 0.5
 
   # Rate parameters
-  update_frequency: 15
-  publish_frequency: 15
+  update_frequency: 10.0
+  publish_frequency: 10.0
+
 
 
   plugins: 
@@ -18,7 +19,7 @@ global_costmap:
 
   inflation_layer:
     enabled: true
-    inflation_radius: 0.55
+    inflation_radius: 0.1
     cost_scaling_factor: 1
 
  
@@ -29,8 +30,3 @@ global_costmap:
     subscribe_to_updates: true
     track_unknown_space: true
 
-
-
-  inflation_layer:
-    inflation_radius: 0.55
-    cost_scaling_factor: 10
