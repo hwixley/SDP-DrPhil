@@ -1,3 +1,7 @@
+
+#!/usr/bin/env python3
+
+
 from time import time
 
 from numpy.core.fromnumeric import var
@@ -151,7 +155,8 @@ def create_idle():
 
 
 def create_face_closest_obstacle(min_distance = 0.5,face_angle=0): 
-    """ returns behaviour sub-tree which instructs the robot to turn towards and travel to the nearest obstacle within distance of min_distance """    
+    """     
+    returns behaviour sub-tree which instructs the robot to turn towards and travel to the nearest obstacle within distance of min_distance """    
 
     # angle opposite of the face angle
     opposite_angle = (face_angle + 180) % 360
@@ -228,3 +233,33 @@ def create_face_closest_obstacle(min_distance = 0.5,face_angle=0):
 
     
     return root
+
+import sys
+import inspect 
+import types
+import pydot
+from graphviz import render
+
+def is_function_local(object):
+    return isinstance(object, types.FunctionType) and object.__module__ == __name__
+
+
+# for generating dotfiles for each subtree
+if __name__ == "__main__":
+
+    trees = [
+        ("create_explore_frontier_and_save_map",create_explore_frontier_and_save_map()),
+        ("create_face_closest_obstacle",create_face_closest_obstacle())
+    ]
+
+    
+
+    dir = os.path.join(os.path.dirname(os.path.realpath(__file__)),"docs","trees")
+
+    for (n,t) in trees:
+        t = py_trees.composites.Sequence(name=n,children=[t])
+        py_graph = py_trees.display.generate_pydot_graph(t,py_trees.common.VisibilityLevel.ALL)
+        py_graph.write(os.path.join(dir,n+".dot"))
+        py_graph.write_png(os.path.join(dir,n + ".png"))
+    
+       
