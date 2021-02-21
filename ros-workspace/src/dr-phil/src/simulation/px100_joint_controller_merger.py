@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import rospy
+from rospy.exceptions import ROSException
 from std_msgs.msg import Float64MultiArray
 from std_msgs.msg import Float64
-
+import sys 
 class px100JointControllerMerger():
     def __init__(self):    
 
@@ -89,5 +90,7 @@ if __name__ == '__main__':
     rate = rospy.Rate(10) 
 
     while not rospy.is_shutdown():
-        rate.sleep()
-
+        try:
+            rate.sleep()
+        except (ROSException, KeyboardInterrupt):
+            sys.exit(0)

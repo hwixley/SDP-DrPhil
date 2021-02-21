@@ -12,6 +12,8 @@ import os
 from py_trees import console 
 import json 
 from rospy.exceptions import ROSException
+import sys
+
 class Controller:
     """ the controller responsible for dictating behaviours to dr-phil. Every node is to be controlled via this script and no node should command behaviours without going through the controller """
 
@@ -128,7 +130,7 @@ class Controller:
 if __name__ == "__main__":
     rospy.init_node("controller",anonymous=True)
     controller = Controller()
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(1)
 
     while not rospy.is_shutdown():
         try:
@@ -137,3 +139,4 @@ if __name__ == "__main__":
         except (KeyboardInterrupt,ROSException):
             rospy.logwarn("Calling stop() on root behaviour")
             controller.root.destroy()
+            sys.exit(0)
