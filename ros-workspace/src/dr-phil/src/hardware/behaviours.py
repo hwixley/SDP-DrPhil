@@ -1,3 +1,4 @@
+import threading
 from numpy.core.fromnumeric import std
 import py_trees
 from py_trees.common import Status
@@ -129,7 +130,7 @@ class RunRos(py_trees.behaviour.Behaviour):
     def subprocess_log_output(self):
         try:  line = self.stdout_queue.get_nowait() # or q.get(timeout=.1)
         except Empty:
-            self.logger.debug("No stdout yet")
+            pass # do nothing
         else: # got line
             self.logger.debug(str(line))
 
@@ -138,14 +139,6 @@ class RunRos(py_trees.behaviour.Behaviour):
             pass # do nothing
         else: # got line
             self.logger.error(str(line))
-
-    def subprocess_store_output(self,stdout,stderr,stdout_q,stderr_q):
-        
-        for line in iter(stdout.readline, b''):
-            stdout_q.put(line)
-
-        for line in iter(stderr.readline, b''):
-            stderr_q.put(line)
 
     def kill_subprocess(self):
         """ kills subprocess started if it was started, otherwise does nothing """
@@ -180,24 +173,46 @@ class RunRos(py_trees.behaviour.Behaviour):
             arg)
 
         ON_POSIX = 'posix' in sys.builtin_module_names
-
+        FNULL = open(os.devnull, 'w')
         launch_process = subprocess.Popen(command, 
-                stdout=subprocess.PIPE,stderr=subprocess.PIPE, shell=True,preexec_fn=os.setsid,close_fds=ON_POSIX)
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                shell=True,
+                preexec_fn=os.setsid,
+                close_fds=ON_POSIX,
+                bufsize=1,
+                universal_newlines=True)
         
         # make sure not to overflow the output, i learned this the hard way
         # subprocess will freeze if you do 
-        # want to have a nonblocking way of reading output, start a separate thread
+        # want to have a nonblocking way of reading output, start a separate thread for each output channel
+        # read continously and store in non blocking to read structure shared with main program
 
         self.stdout_queue = Queue()
         self.stderr_queue = Queue()
-        thread = Thread(target=self.subprocess_store_output,args=(launch_process.stdout,launch_process.stderr,self.stdout_queue,self.stderr_queue))
-        thread.daemon=True # die with parent
-        thread.start()
+
+        self.launch_log_thread(launch_process.stdout,self.stdout_queue)
+        self.launch_log_thread(launch_process.stderr,self.stderr_queue)
 
         self.process = launch_process
         self.blackboard.set(self.alive_key,True)
  
+    def subprocess_store_output(self,out,queue):
+        """ will read the data from the out - io source and put it on the queue, WILL BLOCK the thread """
+        while True:
+            for line in out:
+                queue.put(line)
 
+
+    def launch_log_thread(self,out,queue):
+        """ launches a new thread for storing output for the given io source into the given queue """
+        
+        thread = Thread(target=self.subprocess_store_output,
+            args=(out,queue))
+        thread.daemon = True
+        thread.start()
+
+        return thread
     def is_subprocess_ok(self):
         """ returns 0 if  subprocess alive, 1 if terminated without error and 2 if terminated with error. Updates state accordingly """
 
