@@ -2,6 +2,7 @@ import threading
 from numpy.core.fromnumeric import std
 import py_trees
 from py_trees.common import Status
+import py_trees_ros
 import rospy
 import numpy as np
 import subprocess
@@ -9,16 +10,15 @@ import os
 import signal
 from threading  import Thread
 import sys
+import time 
 
 try:
-    from queue import Queue, Empty
+    from queue import Queue,LifoQueue, Empty
 except ImportError:
-    from Queue import Queue, Empty  # python 2.x
-
-def dummy_nearest_obstacle(scan):
-    return(np.argmin(scan.ranges),0)
+    from Queue import Queue,LifoQueue, Empty  # python 2.x
 
 
+log_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)),"..","..","logs")
 
 class RunRos(py_trees.behaviour.Behaviour):
     """ Runs and returns RUNNING status for as long as given process is running, will return FAILURE whenever it halts, and if killed via blackboard kill key will return SUCCESS and
@@ -87,10 +87,6 @@ class RunRos(py_trees.behaviour.Behaviour):
             # check on the process
             ok = self.is_subprocess_ok()
 
-
-            # log output of program as it's running
-            self.subprocess_log_output()
-
             # if process is still running successfully
             if ok == 0:
                 # check kill trigger
@@ -105,12 +101,15 @@ class RunRos(py_trees.behaviour.Behaviour):
 
             # if process died when not expected
             elif ok == 2 or (ok == 1 and not self.success_on_non_error_exit):
+
+                self.logger.error("stderr dump: "+self.get_last_n_lines(self.stderr_queue,50))
+                self.logger.error("stdout dump: "+self.get_last_n_lines(self.stdout_queue,50))
                 return py_trees.Status.FAILURE
 
             # if process died but we expected it
             else:
-                return py_trees.Status.SUCCESS
                 self.last_success = True
+                return py_trees.Status.SUCCESS
 
         else:
             # start a subprocess
@@ -127,18 +126,18 @@ class RunRos(py_trees.behaviour.Behaviour):
 
 
 
-    def subprocess_log_output(self):
-        try:  line = self.stdout_queue.get_nowait() # or q.get(timeout=.1)
-        except Empty:
-            pass # do nothing
-        else: # got line
-            self.logger.debug(str(line))
+    def get_last_n_lines(self,queue,n):
+        if queue is None:
+            return
 
-        try:  line = self.stderr_queue.get_nowait() # or q.get(timeout=.1)
-        except Empty:
-            pass # do nothing
-        else: # got line
-            self.logger.error(str(line))
+        l = ""
+        for i in range(n):
+            try:  line = self.stdout_queue.get_nowait() # or q.get(timeout=.1)
+            except Empty:
+                pass # do nothing
+            else: # got line
+                l += "\n" + line
+        return l
 
     def kill_subprocess(self):
         """ kills subprocess started if it was started, otherwise does nothing """
@@ -173,23 +172,26 @@ class RunRos(py_trees.behaviour.Behaviour):
             arg)
 
         ON_POSIX = 'posix' in sys.builtin_module_names
-        FNULL = open(os.devnull, 'w')
+
+        # log = open(os.path.join(log_dir,"{0}.log".format(self.name)),"w")
+        # log.truncate(0)
+
         launch_process = subprocess.Popen(command, 
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 shell=True,
                 preexec_fn=os.setsid,
                 close_fds=ON_POSIX,
-                bufsize=1,
-                universal_newlines=True)
-        
+                # bufsize=1,
+                # universal_newlines=True
+        )
         # make sure not to overflow the output, i learned this the hard way
         # subprocess will freeze if you do 
         # want to have a nonblocking way of reading output, start a separate thread for each output channel
         # read continously and store in non blocking to read structure shared with main program
 
-        self.stdout_queue = Queue()
-        self.stderr_queue = Queue()
+        self.stdout_queue = LifoQueue()
+        self.stderr_queue = LifoQueue()
 
         self.launch_log_thread(launch_process.stdout,self.stdout_queue)
         self.launch_log_thread(launch_process.stderr,self.stderr_queue)
@@ -200,13 +202,18 @@ class RunRos(py_trees.behaviour.Behaviour):
     def subprocess_store_output(self,out,queue):
         """ will read the data from the out - io source and put it on the queue, WILL BLOCK the thread """
         while True:
-            for line in out:
-                queue.put(line)
-
+            try:
+                for line in out:
+                    queue.put(line)
+            except:
+                #  locked, just wait
+                print("out is locked")
+                time.sleep(5)
+                pass
 
     def launch_log_thread(self,out,queue):
         """ launches a new thread for storing output for the given io source into the given queue """
-        
+
         thread = Thread(target=self.subprocess_store_output,
             args=(out,queue))
         thread.daemon = True
@@ -245,38 +252,8 @@ class RunRos(py_trees.behaviour.Behaviour):
             return 2
 
             
-class ClosestObstacle(py_trees.behaviour.Behaviour):
-    """ a behaviour which analyses the "/scan" blackboard variable and sets "closest_obstacle/angle" and "closest_obstacle/distance".
-        returns FAILURE if no data available
-    """
-
-    def __init__(self,name):
-        """
-            Args:
-                name: name of the behaviour
-        """
-
-        super().__init__(name=name)    
-
-        self.blackboard = py_trees.Blackboard()    
-    
-    def initialise(self):
-        pass
-
-    def update(self):
-        if self.blackboard.get("scan") is not None:
-            angle,distance = dummy_nearest_obstacle(self.blackboard.scan)
-            self.blackboard.set("closest_obstacle/angle",angle)
-            self.blackboard.set("closest_obstacle/distance",distance)
-
-            self.feedback_message = str(angle) + ":" + str(distance)
-            return py_trees.common.Status.SUCCESS
-        else:
-            self.feedback_message = "No scan data"
-            return py_trees.common.Status.FAILURE
-
 class PublishTopic(py_trees.behaviour.Behaviour):
-    """ a behaviour which publishes a certain message and always returning RUNNING on success"""
+    """ a behaviour which publishes a certain message and returning RUNNING on success. Can be set to return success on publish"""
 
     def __init__(self,name,msg,msg_type,topic,queue_size=1,success_on_publish=False,success_after_n_publishes=None):
         """ 
@@ -317,3 +294,90 @@ class PublishTopic(py_trees.behaviour.Behaviour):
                 return py_trees.common.Status.SUCCESS
         else:
             return py_trees.common.Status.RUNNING       
+
+
+class MessageChanged(py_trees_ros.subscribers.Handler):
+    
+    """ Listens to topic and returns running before receiving 2 messages, which are then compared for changes
+        If they have changed SUCCESS is returned, and otherwise FAILURE
+    """
+
+    def __init__(self, name, topic_name, topic_type,compare_method=None,waiting_timeout=None,timeout_status : py_trees.Status = py_trees.Status.FAILURE):
+        """ 
+            Args:
+                name: the name of the behaviour
+                topic_name: the topic to listen to for changes
+                topic_type: the type of message to expect,
+                compare_method: a function which takes in (msg1,msg2) of topic_type and returns bool (true => changed)
+                waiting_timeout: the time after which if no second message is received, timeout is triggered
+                timeout_status: the status to return on timeout
+        """
+
+        super().__init__(name=name, topic_name=topic_name, topic_type=topic_type)
+        self.second_msg = None
+        self.first_msg = None
+        self.waiting_timeout = waiting_timeout
+        self.timeout_status = timeout_status
+        self.compare_method = compare_method
+
+    def initialise(self):
+        
+        self.start_time = time.time()
+        self.first_msg = None
+        self.second_msg = None 
+
+
+        return super().initialise()
+
+
+    def message_changed(self,msg1,msg2):
+        if self.compare_method is not None:
+            return self.compare_method(msg1,msg2) 
+        else:
+            return not msg1 == msg2
+
+    def update(self):
+        
+        # we always wait for first message with RUNNING
+        with self.data_guard:
+            if self.first_msg == None:
+                self.feedback_message = "waiting for first message"
+                if self.msg != None:
+                    self.first_msg = self.msg
+                    self.msg = None
+                    self.feedback_message = "waiting for second message"
+                    return py_trees.Status.RUNNING
+                else:
+                    return py_trees.Status.RUNNING
+
+            # then we possibly timeout on waiting for second
+
+            timeout = self.waiting_timeout is not None 
+
+            if timeout: 
+                time_left = (time.time() - self.start_time) - self.waiting_timeout
+
+                if time_left <= 0:
+                    self.feedback_message = "timed out"
+                    return self.timeout_status
+
+            # await second
+            if self.second_msg == None:
+                if self.msg != None:
+                    self.second_msg = self.msg
+                    self.msg = None
+                else:
+                    return py_trees.Status.RUNNING
+                
+            # do comparison, only reached with first and second message present
+            # and if not timed out
+
+            if self.message_changed(self.first_msg,self.second_msg):
+                self.feedback_message = "messages changed"
+                return py_trees.Status.SUCCESS
+            else:
+                self.feedback_message = "messages the same"
+                return py_trees.Status.FAILURE
+
+
+

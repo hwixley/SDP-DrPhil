@@ -5,7 +5,7 @@ import py_trees
 import py_trees_ros
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import LaserScan
-from trees import create_idle,create_face_closest_obstacle,create_explore_frontier_and_save_map
+from behaviour.trees.trees import create_idle,create_face_closest_obstacle,create_explore_frontier_and_save_map
 import functools 
 from visualization_msgs.msg import MarkerArray
 import os
@@ -108,7 +108,7 @@ class Controller:
         # priorities  branch for main tasks, the rest of the tree is to go here
         priorities = py_trees.composites.Selector("priorities")
 
-        runMapper = create_explore_frontier_and_save_map(timeout=600,no_data_timeout=120)
+        runMapper = create_explore_frontier_and_save_map(timeout=600,no_data_timeout=60)
         mapperOneShot = py_trees.decorators.OneShot(runMapper)
 
         # for convenience we keep granular behaviours in their own python files

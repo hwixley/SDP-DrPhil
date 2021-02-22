@@ -10,7 +10,10 @@ from py_trees.composites import Parallel
 from py_trees.decorators import FailureIsRunning
 from py_trees.meta import oneshot
 import py_trees_ros
-from behaviours import ClosestObstacle,PublishTopic,RunRos
+
+from behaviour.leafs.ros import PublishTopic,RunRos,MessageChanged
+from behaviour.leafs.general import ClosestObstacle
+
 from decorators import HoldStateForDuration
 import operator
 from geometry_msgs.msg import Twist
@@ -29,21 +32,12 @@ def create_exploration_completed_check(duration=60):
             duration: the time after which if no data is received on `/explore/frontiers` to return SUCCESS
     """
 
-    # fail_no_data = py_trees_ros.subscribers.CheckData(name="MoveBaseHasNoCommand?",
-    #                                     topic_name="/move_base/status",
-    #                                     topic_type=GoalStatusArray,
-    #                                     variable_name="status_list",
-    #                                     clearing_policy=py_trees.common.ClearingPolicy.ON_SUCCESS,
-    #                                     fail_if_bad_comparison=True,
-    #                                     expected_value=[])
-    # hold_state = HoldStateForDuration(fail_no_data,"HoldSuccess",duration,state=py_trees.common.Status.SUCCESS)
+    fail_no_new_data = MessageChanged(name="CmdVelChanged?",
+                                        topic_name="/cmd_vel",
+                                        topic_type=Twist)
+    
 
-    fail_no_data = py_trees_ros.subscribers.WaitForData(name="NewFrontiersReceived?",
-                                    topic_name="/explore/frontiers",
-                                    topic_type=GoalStatusArray,
-                                    clearing_policy=py_trees.common.ClearingPolicy.ON_SUCCESS)
-
-    hold_state = HoldStateForDuration(fail_no_data,"HoldRunning",duration,state=py_trees.common.Status.RUNNING)
+    hold_state = HoldStateForDuration(fail_no_new_data,"HoldFailureIgnoreRunning",duration,state=py_trees.common.Status.FAILURE,ignore_running=True)
 
     f2rHold_state = py_trees.decorators.FailureIsRunning(hold_state)
     return f2rHold_state
