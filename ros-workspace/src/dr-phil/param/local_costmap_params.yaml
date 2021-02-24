@@ -40,7 +40,7 @@ local_costmap:
     # combination_method: 1
 
   inflation_layer:
-    inflation_radius: 0.25
+    inflation_radius: 0.1
     cost_scaling_factor: 1
 
 
