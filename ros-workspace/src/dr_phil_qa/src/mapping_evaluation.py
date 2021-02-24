@@ -10,6 +10,10 @@ import numpy as np
 from typing import Callable
 from numbers import Number
 import csv
+from dr_phil_qa.srv import EvaluateMapsResponse,EvaluateMaps
+import os
+import threading
+import yaml 
 
 class GRID_VALUES(enum.IntEnum):
     OCCUPIED = 100
@@ -28,20 +32,57 @@ class MapEvaluator():
     and performs quantative measurements of mapping quality """
 
 
-    def __init__(self,measured_map,truth_map):
+    def __init__(self,measured_topic,truth_topic,dump_scan,scan_param_namespace,run_periodically):
         
-        self.measured_map = measured_map
-        self.truth_map = truth_map
+        self.measured_topic = measured_topic
+        self.truth_topic = truth_topic
 
         self.tp_pub = rospy.Publisher("~tp_map",OccupancyGrid,queue_size=10)
         self.fp_pub = rospy.Publisher("~fp_map",OccupancyGrid,queue_size=10)
         self.tn_pub = rospy.Publisher("~tn_map",OccupancyGrid,queue_size=10)
         self.fn_pub = rospy.Publisher("~fn_map",OccupancyGrid,queue_size=10)
 
+        self.m_sub = rospy.Subscriber(self.measured_topic,OccupancyGrid,self.m_callback)
+        self.GT_sub = rospy.Subscriber(self.truth_topic,OccupancyGrid,self.GT_callback)
+
         self.tp_map = None
         self.fp_map = None
         self.tn_map = None
         self.fn_map = None
+
+        self.data_home_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"..","data")
+
+        self.evaluate_trigger = rospy.Service("~evaluate",EvaluateMaps,self.evaluate)
+        self.data_guard = threading.Lock()
+        
+        self.measured_map = None
+        self.truth_map = None
+        self.values = {}
+
+        self.dump_scan = dump_scan
+        self.scan_param_namespace = scan_param_namespace
+
+        self.run_periodically = run_periodically
+        self.last_args = None 
+
+    def m_callback(self,data):
+        self.measured_map = data
+
+    def GT_callback(self,data):
+        self.truth_map = data 
+
+    def spin(self):
+        if self.run_periodically and not ((self.measured_map is None) or (self.truth_map is None) or (self.last_args is None)):
+            self.evaluate(self.last_args)
+        
+        self.visualise_evaluation()
+        self.publish_values()
+
+
+
+    def publish_values(self):
+        #TODO: add publishers for values. keys
+        pass
 
     def visualise_evaluation(self):
         for (p,m) in [(self.tp_pub,self.tp_map),
@@ -49,75 +90,87 @@ class MapEvaluator():
                     (self.tn_pub,self.tn_map),
                     (self.fn_pub,self.fn_map)]:
             if m is not None:
-                p.publish(self.binarize_counter_map(m))
-    
-    def binarize_counter_map(self,map : OccupancyGrid):
-        """ counter passed maps are not entirely fit for viewing, binarize them - all values between 0 and 99  are converted to FREE values, overflow is turned to OCCUPIED and underflow to UNKNOWN"""
-        
-        def classify(x):
-            if x < 0:
-                return GRID_VALUES.UNKNOWN
-            elif x < 100:
-                return GRID_VALUES.FREE
-            else:
-                return GRID_VALUES.OCCUPIED
+                p.publish(m)
 
-        map.data = [classify(x) for x in map.data]
-        return map
+    def evaluate(self,args):
+        """ performs the evaluation between ground truth and measured maps """
 
-    def evaluate(self,file_path):
+        self.last_args = args
 
+        ## await map data first
+        raw = {}
+        rates = {}
+        areas = {}
+        metrics = {}
         values = {}
 
-        """ called after both maps have been received and stored, performs the evaluation """
-
-
         ## Areas - translation and rotation invariant
-        free_area_measured = self.calculate_area(self.measured_map)
-        occupied_area_measured = self.calculate_area(self.measured_map,
-                                                        include_condition=GRID_VALUES.is_occupied)
 
-        free_area_truth = self.calculate_area(self.truth_map)
-        occupied_area_truth = self.calculate_area(self.truth_map,
-                                                        include_condition=GRID_VALUES.is_occupied)
+        with self.data_guard: # don't want maps to change mid calculation
+            free_area_measured = self.calculate_area(self.measured_map)
+            occupied_area_measured = self.calculate_area(self.measured_map,
+                                                            include_condition=GRID_VALUES.is_occupied)
 
-        values["free_area_mesured_over_truth"] = free_area_measured / free_area_truth
-        values["occupied_area_mesured_over_truth"] = occupied_area_measured / occupied_area_truth
-        values["total_area_mesured_over_truth"] = (occupied_area_measured + free_area_measured) / (occupied_area_truth + free_area_truth)
+            free_area_truth = self.calculate_area(self.truth_map)
+            occupied_area_truth = self.calculate_area(self.truth_map,
+                                                            include_condition=GRID_VALUES.is_occupied)
 
-        ## Rates - not invariant 
-        (tp_num,tp_map) = self.apply_count_over_map(self.measured_map,self.truth_map,
-                                                        self.true_positive_counter,
-                                                        self.nonzero_to_red_filter)
+            areas["free_area_mesured_over_truth"] = free_area_measured / free_area_truth
+            areas["occupied_area_mesured_over_truth"] = occupied_area_measured / occupied_area_truth
+            
+            areas["total_area_mesured_over_truth"] = (occupied_area_measured + free_area_measured) / (occupied_area_truth + free_area_truth)
 
-        (tn_num,tn_map) = self.apply_count_over_map(self.measured_map,self.truth_map,
-                                                        self.true_negative_counter,
-                                                        self.nonzero_to_red_filter)
+            ## Rates - not invariant 
+            (tp_num,tp_map) = self.apply_count_over_map(self.measured_map,self.truth_map,
+                                                            self.true_positive_counter,
+                                                            self.nonzero_to_green_filter)
 
-        (fp_num,fp_map) = self.apply_count_over_map(self.measured_map,self.truth_map,
-                                                        self.false_positive_counter,
-                                                        self.nonzero_to_red_filter)
+            (tn_num,tn_map) = self.apply_count_over_map(self.measured_map,self.truth_map,
+                                                            self.true_negative_counter,
+                                                            self.nonzero_to_blue_filter)
 
-        (fn_num,fn_map) = self.apply_count_over_map(self.measured_map,self.truth_map,
-                                                        self.false_negative_counter,
-                                                        self.nonzero_to_red_filter)
+            (fp_num,fp_map) = self.apply_count_over_map(self.measured_map,self.truth_map,
+                                                            self.false_positive_counter,
+                                                            self.nonzero_to_red_filter)
 
-        values["true_positives"] = tp_num
-        values["true_negatives"] = tn_num
-        values["false_positives"] = fp_num
-        values["false_negatives"] = fn_num
+            (fn_num,fn_map) = self.apply_count_over_map(self.measured_map,self.truth_map,
+                                                            self.false_negative_counter,
+                                                            self.nonzero_to_yellow_filter)
+
+        raw["true_positives"] = tp_num
+        raw["true_negatives"] = tn_num
+        raw["false_positives"] = fp_num
+        raw["false_negatives"] = fn_num
+
+        rates["true_positive_rate"] = tp_num / (tp_num + fn_num)
+        rates["false_positive_rate"] = fp_num / (fp_num + tn_num)
+        rates["overall_error"] = (fp_num + fn_num) / (tp_num + fn_num + fp_num + tn_num)
+        
+        metrics["rates"] = rates
+        metrics["raw"] = raw
+        metrics["areas"] = areas 
+        values["values"] = metrics
+
+        # save data for publishing too
+        self.values = values
 
         # save maps for visualisation
-        
         self.tp_map = tp_map
         self.tn_map = tn_map
         self.fp_map = fp_map
         self.fn_map = fn_map
 
+        file_path = os.path.join(self.data_home_path,args.filename + ".yml")
         with open(file_path, 'w') as f:  # You will need 'wb' mode in Python 2.x
-            w = csv.DictWriter(f, values.keys())
-            w.writeheader()
-            w.writerow(values)
+            yaml.dump(values,f,default_flow_style=False)
+
+        if self.dump_scan:
+            scan_params = rospy.get_param(self.scan_param_namespace)
+            if scan_params is not None:
+                with open(os.path.join(os.path.dirname(file_path),args.filename+"-scan.yml"), 'w') as f:
+                    yaml.dump(scan_params,f,default_flow_style=False)
+
+        return EvaluateMapsResponse()
 
     def true_positive_counter(self,m_val,GT_val):
         return 1 if m_val == GT_val == GRID_VALUES.OCCUPIED else 0
@@ -133,7 +186,19 @@ class MapEvaluator():
     
     def nonzero_to_red_filter(self,x):
         """ filter which shows non zero counts on the map """
-        return 254 if x != 0 else GRID_VALUES.UNKNOWN
+        return 98 if x != 0 else GRID_VALUES.UNKNOWN
+    
+    def nonzero_to_green_filter(self,x):
+        """ filter which shows non zero counts on the map """
+        return 101 if x != 0 else GRID_VALUES.UNKNOWN
+    
+    def nonzero_to_blue_filter(self,x):
+        """ filter which shows non zero counts on the map """
+        return 1 if x != 0 else GRID_VALUES.UNKNOWN
+    
+    def nonzero_to_yellow_filter(self,x):
+        """ filter which shows non zero counts on the map """
+        return 100 if x != 0 else GRID_VALUES.UNKNOWN
 
     def apply_count_over_map(self,m : OccupancyGrid,GT : OccupancyGrid,counter : Callable[[Number,Number],Number], map_filter : Callable[[Number],Number] = lambda x: x):
         """ sweeps the counter function over each pair of matching cells in m and GT maps in this order
@@ -227,22 +292,18 @@ class MapEvaluator():
 if __name__ == "__main__":
     rospy.init_node("map_evaluator")
 
-    measured_topic = rospy.get_param("~measured","/map_measured")
-    truth_topic = rospy.get_param("~truth","/map_truth")
-    file_path = rospy.get_param("~file_path","data.csv")
+    measured_topic = rospy.get_param("~measured_topic","/map_measured")
+    truth_topic = rospy.get_param("~truth_topic","/map_truth")
+    dump_scan = rospy.get_param("~store_scan_params",False)
+    scan_param_namespace = rospy.get_param("~scan_param_namespace","/slam_gmapping")
+    run_periodically = rospy.get_param("~run_periodically","false")
 
-
-    
-    measured_map = rospy.wait_for_message(measured_topic,OccupancyGrid)
-    truth_map = rospy.wait_for_message(truth_topic,OccupancyGrid)
-
-    evaluator = MapEvaluator(measured_map,
-                    truth_map)
-
-    evaluator.evaluate(file_path)
-    
     rate = rospy.Rate(1)
 
+    node = MapEvaluator(measured_topic,truth_topic,dump_scan,scan_param_namespace,run_periodically)
+
+    if run_periodically:
+        rospy.loginfo("run_periodically setting is on, after first service call will repeatedely evaluate")
     while not rospy.is_shutdown():
-        evaluator.visualise_evaluation()
+        node.spin()
         rate.sleep()

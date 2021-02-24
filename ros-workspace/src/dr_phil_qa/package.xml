@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>dr-phil-qa</name>
+  <name>dr_phil_qa</name>
   <version>0.0.0</version>
-  <description>The dr-phil-qa package</description>
+  <description>The dr_phil_qa package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -50,7 +50,9 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <depend>dr-phil</depend>
-
+  <depend>rospy</depend>
+  <depend>message_generation</depend>
+  <exec_depend>message_runtime</exec_depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
