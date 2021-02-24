@@ -1,0 +1,34 @@
+digraph create_explore_frontier_and_save_map {
+graph [fontname="times-roman"];
+node [fontname="times-roman"];
+edge [fontname="times-roman"];
+create_explore_frontier_and_save_map [fillcolor=orange, fontcolor=black, fontsize=11, shape=box, style=filled];
+"Timeout\n[Sequence]" [fillcolor=ghostwhite, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+create_explore_frontier_and_save_map -> "Timeout\n[Sequence]";
+Sequence [fillcolor=orange, fontcolor=black, fontsize=11, shape=box, style=filled];
+"Timeout\n[Sequence]" -> Sequence;
+"OneShot\n[clearArmPosition]" [fillcolor=ghostwhite, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+Sequence -> "OneShot\n[clearArmPosition]";
+clearArmPosition [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+"OneShot\n[clearArmPosition]" -> clearArmPosition;
+Parallel [fillcolor=gold, fontcolor=black, fontsize=11, shape=parallelogram, style=filled];
+Sequence -> Parallel;
+runExplorationNodes [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+Parallel -> runExplorationNodes;
+"Sequence*" [fillcolor=orange, fontcolor=black, fontsize=11, shape=box, style=filled];
+Parallel -> "Sequence*";
+"FailureIsRunning\n[HoldRunning]" [fillcolor=ghostwhite, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+"Sequence*" -> "FailureIsRunning\n[HoldRunning]";
+HoldRunning [fillcolor=ghostwhite, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+"FailureIsRunning\n[HoldRunning]" -> HoldRunning;
+"NewFrontiersReceived?" [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+HoldRunning -> "NewFrontiersReceived?";
+runSaveMap [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+"Sequence*" -> runSaveMap;
+SetKillTrigger [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+"Sequence*" -> SetKillTrigger;
+haltCmdVel [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+"Sequence*" -> haltCmdVel;
+Timer [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+"Sequence*" -> Timer;
+}

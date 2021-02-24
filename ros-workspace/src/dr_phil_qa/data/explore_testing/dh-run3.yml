@@ -1,0 +1,16 @@
+values:
+  areas:
+    free_area_mesured_over_truth: 0.8662883631713555
+    occupied_area_mesured_over_truth: 1.235982447586543
+    total_area_mesured_over_truth: 0.8854421906181322
+  quality:
+    time_elapsed: 5.675083333333333
+  rates:
+    false_positive_rate: 0.05496491280908351
+    overall_error: 0.0845600821636426
+    true_positive_rate: 0.3839913466738778
+  raw:
+    false_negatives: 1139.0
+    false_positives: 1825.0
+    true_negatives: 31378.0
+    true_positives: 710.0

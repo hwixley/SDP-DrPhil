@@ -1,5 +1,15 @@
 <sdf version='1.7'>
   <world name='default'>
+
+    <plugin name='gazebo_occupancy_map' filename='libgazebo_2Dmap_plugin.so'>
+      <map_resolution>0.05</map_resolution> 
+      <map_height>0.132</map_height>   <!--132 height of lidar frame from ground-->      
+      <map_size_x>15</map_size_x>        
+      <map_size_y>15</map_size_y>         
+      <init_robot_x>-2.0</init_robot_x> 
+      <init_robot_y>-0.5</init_robot_y>       
+    </plugin>
+    
     <light name='sun' type='directional'>
       <cast_shadows>1</cast_shadows>
       <pose>0 0 10 0 -0 0</pose>

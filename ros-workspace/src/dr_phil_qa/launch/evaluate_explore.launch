@@ -1,0 +1,29 @@
+<launch>
+    <arg name="map_truth" doc="name of map .yaml file in maps folder"/>
+    <arg name="map_measured_topic" default="/map"/>
+    <arg name="map_truth_topic" default="/map_truth"/>
+    <arg name="scan_param_namespace" default="/slam_gmapping"/>
+
+
+    <include file="$(find dr_phil_qa)/launch/map_management/serve_maps.launch">
+        <arg name="map_truth" value="$(arg map_truth)"/>
+        <arg name="map_truth_topic" default="$(arg map_truth_topic)"/>
+    </include>
+
+    <node 
+      pkg="dr_phil_qa" 
+      type="mapping_evaluation.py" 
+      name="mapping_evaluation">
+      <param name="measured_topic" value="$(arg map_measured_topic)"/>
+      <param name="truth_topic" value="$(arg map_truth_topic)"/>
+      <param name="store_scan_params" value="false"/>
+      <param name="scan_param_namespace" value="$(arg scan_param_namespace)"/>
+      <param name="run_periodically" value="true"/>
+      <param name="store_velocity" value="true"/>
+      <param name="odom_topic" value="/odom"/>
+      <param name="store_explore_lite" value="true"/>
+      <param name="explore_lite_namespace" value="/explore"/>
+    </node> 
+
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find dr_phil_qa)/rviz/compare_maps.rviz" /> 
+</launch>

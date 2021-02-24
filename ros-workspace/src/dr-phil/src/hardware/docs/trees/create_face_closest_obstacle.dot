@@ -1,0 +1,34 @@
+digraph create_face_closest_obstacle {
+graph [fontname="times-roman"];
+node [fontname="times-roman"];
+edge [fontname="times-roman"];
+create_face_closest_obstacle [fillcolor=orange, fontcolor=black, fontsize=11, shape=box, style=filled];
+Sequence [fillcolor=orange, fontcolor=black, fontsize=11, shape=box, style=filled];
+create_face_closest_obstacle -> Sequence;
+checkBB [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+Sequence -> checkBB;
+"FailureIsRunning\n[Sequence]" [fillcolor=ghostwhite, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+Sequence -> "FailureIsRunning\n[Sequence]";
+"Sequence*" [fillcolor=orange, fontcolor=black, fontsize=11, shape=box, style=filled];
+"FailureIsRunning\n[Sequence]" -> "Sequence*";
+closestObstacle2BB [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+"Sequence*" -> closestObstacle2BB;
+Selector [fillcolor=cyan, fontcolor=black, fontsize=11, shape=octagon, style=filled];
+"Sequence*" -> Selector;
+checkFacingObstacleBB [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+Selector -> checkFacingObstacleBB;
+Parallel [fillcolor=gold, fontcolor=black, fontsize=11, shape=parallelogram, style=filled];
+Selector -> Parallel;
+"Selector Turn Left" [fillcolor=orange, fontcolor=black, fontsize=11, shape=box, style=filled];
+Parallel -> "Selector Turn Left";
+checkObstacleOnLeft [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+"Selector Turn Left" -> checkObstacleOnLeft;
+turnLeft [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+"Selector Turn Left" -> turnLeft;
+"Selector Turn Right" [fillcolor=orange, fontcolor=black, fontsize=11, shape=box, style=filled];
+Parallel -> "Selector Turn Right";
+checkObstacleOnRight [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+"Selector Turn Right" -> checkObstacleOnRight;
+turnRight [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+"Selector Turn Right" -> turnRight;
+}
