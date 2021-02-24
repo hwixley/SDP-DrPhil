@@ -108,7 +108,9 @@ class Controller:
         # priorities  branch for main tasks, the rest of the tree is to go here
         priorities = py_trees.composites.Selector("priorities")
 
-        runMapper = create_explore_frontier_and_save_map(timeout=600,no_data_timeout=60)
+        map_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"map")
+
+        runMapper = create_explore_frontier_and_save_map(timeout=600,no_data_timeout=60,map_path=map_path)
         mapperOneShot = py_trees.decorators.OneShot(runMapper)
 
         # for convenience we keep granular behaviours in their own python files
