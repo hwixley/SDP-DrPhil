@@ -101,6 +101,7 @@
   <exec_depend>py_trees_ros</exec_depend>
   <exec_depend>dwa_local_planner</exec_depend>
   <exec_depend>explore_lite</exec_depend>
+  <exec_depend>hector_mapping</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

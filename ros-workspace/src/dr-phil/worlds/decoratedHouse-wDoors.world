@@ -1,5 +1,16 @@
 <sdf version='1.4'>
   <world name='default'>
+
+    <plugin name='gazebo_occupancy_map' filename='libgazebo_2Dmap_plugin.so'>
+      <map_resolution>0.05</map_resolution> 
+      <map_height>0.132</map_height>   <!--132 height of lidar frame from ground-->      
+      <map_size_x>20</map_size_x>        
+      <map_size_y>20</map_size_y>         
+      <init_robot_x>-2.0</init_robot_x> 
+      <init_robot_y>-0.5</init_robot_y>       
+    </plugin>
+    
+
     <!-- A global light source -->
     <include>
       <uri>model://sun</uri>
@@ -33,7 +44,18 @@
 
     <!-- A turtlebot symbol -->
     <include>
+      <pose>2.195 -3.917 0 0 0 0 </pose>
       <uri>model://turtlebot3_house</uri>
+    </include>
+
+    <include>
+      <pose>4.382 -1.0 0 0 0 0 </pose>
+      <uri>model://gap-filler-grey</uri>
+    </include>
+
+    <include>
+      <pose>3.183 -4.09 0 0 0 0 </pose>
+      <uri>model://door-model</uri>
     </include>
 
     <scene>

@@ -1,10 +1,32 @@
 global_costmap:
+  
+  # Coordinate frame and TF parameters
   global_frame: map
   robot_base_frame: base_footprint
-
-  update_frequency: 10.0
-  publish_frequency: 10.0
   transform_tolerance: 0.5
 
-  static_map: true
+  # Rate parameters
+  update_frequency: 10.0
+  publish_frequency: 10.0
+
+
+
+  plugins: 
+    - {name: static_layer,        type: "costmap_2d::StaticLayer"}
+    - {name: inflation_layer,        type: "costmap_2d::InflationLayer"}
+
+  # Layer definitions
+
+  inflation_layer:
+    enabled: true
+    inflation_radius: 0.3
+    cost_scaling_factor: 1
+
  
+  static_layer:
+    # for parameter info see http://wiki.ros.org/costmap_2d/hydro/staticmap
+
+    map_topic: /map
+    subscribe_to_updates: true
+    track_unknown_space: true
+

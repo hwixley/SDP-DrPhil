@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import rospy
+from rospy.exceptions import ROSException
 from std_msgs.msg import Float64MultiArray
 from std_msgs.msg import Float64
-
+import sys 
 class px100JointControllerMerger():
     def __init__(self):    
 
@@ -15,7 +16,7 @@ class px100JointControllerMerger():
         self.waist_pub = rospy.Publisher("/waist_controller/command",Float64,queue_size=10)
         self.shoulder_pub = rospy.Publisher("/shoulder_controller/command",Float64,queue_size=10)
         self.elbow_pub = rospy.Publisher("/elbow_controller/command",Float64,queue_size=10)
-        self.wrist_pub = rospy.Publisher("/wrist_controller/command",Float64,queue_size=10)
+        self.wrist_pub = rospy.Publisher("/wrist_angle_controller/command",Float64,queue_size=10)
         self.fingerL_pub = rospy.Publisher("/left_finger_controller/command",Float64,queue_size=10)
         self.fingerR_pub = rospy.Publisher("/right_finger_controller/command",Float64,queue_size=10)
         
@@ -89,5 +90,7 @@ if __name__ == '__main__':
     rate = rospy.Rate(10) 
 
     while not rospy.is_shutdown():
-        rate.sleep()
-
+        try:
+            rate.sleep()
+        except (ROSException, KeyboardInterrupt):
+            sys.exit(0)
