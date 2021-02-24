@@ -15,6 +15,8 @@ import os
 import threading
 import yaml 
 import copy 
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Twist
 
 class GRID_VALUES(enum.IntEnum):
     OCCUPIED = 100
@@ -33,7 +35,7 @@ class MapEvaluator():
     and performs quantative measurements of mapping quality """
 
 
-    def __init__(self,measured_topic,truth_topic,dump_scan,scan_param_namespace,run_periodically):
+    def __init__(self,measured_topic,truth_topic,dump_scan,scan_param_namespace,dump_robot_velocity,odom_topic,store_explore_lite,explore_lite_namespace,run_periodically):
         
         self.measured_topic = measured_topic
         self.truth_topic = truth_topic
@@ -67,6 +69,22 @@ class MapEvaluator():
         self.run_periodically = run_periodically
         self.last_args = None 
         self.time_start = rospy.rostime.get_time()
+
+        self.dump_twist = dump_robot_velocity
+        if dump_robot_velocity:
+            self.odom_sub = rospy.Subscriber(odom_topic,Odometry,self.odom_callback)
+        else:
+            self.odom_sub = None
+
+        self.linear_vels = []
+        self.ang_vels = []
+        self.odom = None 
+
+        self.store_explore_lite = store_explore_lite
+        self.explore_lite_namespace = explore_lite_namespace
+
+    def odom_callback(self,data : Odometry):
+        self.odom = data
 
     def m_callback(self,data):
         self.measured_map = data
@@ -105,6 +123,7 @@ class MapEvaluator():
         if combined_map is not None:
             self.combined_pub.publish(combined_map)
 
+
     def evaluate(self,args):
         """ performs the evaluation between ground truth and measured maps """
 
@@ -114,6 +133,7 @@ class MapEvaluator():
         raw = {}
         rates = {}
         areas = {}
+        quality = {}
         metrics = {}
         values = {}
 
@@ -150,11 +170,21 @@ class MapEvaluator():
                                                             self.false_negative_counter,
                                                             self.nonzero_to_blue_filter)
 
+            if self.dump_twist:
+                rospy.logerr(str(self.dump_twist))
+                self.linear_vels.append(abs(self.odom.twist.twist.linear.x))
+                self.ang_vels.append(abs(self.odom.twist.twist.angular.z))
+
+                quality["average_ang_vel"] = sum(self.ang_vels)/ len(self.ang_vels) 
+                quality["average_lin_vel"] = sum(self.linear_vels)/ len(self.linear_vels) 
+
+        
+        quality["time_elapsed"] = (rospy.rostime.get_time() - self.time_start) / 60
+
         raw["true_positives"] = tp_num
         raw["true_negatives"] = tn_num
         raw["false_positives"] = fp_num
         raw["false_negatives"] = fn_num
-        raw["time_"] = fn_num
 
         rates["true_positive_rate"] = tp_num / (tp_num + fn_num)
         rates["false_positive_rate"] = fp_num / (fp_num + tn_num)
@@ -163,6 +193,7 @@ class MapEvaluator():
         metrics["rates"] = rates
         metrics["raw"] = raw
         metrics["areas"] = areas 
+        metrics["quality"] = quality
         values["values"] = metrics
 
         # save data for publishing too
@@ -190,6 +221,12 @@ class MapEvaluator():
                 with open(os.path.join(os.path.dirname(file_path),args.filename+"-scan.yml"), 'w') as f:
                     yaml.dump(scan_params,f,default_flow_style=False)
 
+        if self.store_explore_lite:
+            explore_params = rospy.get_param(self.explore_lite_namespace)
+            if explore_params is not None:
+                with open(os.path.join(os.path.dirname(file_path),args.filename+"-explore.yml"), 'w') as f:
+                    yaml.dump(explore_params,f,default_flow_style=False)
+                    
         return EvaluateMapsResponse()
 
     def true_positive_counter(self,m_val,GT_val):
@@ -316,11 +353,23 @@ if __name__ == "__main__":
     truth_topic = rospy.get_param("~truth_topic","/map_truth")
     dump_scan = rospy.get_param("~store_scan_params",False)
     scan_param_namespace = rospy.get_param("~scan_param_namespace","/slam_gmapping")
-    run_periodically = rospy.get_param("~run_periodically","false")
+    run_periodically = rospy.get_param("~run_periodically",False)
+    store_velocity = rospy.get_param("~store_robot_velocity",False)
+    odom_topic = rospy.get_param("~odom_topic","/odom")
+    store_explore_lite = rospy.get_param("~store_explore_lite",False)
+    explore_lite_namespace = rospy.get_param("~explore_lite_namespace","/explore")
 
     rate = rospy.Rate(1)
 
-    node = MapEvaluator(measured_topic,truth_topic,dump_scan,scan_param_namespace,run_periodically)
+    node = MapEvaluator(measured_topic,
+                truth_topic,
+                dump_scan,
+                scan_param_namespace,
+                store_velocity,
+                odom_topic,
+                store_explore_lite,
+                explore_lite_namespace,
+                run_periodically)
 
     if run_periodically:
         rospy.loginfo("run_periodically setting is on, after first service call will repeatedely evaluate")

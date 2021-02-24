@@ -4,7 +4,7 @@
   <arg name="map_measured_topic" default="/map"/>
   <arg name="map_truth_topic" default="/map_truth"/>
 
-  <group if="$(eval arg('map_measured') ==None)">
+  <group if="$(eval arg('map_measured') != 'None')">
     <node 
       pkg="map_server" 
       type="map_server" 
