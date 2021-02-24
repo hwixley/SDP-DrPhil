@@ -14,6 +14,7 @@ from dr_phil_qa.srv import EvaluateMapsResponse,EvaluateMaps
 import os
 import threading
 import yaml 
+import copy 
 
 class GRID_VALUES(enum.IntEnum):
     OCCUPIED = 100
@@ -37,10 +38,11 @@ class MapEvaluator():
         self.measured_topic = measured_topic
         self.truth_topic = truth_topic
 
-        self.tp_pub = rospy.Publisher("~tp_map",OccupancyGrid,queue_size=10)
-        self.fp_pub = rospy.Publisher("~fp_map",OccupancyGrid,queue_size=10)
-        self.tn_pub = rospy.Publisher("~tn_map",OccupancyGrid,queue_size=10)
-        self.fn_pub = rospy.Publisher("~fn_map",OccupancyGrid,queue_size=10)
+        self.tp_pub = rospy.Publisher("~tp_map",OccupancyGrid,queue_size=1)
+        self.fp_pub = rospy.Publisher("~fp_map",OccupancyGrid,queue_size=1)
+        self.tn_pub = rospy.Publisher("~tn_map",OccupancyGrid,queue_size=1)
+        self.fn_pub = rospy.Publisher("~fn_map",OccupancyGrid,queue_size=1)
+        self.combined_pub = rospy.Publisher("~combined_map",OccupancyGrid,queue_size=1)
 
         self.m_sub = rospy.Subscriber(self.measured_topic,OccupancyGrid,self.m_callback)
         self.GT_sub = rospy.Subscriber(self.truth_topic,OccupancyGrid,self.GT_callback)
@@ -64,6 +66,7 @@ class MapEvaluator():
 
         self.run_periodically = run_periodically
         self.last_args = None 
+        self.time_start = rospy.rostime.get_time()
 
     def m_callback(self,data):
         self.measured_map = data
@@ -85,12 +88,22 @@ class MapEvaluator():
         pass
 
     def visualise_evaluation(self):
+        combined_map = copy.copy(self.tp_map)
+
         for (p,m) in [(self.tp_pub,self.tp_map),
                     (self.fp_pub,self.fp_map),
                     (self.tn_pub,self.tn_map),
                     (self.fn_pub,self.fn_map)]:
             if m is not None:
                 p.publish(m)
+                
+                # take average 
+                combined_map.data = [ x if y == GRID_VALUES.UNKNOWN else 
+                                        (y if x == GRID_VALUES.UNKNOWN else 
+                                            GRID_VALUES.UNKNOWN )for x,y in zip(combined_map.data,m.data)]
+
+        if combined_map is not None:
+            self.combined_pub.publish(combined_map)
 
     def evaluate(self,args):
         """ performs the evaluation between ground truth and measured maps """
@@ -127,7 +140,7 @@ class MapEvaluator():
 
             (tn_num,tn_map) = self.apply_count_over_map(self.measured_map,self.truth_map,
                                                             self.true_negative_counter,
-                                                            self.nonzero_to_blue_filter)
+                                                            self.nonzero_to_yellow_filter)
 
             (fp_num,fp_map) = self.apply_count_over_map(self.measured_map,self.truth_map,
                                                             self.false_positive_counter,
@@ -135,17 +148,18 @@ class MapEvaluator():
 
             (fn_num,fn_map) = self.apply_count_over_map(self.measured_map,self.truth_map,
                                                             self.false_negative_counter,
-                                                            self.nonzero_to_yellow_filter)
+                                                            self.nonzero_to_blue_filter)
 
         raw["true_positives"] = tp_num
         raw["true_negatives"] = tn_num
         raw["false_positives"] = fp_num
         raw["false_negatives"] = fn_num
+        raw["time_"] = fn_num
 
         rates["true_positive_rate"] = tp_num / (tp_num + fn_num)
         rates["false_positive_rate"] = fp_num / (fp_num + tn_num)
         rates["overall_error"] = (fp_num + fn_num) / (tp_num + fn_num + fp_num + tn_num)
-        
+
         metrics["rates"] = rates
         metrics["raw"] = raw
         metrics["areas"] = areas 
@@ -160,7 +174,13 @@ class MapEvaluator():
         self.fp_map = fp_map
         self.fn_map = fn_map
 
+        
         file_path = os.path.join(self.data_home_path,args.filename + ".yml")
+
+        if os.path.isfile(file_path) and ((not self.run_periodically) or self.run_periodically and self.last_args == None):
+            rospy.logerr("file already exists at: {0}. Aborting".format(file_path))
+            return None
+
         with open(file_path, 'w') as f:  # You will need 'wb' mode in Python 2.x
             yaml.dump(values,f,default_flow_style=False)
 
@@ -179,10 +199,10 @@ class MapEvaluator():
         return 1 if m_val == GT_val == GRID_VALUES.FREE else 0
 
     def false_positive_counter(self,m_val,GT_val):
-        return 1 if m_val == GRID_VALUES.OCCUPIED and GT_val == GRID_VALUES.FREE else 0
+        return 1 if GT_val != GRID_VALUES.OCCUPIED and m_val == GRID_VALUES.OCCUPIED else 0
     
     def false_negative_counter(self,m_val,GT_val):
-        return 1 if m_val == GRID_VALUES.FREE and GT_val == GRID_VALUES.OCCUPIED else 0
+        return 1 if GT_val != GRID_VALUES.FREE and m_val == GRID_VALUES.FREE else 0
     
     def nonzero_to_red_filter(self,x):
         """ filter which shows non zero counts on the map """
@@ -194,11 +214,11 @@ class MapEvaluator():
     
     def nonzero_to_blue_filter(self,x):
         """ filter which shows non zero counts on the map """
-        return 1 if x != 0 else GRID_VALUES.UNKNOWN
+        return 99 if x != 0 else GRID_VALUES.UNKNOWN
     
     def nonzero_to_yellow_filter(self,x):
         """ filter which shows non zero counts on the map """
-        return 100 if x != 0 else GRID_VALUES.UNKNOWN
+        return -20 if x != 0 else GRID_VALUES.UNKNOWN
 
     def apply_count_over_map(self,m : OccupancyGrid,GT : OccupancyGrid,counter : Callable[[Number,Number],Number], map_filter : Callable[[Number],Number] = lambda x: x):
         """ sweeps the counter function over each pair of matching cells in m and GT maps in this order
