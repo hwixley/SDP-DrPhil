@@ -8,11 +8,11 @@ iterations: 5
 lsigma: 0.075
 ogain: 3.0
 lskip: 0
-minimumScore: 150
+minimumScore: 100
 srr: 0.1
 srt: 0.2
-str: 0.1
-stt: 0.2
+str: 0.15
+stt: 0.25
 linearUpdate: 0.1
 angularUpdate: 0.1
 temporalUpdate: 0.5
