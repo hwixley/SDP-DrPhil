@@ -92,6 +92,7 @@ class RunRos(py_trees.behaviour.Behaviour):
                 # check kill trigger
                 if self.blackboard.get(self.kill_key) is not None:
                     # kill
+                    self.logger.debug("process ended stdout dump: "+self.get_last_n_lines(self.stdout_queue,50))
                     self.kill_subprocess()
                     self.last_success = True
 
@@ -108,6 +109,7 @@ class RunRos(py_trees.behaviour.Behaviour):
 
             # if process died but we expected it
             else:
+                self.logger.debug("process ended stdout dump: "+self.get_last_n_lines(self.stdout_queue,50))
                 self.last_success = True
                 return py_trees.Status.SUCCESS
 
@@ -136,7 +138,7 @@ class RunRos(py_trees.behaviour.Behaviour):
             except Empty:
                 pass # do nothing
             else: # got line
-                l += "\n" + line
+                l += "\n" + str(line)
         return l
 
     def kill_subprocess(self):
