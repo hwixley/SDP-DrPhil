@@ -23,10 +23,18 @@
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>./Door.dae</uri>
+            <uri>./Door-Coloured.dae</uri>
             <scale>0.001 0.001 0.001</scale>
           </mesh>
         </geometry>
+        <material>
+          <lighting>1</lighting>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/White</name>
+          </script>
+          <ambient>1 1 1 1</ambient>
+        </material>
         <transparency>0</transparency>
         <cast_shadows>1</cast_shadows>
       </visual>
@@ -36,7 +44,7 @@
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>./Door.dae</uri>
+            <uri>./Door-Coloured.dae</uri>
             <scale>0.001 0.001 0.001</scale>
           </mesh>
         </geometry>
