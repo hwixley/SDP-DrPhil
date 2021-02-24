@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import numpy as np
+from vision.ray import Ray
 
 def invert_homog_mat(hm):
     """ inverts homogenous matrix expressing rotation and translation in 3D or 2D """  
@@ -21,3 +22,6 @@ def invert_homog_mat(hm):
 
     return hm
 
+def intersect(ray1, ray2):
+    """ returns true if rays intersect, false otherwise """
+    pass
