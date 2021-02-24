@@ -23,6 +23,9 @@
             <uri>file://media/materials/scripts/gazebo.material</uri>
             <name>Gazebo/Grey</name>
           </script>
+          <shader type='pixel'>
+            <normal_map>__default__</normal_map>
+          </shader>
           <ambient>1 1 1 1</ambient>
         </material>
         <meta>
