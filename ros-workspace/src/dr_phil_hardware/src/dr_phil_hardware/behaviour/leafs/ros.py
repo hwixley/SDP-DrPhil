@@ -316,7 +316,7 @@ class MessageChanged(py_trees_ros.subscribers.Handler):
                 timeout_status: the status to return on timeout
         """
 
-        super().__init__(name=name, topic_name=topic_name, topic_type=topic_type)
+        super(MessageChanged,self).__init__(name=name, topic_name=topic_name, topic_type=topic_type)
         self.second_msg = None
         self.first_msg = None
         self.waiting_timeout = waiting_timeout
