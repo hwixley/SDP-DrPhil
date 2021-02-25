@@ -38,6 +38,6 @@ jobs:
         uses: actions/upload-artifact@v1            # upload logs
         with:
           name: catkin-logs
-          path: ${{ github.workspace }}/ros-workspace/build/test-results
+          path: ros-workspace
         if: always()
       
