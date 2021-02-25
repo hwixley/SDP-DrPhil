@@ -16,26 +16,24 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-20.04
-    container:
-      image: ubuntu:focal
     steps:
-      - name: Setup ROS environment 
-        uses: ros-tooling/setup-ros@0.1.2           
+
+      - name: checkout repository
+        uses: actions/checkout@v2
+    
+      - name: setup ROS environment
+        uses: betwo/github-setup-catkin@master
         with:
-          required-ros-distributions: noetic    
+          ros-version: 'noetic'
+          build-tool: 'catkin_tools'
+          workspace: '$GITHUB_WORKSPACE/ros-workspace'
           
-      - uses: actions/checkout@v1 
+      - name: build catkin workspace
+        run: cd $GITHUB_WORKSPACE/ros-workspace && catkin_make
+          
+#       - uses: actions/upload-artifact@v1            # upload logs
+#         with:
+#           name: colcon-logs
+#           path: ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/log
+#         if: always()
       
-      - name: build and test ROS1 
-        id: action_ros_ci_step
-        uses: ros-tooling/action-ros-ci@0.1.1
-        with:
-          package-name: dr_phil_hardware dr_phil_gazebo
-          target-ros1-distro: noetic
-          import-token: ${{ secrets.REPO_TOKEN }}
-          vcs-repo-file-url: ""
-          
-      - uses: actions/upload-artifact@v1            # upload logs
-        with:
-          name: colcon-logs
-          path: ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/log
