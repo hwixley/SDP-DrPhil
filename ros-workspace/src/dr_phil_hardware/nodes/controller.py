@@ -5,7 +5,8 @@ import py_trees
 import py_trees_ros
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import LaserScan
-from behaviour.trees.trees import create_idle,create_face_closest_obstacle,create_explore_frontier_and_save_map
+import dr_phil_hardware.behaviour
+from dr_phil_hardware.behaviour.trees.trees import create_idle,create_face_closest_obstacle,create_explore_frontier_and_save_map
 import functools 
 from visualization_msgs.msg import MarkerArray
 import os
