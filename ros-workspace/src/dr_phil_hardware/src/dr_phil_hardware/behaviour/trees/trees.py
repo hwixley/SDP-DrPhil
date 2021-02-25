@@ -11,10 +11,11 @@ from py_trees.decorators import FailureIsRunning
 from py_trees.meta import oneshot
 import py_trees_ros
 
-from behaviour.leafs.ros import PublishTopic,RunRos,MessageChanged
-from behaviour.leafs.general import ClosestObstacle
+from dr_phil_hardware.behaviour.leafs.ros import PublishTopic,RunRos,MessageChanged
+from dr_phil_hardware.behaviour.leafs.general import ClosestObstacle
 
-from decorators import HoldStateForDuration
+from dr_phil_hardware.behaviour.decorators import HoldStateForDuration
+
 import operator
 from geometry_msgs.msg import Twist
 from visualization_msgs.msg import MarkerArray

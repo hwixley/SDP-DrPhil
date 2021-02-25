@@ -40,6 +40,54 @@ to run the behaviour tree launch `rosrun dr-phil controller.py`, The tree will b
 
 This will initialize the main behaviour tree, see example behaviours for tips on building other behaviours.
 
+### Testing
+I've setup the gazebo and hardware packages for unit and integration testing,
+each test is a node in the test/ directory in each package and needs to be executable,
+
+The minimum test looks like this:
+
+`test/unit_tests/test.py`
+``` Python
+import unittest
+import sys
+
+PKG='dr_phil_hardware'
+import roslib; roslib.load_manifest(PKG)
+# all unit tests are compatibile with ros
+# only requirement is that we return results in an appropriate xml format 
+# see: http://wiki.ros.org/unittest
+
+class TestExample(unittest.TestCase):
+    def test_hello_world(self):
+        self.assertEqual(1,1)
+
+if __name__ == "__main__":
+    import rosunit
+    rosunit.unitrun(PKG,'test_example',TestExample)
+
+```
+
+to actually execute the test we create a .test file which acts exactly like a launch file, starts up all the nodes required and the test:
+
+`test/example.test`
+``` xml
+<launch>
+  <test test-name="test" pkg="<package>" type="test.py" />
+</launch>
+```
+
+now to run this test, we can simply execute it as a node directly: `./test.py`
+
+or to run the whole suite of available tests run: `catkin_make run_tests_<package>_rostest` or `catkin_make run_tests`
+
+to add tests to the suite change the `CMakeLists.txt` and add a rostest like so:
+
+``` txt
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  add_rostest(test/example.test)
+endif()
+```
 ### Interfacing with the robot
 
 see docs https://emanual.robotis.com/docs/en/platform/turtlebot3/simulation/#gazebo-simulation
