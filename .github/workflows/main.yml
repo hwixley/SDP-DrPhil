@@ -23,7 +23,7 @@ jobs:
         uses: ros-tooling/setup-ros@0.1.2           
         with:
           required-ros-distributions: noetic
-      - run: "source /opt/ros/etc/setup.bash && rosnode --help" # confirm install and source
+      - run: "source /opt/ros/noetic/setup.bash && rosnode --help" # confirm install and source
       
       - run: |                                      # generate dependencies
           rosinstall_generator dr_phil_hardware --rosdistro noetic \
