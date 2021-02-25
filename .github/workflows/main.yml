@@ -15,24 +15,27 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-20.04]
-      fail-fast: false
+    runs-on: ubuntu-20.04
     steps:
-      - name: Setup ROS 2
-        uses: ros-tooling/setup-ros@0.1.2
+      - uses: actions/checkout@v1                   # checkout our repo
+      
+      - name: Setup ROS                             # setup ROS install
+        uses: ros-tooling/setup-ros@0.1.2           
         with:
           required-ros-distributions: noetic
-
-      - name: Run Tests
+          
+      - run: |                                      # generate dependencies
+          rosinstall_generator dr_phil_hardware --rosdistro noetic \
+          --deps-only --deps --upstream-development > /tmp/deps.repos
+          
+      - name: Run Tests                             # run tests
         uses: ros-tooling/action-ros-ci@0.1.1
         with:
           package-name: dr_phil_hardware
           target-ros1-distro: noetic
           import-token: ${{ secrets.REPO_TOKEN }}
-
+          vcs-repo-file-url: /tmp/deps.repos
+          
       - name: Upload Logs
         uses: actions/upload-artifact@v1
         with:
