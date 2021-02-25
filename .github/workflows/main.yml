@@ -1,0 +1,41 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+      fail-fast: false
+    steps:
+      - name: Setup ROS 2
+        uses: ros-tooling/setup-ros@0.1.2
+        with:
+          required-ros-distributions: noetic
+
+      - name: Run Tests
+        uses: ros-tooling/action-ros-ci@0.1.1
+        with:
+          package-name: dr_phil_hardware
+          target-ros1-distro: noetic
+          import-token: ${{ secrets.REPO_TOKEN }}
+
+      - name: Upload Logs
+        uses: actions/upload-artifact@v1
+        with:
+          name: colcon-logs
+          path: ros-workspace/log
+        if: always()
