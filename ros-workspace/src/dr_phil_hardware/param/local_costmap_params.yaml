@@ -1,0 +1,59 @@
+local_costmap:
+
+  #Coordinate frame and tf parameters
+  global_frame: odom
+  robot_base_frame: base_footprint
+  transform_tolerance: 0.5
+
+  # Rate parameters
+  update_frequency: 10.0
+  publish_frequency: 10.0
+
+
+  # Map management parameters
+  rolling_window: true
+  width: 3
+  height: 3
+  resolution: 0.05
+  
+  plugins: 
+
+    - {name: obstacle_layer,        type: "costmap_2d::ObstacleLayer"}
+    - {name: inflation_layer,        type: "costmap_2d::InflationLayer"}
+
+  
+
+  obstacle_layer:
+  # for param info see: http://wiki.ros.org/costmap_2d/hydro/obstacles
+    observation_sources: scan
+    scan: {
+            data_type: LaserScan, 
+            topic: scan, 
+            marking: true, 
+            clearing: true,
+            inf_is_valid: true,
+            expected_update_rate: 1,
+            obstacle_range: 3.0,
+            raytrace_range: 3.5
+            }
+    track_unknown_space: true
+    # combination_method: 1
+
+  inflation_layer:
+    inflation_radius: 0.1
+    cost_scaling_factor: 1
+
+
+  static_layer:
+    # for parameter info see http://wiki.ros.org/costmap_2d/hydro/staticmap
+
+    map_topic: /map
+    subscribe_to_updates: true
+    track_unknown_space: true
+
+    # lethal_cost_threshold: 
+    #  first_map_only
+    # track_unknown_space
+    # use_maximum
+    # trinary_costmap
+
