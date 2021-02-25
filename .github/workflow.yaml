@@ -26,7 +26,7 @@ jobs:
       with:
         package-name: dr_phil_hardware
         target-ros1-distro: noetic
-        # import-token: ${{ secrets.REPO_TOKEN }}
+        import-token: ${{ secrets.REPO_TOKEN }}
 
     - name: Upload Logs
       uses: actions/upload-artifact@v1
