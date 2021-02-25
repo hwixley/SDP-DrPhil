@@ -14,17 +14,23 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-test:
+  build:
+      runs-on: ubuntu-20.04
+      container:
+        image: ubuntu:focal
+      steps:
+        - name: Setup ROS                             # setup ROS install
+          uses: ros-tooling/setup-ros@0.1.2           
+          with:
+            required-ros-distributions: noetic
+        - run: "vcs --help"                           # confirm install
+      
+  test:
     runs-on: ubuntu-20.04
+    container:
+      image: ubuntu:focal
     steps:
       - uses: actions/checkout@v1                   # checkout our repo
-      
-      - name: Setup ROS                             # setup ROS install
-        uses: ros-tooling/setup-ros@0.1.2           
-        with:
-          required-ros-distributions: noetic
-      - run: " source /opt/ros/noetic/setup.bash && rosnode --help" # confirm install and source
-      
       - run: |                                      # generate dependencies
           source /opt/ros/noetic/setup.bash && 
           rosinstall_generator dr_phil_hardware --rosdistro noetic \
