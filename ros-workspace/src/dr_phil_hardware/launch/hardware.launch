@@ -1,0 +1,11 @@
+<launch>
+
+
+  <node pkg="dr_phil_hardware" type="filter_scan.py" name="filter_scan">
+    <param name="scan/source" value="/scan"/>
+    <param name="scan/target" value="/scan_filtered"/>
+    <param name="filter/min_range" value="0.2"/>
+  </node>
+
+ 
+</launch>
