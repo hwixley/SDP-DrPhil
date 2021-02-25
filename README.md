@@ -26,17 +26,17 @@ If you don't want to run this everytime you start a new shell you can add
 
 On Ubuntu, and the respective files for other distros
 
-5. To check if this works run `roscd dr-phil`, if you see no errors, you've successfully created a custom ROS workspace and installed the dr-phil ROS package.
+5. To check if this works run `roscd dr_phil_gazebo`, if you see no errors, you've successfully created a custom ROS workspace and installed the dr_phil ROS package.
 
 ## Starting gazebo simulation
 
 1. activate the workspace if you haven't already
 2. `roscore`
-3. roslaunch dr-phil simulation.launch
+3. `roslaunch dr_phil_gazebo simulation.launch`
 
 ### Running behaviours
 
-to run the behaviour tree launch `rosrun dr-phil controller.py`, The tree will be printed to the console along with its status.
+to run the behaviour tree launch `rosrun dr_phil_hardware controller.py`, The tree will be printed to the console along with its status.
 
 This will initialize the main behaviour tree, see example behaviours for tips on building other behaviours.
 
@@ -104,7 +104,7 @@ see docs https://emanual.robotis.com/docs/en/platform/turtlebot3/simulation/#gaz
 ### Visualising sensor data 
 
 Run `rviz`
-You can visualise the data by loading the config in `dr-phil/rviz/model.rviz` from rviz when running the gazebo simulation
+You can visualise the data by loading the config in `dr_phil_gazebo/rviz/model.rviz` from rviz when running the gazebo simulation
 
 ### using SLAM and other launch files
 
@@ -126,32 +126,26 @@ for usage of `/cmd_vel` and `/joint_trajectory_point` for manually controlling t
 
 If your simulation is very slow, and you don't need all the features of the simulation (just the robot) then change the world to `field.world` like so:
 
-`roslaunch dr-phil simulation.launch world:=field`
+`roslaunch dr_phil_gazebo simulation.launch world:=field`
 
 
 ## Gazebo simulation world files
 
-You can find the various different Gazebo worlds in the `<path to this repo>/ros-workspace/src/dr-phil/worlds` directory. Each world has a version with and without obstacles. 
+You can find the various different Gazebo worlds in the `<path to this repo>/ros-workspace/src/dr_phil_gazebo/worlds` directory. Each world has a version with and without obstacles. 
 
 
 ### Further notes:
 
 1. This error **alone** upon launch is fine:
-`[spawn_urdf-4] process has died [pid 27330, exit code 1, cmd /opt/ros/noetic/lib/gazebo_ros/spawn_model -urdf -model dr-phil -x -2.0 -y -0.5 -z 0.0 -param robot_description __name:=spawn_urdf __log:=/home/<username>/.ros/log/d0f6ea0e-6a38-11eb-8b01-c9c2a073f777/spawn_urdf-4.log]. log file: /home/<username>/.ros/log/d0f6ea0e-6a38-11eb-8b01-c9c2a073f777/spawn_urdf-4*.log`
+`[spawn_urdf-4] process has died [pid 27330, exit code 1, cmd /opt/ros/noetic/lib/gazebo_ros/spawn_model -urdf -model dr_phil_gazebo -x -2.0 -y -0.5 -z 0.0 -param robot_description __name:=spawn_urdf __log:=/home/<username>/.ros/log/d0f6ea0e-6a38-11eb-8b01-c9c2a073f777/spawn_urdf-4.log]. log file: /home/<username>/.ros/log/d0f6ea0e-6a38-11eb-8b01-c9c2a073f777/spawn_urdf-4*.log`
 <br /><br />
-
-## Starting webots simulation 
-
-For some reason I cannot get ros controllers to work without special launch files, so in order to start the simulation.wbt world simulation + launch ROS controller nodes do:
-
-1. activate the workspace if you haven't already
-2. start the roscore process with `roscore`
-3. roslaunch dr-phil simulation-webots.launch
-
-This will run webots and start up all the controller nodes, if any errors to do with <extern> appear, simply restart the simulation which will launch the controller again.
 
 ## Behaviours
 
 we're using py_trees to model complex behaviours, for documentation see here:
 
 https://py-trees.readthedocs.io/en/release-0.7.x/
+
+and here for the ros specific behaviours and utilitites:
+
+http://docs.ros.org/en/noetic/api/py_trees_ros/html/index.html
