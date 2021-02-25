@@ -1,4 +1,6 @@
 
+[![CI](https://github.com/hwixley/SDP-DrPhil/actions/workflows/main.yml/badge.svg)](https://github.com/hwixley/SDP-DrPhil/actions/workflows/main.yml)
+
 # Setting up the catkin workspace
 
 ## Requirements
