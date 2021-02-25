@@ -29,6 +29,7 @@ jobs:
           --deps-only --deps --upstream-development > /tmp/deps.repos
           
       - name: Run Tests                             # run tests
+        id: action_ros_ci_step
         uses: ros-tooling/action-ros-ci@0.1.1
         with:
           package-name: dr_phil_hardware
@@ -36,9 +37,7 @@ jobs:
           import-token: ${{ secrets.REPO_TOKEN }}
           vcs-repo-file-url: /tmp/deps.repos
           
-      - name: Upload Logs
-        uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v1            # upload logs
         with:
           name: colcon-logs
-          path: ros-workspace/log
-        if: always()
+          path: ${{ steps.action_ros_ci_step.outputs.ros-workspace-directory-name }}/log
