@@ -16,8 +16,6 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-20.04
-    container:
-      image: ubuntu:focal
     steps:
 
       - name: checkout repository
