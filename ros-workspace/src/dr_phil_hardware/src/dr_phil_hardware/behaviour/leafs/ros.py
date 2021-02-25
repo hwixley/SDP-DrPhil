@@ -34,7 +34,7 @@ class RunRos(py_trees.behaviour.Behaviour):
                 package: the package containing the launch file (DEFAULT: "dr_phil")
                 success_on_non_error_exit: will not return FAILURE if process exits with successfull return code (i.e. completes), use for running single-use launchfiles/nodes
         """
-        super().__init__(name=name)
+        super(RunRos, self).__init__(name=name) 
         self.package = package
         self.launch_file = launch_file
         self.node_file = node_file
@@ -269,7 +269,7 @@ class PublishTopic(py_trees.behaviour.Behaviour):
             success_after_n_publishes: when set to any integer, will return success after publishing n times without failure
         """
 
-        super().__init__(name=name)
+        super(PublishTopic, self).__init__(name=name) 
         self.msg = msg
 
 

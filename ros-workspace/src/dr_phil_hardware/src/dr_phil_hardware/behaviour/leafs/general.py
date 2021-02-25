@@ -15,7 +15,7 @@ class ClosestObstacle(py_trees.behaviour.Behaviour):
                 name: name of the behaviour
         """
 
-        super().__init__(name=name)    
+        super(ClosestObstacle, self).__init__(name=name) 
 
         self.blackboard = py_trees.Blackboard()    
     
