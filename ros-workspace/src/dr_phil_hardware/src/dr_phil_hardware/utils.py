@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from __future__ import absolute_import
 from graphviz import Source
 import rospy
 import sys
@@ -13,18 +14,18 @@ def visualise_tree():
 
     def receive(data):
         received = True
-        print(data.data)
+        print data.data
         src=  Source(data.data)
-        src.render('controller-tree.gv',view=True)
+        src.render(u'controller-tree.gv',view=True)
 
-    rospy.init_node("vis",anonymous=True)
+    rospy.init_node(u"vis",anonymous=True)
 
     # find topic containing dot tree and listen to one of the 
     # first message then interpret it and shutdown
-    topic = ""
+    topic = u""
     for t in rospy.get_published_topics():
-        if "/dot/tree" in t[0]:
-            print(t)
+        if u"/dot/tree" in t[0]:
+            print t
             topic = t[0]
 
     rospy.Subscriber(topic,String,receive)

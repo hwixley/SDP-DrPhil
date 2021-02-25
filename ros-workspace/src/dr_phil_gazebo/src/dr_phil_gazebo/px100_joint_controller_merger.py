@@ -1,24 +1,26 @@
 #!/usr/bin/env python3
 
+from __future__ import division
+from __future__ import absolute_import
 import rospy
 from rospy.exceptions import ROSException
 from std_msgs.msg import Float64MultiArray
 from std_msgs.msg import Float64
 import sys 
-class px100JointControllerMerger():
+class px100JointControllerMerger(object):
     def __init__(self):    
 
         # input, joints in order but first element is zero
         # based on: http://www.inf.ed.ac.uk/teaching/courses/sdp/SDP2020/turtlebot3_docs.pdf
-        self.input_sub = rospy.Subscriber('joint_trajectory_point',Float64MultiArray,self.merge_callback) 
+        self.input_sub = rospy.Subscriber(u'joint_trajectory_point',Float64MultiArray,self.merge_callback) 
 
         # output, splits input to those publishers in order
-        self.waist_pub = rospy.Publisher("/waist_controller/command",Float64,queue_size=10)
-        self.shoulder_pub = rospy.Publisher("/shoulder_controller/command",Float64,queue_size=10)
-        self.elbow_pub = rospy.Publisher("/elbow_controller/command",Float64,queue_size=10)
-        self.wrist_pub = rospy.Publisher("/wrist_angle_controller/command",Float64,queue_size=10)
-        self.fingerL_pub = rospy.Publisher("/left_finger_controller/command",Float64,queue_size=10)
-        self.fingerR_pub = rospy.Publisher("/right_finger_controller/command",Float64,queue_size=10)
+        self.waist_pub = rospy.Publisher(u"/waist_controller/command",Float64,queue_size=10)
+        self.shoulder_pub = rospy.Publisher(u"/shoulder_controller/command",Float64,queue_size=10)
+        self.elbow_pub = rospy.Publisher(u"/elbow_controller/command",Float64,queue_size=10)
+        self.wrist_pub = rospy.Publisher(u"/wrist_angle_controller/command",Float64,queue_size=10)
+        self.fingerL_pub = rospy.Publisher(u"/left_finger_controller/command",Float64,queue_size=10)
+        self.fingerR_pub = rospy.Publisher(u"/right_finger_controller/command",Float64,queue_size=10)
         
 
         self.state = [0,0,0,0,0,0]
@@ -78,10 +80,10 @@ class px100JointControllerMerger():
 
 
 # when started as a script
-if __name__ == '__main__':
+if __name__ == u'__main__':
 
     # start up a new node
-    rospy.init_node('px100_joint_controller_merger',anonymous=True)
+    rospy.init_node(u'px100_joint_controller_merger',anonymous=True)
 
     # initialize behaviour
     merger = px100JointControllerMerger()

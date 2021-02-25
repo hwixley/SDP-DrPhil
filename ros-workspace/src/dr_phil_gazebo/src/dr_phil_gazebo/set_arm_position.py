@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from __future__ import absolute_import
 import rospy
 from numpy import maximum, minimum
 from sensor_msgs.msg import JointState
@@ -20,7 +21,7 @@ def joint_callback(data):
 # listens to the "joint_states" topic and sends them to "joint_callback" for processing
 
 def read_joint_states():
-    rospy.Subscriber("joint_states",JointState,joint_callback)
+    rospy.Subscriber(u"joint_states",JointState,joint_callback)
 
 # Makes sure the joints do not go outside the joint limits/break the servos
 def clean_joint_states(data):
@@ -32,7 +33,7 @@ def clean_joint_states(data):
 
 # publishes a set of joint commands to the 'joint_trajectory_point' topic
 def move_arm():
-    jointpub = rospy.Publisher('joint_trajectory_point',Float64MultiArray,queue_size =10)
+    jointpub = rospy.Publisher(u'joint_trajectory_point',Float64MultiArray,queue_size =10)
     joint_pos = Float64MultiArray()
 # Joint Position vector should contain 6 elements:
 # [0, shoulder1, shoulder2, elbow, wrist, gripper]
@@ -41,8 +42,8 @@ def move_arm():
     read_joint_states()
 
 #loops over the commands at 20Hz until shut down
-if __name__ == '__main__':
-    rospy.init_node('move_arm',anonymous=True)
+if __name__ == u'__main__':
+    rospy.init_node(u'move_arm',anonymous=True)
     rate = rospy.Rate(20)
     while not rospy.is_shutdown():
         move_arm()

@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
+from __future__ import division
+from __future__ import absolute_import
 import rospy
 from sensor_msgs.msg import BatteryState
 import time
 
-class batterySim():
+class batterySim(object):
 
     def __init__(self):
         #time until low battery (11v) in mins
         self.low_battery_time = 30
         
-        self.battery_pub = rospy.Publisher('battery_state', BatteryState, queue_size=10)
+        self.battery_pub = rospy.Publisher(u'battery_state', BatteryState, queue_size=10)
         self.rate = rospy.Rate(10) 
         self.state = BatteryState()
         self.state.design_capacity = 1.79999995232
@@ -27,11 +29,11 @@ class batterySim():
             
             #turtlebot cannot operate below 10v
             if (self.state.voltage <= 10.0):
-                raise Exception("Battery too low! Operation at below 10v can lead to battery damage.")
+                raise Exception(u"Battery too low! Operation at below 10v can lead to battery damage.")
   
 
-if __name__ == '__main__':
-    rospy.init_node('battery_level', anonymous=True)
+if __name__ == u'__main__':
+    rospy.init_node(u'battery_level', anonymous=True)
     battery = batterySim()
     try:
         battery.discharge()

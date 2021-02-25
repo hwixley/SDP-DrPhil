@@ -1,3 +1,5 @@
+from __future__ import with_statement
+from __future__ import absolute_import
 import threading
 from numpy.core.fromnumeric import std
 import py_trees
@@ -13,18 +15,18 @@ import sys
 import time 
 
 try:
-    from queue import Queue,LifoQueue, Empty
+    from Queue import Queue,LifoQueue, Empty
 except ImportError:
     from Queue import Queue,LifoQueue, Empty  # python 2.x
 
 
-log_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)),"..","..","logs")
+log_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)),u"..",u"..",u"logs")
 
 class RunRos(py_trees.behaviour.Behaviour):
     """ Runs and returns RUNNING status for as long as given process is running, will return FAILURE whenever it halts, and if killed via blackboard kill key will return SUCCESS and
         won't reset untill this key is cleared (i.e. will keep returning SUCCESS ). Optionally can serve as short process launcher
     """
-    def __init__(self,name,blackboard_alive_key,blackboard_kill_trigger_key,launch_file=None,node_file=None,package="dr_phil",args=[],success_on_non_error_exit=False):
+    def __init__(self,name,blackboard_alive_key,blackboard_kill_trigger_key,launch_file=None,node_file=None,package=u"dr_phil",args=[],success_on_non_error_exit=False):
         """
             Args: 
                 name: name of the behaviour
@@ -57,15 +59,15 @@ class RunRos(py_trees.behaviour.Behaviour):
         # 1) another node killed us on purpose
         # 2) we run a single-use node/launchfile to completion
         if self.last_success:
-            self.feedback_message = "completed" 
+            self.feedback_message = u"completed" 
             if self.blackboard.get(self.kill_key) is None:
                 self.last_success = False
-                self.feedback_message = "re-starting process"
+                self.feedback_message = u"re-starting process"
             else:
-                self.feedback_message += " , kill key set, not-starting new processes"
+                self.feedback_message += u" , kill key set, not-starting new processes"
                 
         else: # if we were just started, or previously failed
-            self.feedback_message = "starting process"
+            self.feedback_message = u"starting process"
             
             # TODO: check this is not redundant cosnidering terminate() calls it too
             # AFAIK terminate will trigger a kill before each initialization anyway
@@ -82,7 +84,7 @@ class RunRos(py_trees.behaviour.Behaviour):
         # if already running, check on it untill watch time is over
         if self.process is not None:          
 
-            self.feedback_message= "running process"
+            self.feedback_message= u"running process"
 
             # check on the process
             ok = self.is_subprocess_ok()
@@ -92,7 +94,7 @@ class RunRos(py_trees.behaviour.Behaviour):
                 # check kill trigger
                 if self.blackboard.get(self.kill_key) is not None:
                     # kill
-                    self.logger.debug("process ended stdout dump: "+self.get_last_n_lines(self.stdout_queue,50))
+                    self.logger.debug(u"process ended stdout dump: "+self.get_last_n_lines(self.stdout_queue,50))
                     self.kill_subprocess()
                     self.last_success = True
 
@@ -103,13 +105,13 @@ class RunRos(py_trees.behaviour.Behaviour):
             # if process died when not expected
             elif ok == 2 or (ok == 1 and not self.success_on_non_error_exit):
 
-                self.logger.error("stderr dump: "+self.get_last_n_lines(self.stderr_queue,50))
-                self.logger.error("stdout dump: "+self.get_last_n_lines(self.stdout_queue,50))
+                self.logger.error(u"stderr dump: "+self.get_last_n_lines(self.stderr_queue,50))
+                self.logger.error(u"stdout dump: "+self.get_last_n_lines(self.stdout_queue,50))
                 return py_trees.Status.FAILURE
 
             # if process died but we expected it
             else:
-                self.logger.debug("process ended stdout dump: "+self.get_last_n_lines(self.stdout_queue,50))
+                self.logger.debug(u"process ended stdout dump: "+self.get_last_n_lines(self.stdout_queue,50))
                 self.last_success = True
                 return py_trees.Status.SUCCESS
 
@@ -129,28 +131,28 @@ class RunRos(py_trees.behaviour.Behaviour):
 
 
     def get_last_n_lines(self,queue,n):
-        if queue is None:
+        if Queue is None:
             return
 
-        l = ""
-        for i in range(n):
+        l = u""
+        for i in xrange(n):
             try:  line = self.stdout_queue.get_nowait() # or q.get(timeout=.1)
             except Empty:
                 pass # do nothing
             else: # got line
-                l += "\n" + str(line)
+                l += u"\n" + unicode(line)
         return l
 
     def kill_subprocess(self):
-        """ kills subprocess started if it was started, otherwise does nothing """
+        u""" kills subprocess started if it was started, otherwise does nothing """
         
         
         # if it exists kill it and clear the blackboard
         if self.process is not None:
             try:
                 os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
-            except Exception as e:
-                print("COULD NOT KILL, {0}".format(self.process))
+            except Exception, e:
+                print u"COULD NOT KILL, {0}".format(self.process)
                 raise e
                 
 
@@ -160,14 +162,14 @@ class RunRos(py_trees.behaviour.Behaviour):
 
         file = self.launch_file if self.node_file is None else self.node_file
 
-        main_cmd = "roslaunch" if self.node_file is None else "rosrun"
+        main_cmd = u"roslaunch" if self.node_file is None else u"rosrun"
         
-        arg = " "
+        arg = u" "
 
         for k in self.args:
-            arg += "{0} ".format(k)
+            arg += u"{0} ".format(k)
 
-        command = "{0} {1} {2} {3}".format(
+        command = u"{0} {1} {2} {3}".format(
             main_cmd,
             self.package,
             file,
@@ -175,7 +177,7 @@ class RunRos(py_trees.behaviour.Behaviour):
         
         self.feedback_message = command
 
-        ON_POSIX = 'posix' in sys.builtin_module_names
+        ON_POSIX = u'posix' in sys.builtin_module_names
 
         # log = open(os.path.join(log_dir,"{0}.log".format(self.name)),"w")
         # log.truncate(0)
@@ -208,10 +210,10 @@ class RunRos(py_trees.behaviour.Behaviour):
         while True:
             try:
                 for line in out:
-                    queue.put(line)
+                    Queue.put(line)
             except:
                 #  locked, just wait
-                print("out is locked")
+                print u"out is locked"
                 time.sleep(5)
                 pass
 
@@ -219,7 +221,7 @@ class RunRos(py_trees.behaviour.Behaviour):
         """ launches a new thread for storing output for the given io source into the given queue """
 
         thread = Thread(target=self.subprocess_store_output,
-            args=(out,queue))
+            args=(out,Queue))
         thread.daemon = True
         thread.start()
 
@@ -236,7 +238,7 @@ class RunRos(py_trees.behaviour.Behaviour):
 
         elif state == 0:
             # terminated without error
-            self.feedback_message = "process exit with return code 0"
+            self.feedback_message = u"process exit with return code 0"
             self.process = None
             self.blackboard.set(self.alive_key,None)
 
@@ -245,10 +247,10 @@ class RunRos(py_trees.behaviour.Behaviour):
         else:
             # terminated with error
             (out,err) = self.process.communicate()
-            self.feedback_message = "process terminated"
-            self.logger.warning("process terminated with sig: {0}".format(-state))
-            self.logger.warning("stderr: {0}".format(err))
-            self.logger.warning("stdout: {0}".format(out))
+            self.feedback_message = u"process terminated"
+            self.logger.warning(u"process terminated with sig: {0}".format(-state))
+            self.logger.warning(u"stderr: {0}".format(err))
+            self.logger.warning(u"stdout: {0}".format(out))
 
             self.process = None 
             self.blackboard.set(self.alive_key,None)
@@ -281,12 +283,12 @@ class PublishTopic(py_trees.behaviour.Behaviour):
         pass
 
     def update(self):
-        self.feedback_message = "Waiting for data"
+        self.feedback_message = u"Waiting for data"
         try:
-            self.feedback_message = "Published"
+            self.feedback_message = u"Published"
             self.publisher.publish(self.msg)
         except:
-            self.feedback_message = "Publisher failure"
+            self.feedback_message = u"Publisher failure"
             return py_trees.common.Status.FAILURE
 
         if self.success_on_publish or self.n_target >= 0:
@@ -305,7 +307,7 @@ class MessageChanged(py_trees_ros.subscribers.Handler):
         If they have changed SUCCESS is returned, and otherwise FAILURE
     """
 
-    def __init__(self, name, topic_name, topic_type,compare_method=None,waiting_timeout=None,timeout_status : py_trees.Status = py_trees.Status.FAILURE):
+    def __init__(self, name, topic_name, topic_type,compare_method=None,waiting_timeout=None,timeout_status = py_trees.Status.FAILURE):
         """ 
             Args:
                 name: the name of the behaviour
@@ -330,7 +332,7 @@ class MessageChanged(py_trees_ros.subscribers.Handler):
         self.second_msg = None 
 
 
-        return super().initialise()
+        return super(MessageChanged, self).initialise()
 
 
     def message_changed(self,msg1,msg2):
@@ -344,11 +346,11 @@ class MessageChanged(py_trees_ros.subscribers.Handler):
         # we always wait for first message with RUNNING
         with self.data_guard:
             if self.first_msg == None:
-                self.feedback_message = "waiting for first message"
+                self.feedback_message = u"waiting for first message"
                 if self.msg != None:
                     self.first_msg = self.msg
                     self.msg = None
-                    self.feedback_message = "waiting for second message"
+                    self.feedback_message = u"waiting for second message"
                     return py_trees.Status.RUNNING
                 else:
                     return py_trees.Status.RUNNING
@@ -361,7 +363,7 @@ class MessageChanged(py_trees_ros.subscribers.Handler):
                 time_left = (time.time() - self.start_time) - self.waiting_timeout
 
                 if time_left <= 0:
-                    self.feedback_message = "timed out"
+                    self.feedback_message = u"timed out"
                     return self.timeout_status
 
             # await second
@@ -376,10 +378,10 @@ class MessageChanged(py_trees_ros.subscribers.Handler):
             # and if not timed out
 
             if self.message_changed(self.first_msg,self.second_msg):
-                self.feedback_message = "messages changed"
+                self.feedback_message = u"messages changed"
                 return py_trees.Status.SUCCESS
             else:
-                self.feedback_message = "messages the same"
+                self.feedback_message = u"messages the same"
                 return py_trees.Status.FAILURE
 
 

@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import py_trees
 import numpy as np
 
@@ -23,13 +24,13 @@ class ClosestObstacle(py_trees.behaviour.Behaviour):
         pass
 
     def update(self):
-        if self.blackboard.get("scan") is not None:
+        if self.blackboard.get(u"scan") is not None:
             angle,distance = dummy_nearest_obstacle(self.blackboard.scan)
-            self.blackboard.set("closest_obstacle/angle",angle)
-            self.blackboard.set("closest_obstacle/distance",distance)
+            self.blackboard.set(u"closest_obstacle/angle",angle)
+            self.blackboard.set(u"closest_obstacle/distance",distance)
 
-            self.feedback_message = str(angle) + ":" + str(distance)
+            self.feedback_message = unicode(angle) + u":" + unicode(distance)
             return py_trees.common.Status.SUCCESS
         else:
-            self.feedback_message = "No scan data"
+            self.feedback_message = u"No scan data"
             return py_trees.common.Status.FAILURE

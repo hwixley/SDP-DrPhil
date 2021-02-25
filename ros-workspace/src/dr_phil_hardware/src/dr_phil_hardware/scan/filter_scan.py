@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
+from __future__ import absolute_import
 import rospy
 import numpy as np
 from sensor_msgs.msg import LaserScan
 
-class FilterScan():
+class FilterScan(object):
 
-    def __init__(self,source_topic="/scan",target_topic="/scan_filtered", min_range=0.16):
+    def __init__(self,source_topic=u"/scan",target_topic=u"/scan_filtered", min_range=0.16):
         """ 
             Args:
                 source_topic: the topic from which to get laser scan data
@@ -30,15 +31,15 @@ class FilterScan():
         self.pub.publish(laserScan)
 
 
-if __name__ == "__main__":
-    rospy.init_node("filter_scan")
-    source = rospy.get_param("~scan/source","/scan")
-    target = rospy.get_param("~scan/target","/scan_filtered")
-    min_range = rospy.get_param("~filter/min_range",0.16)
+if __name__ == u"__main__":
+    rospy.init_node(u"filter_scan")
+    source = rospy.get_param(u"~scan/source",u"/scan")
+    target = rospy.get_param(u"~scan/target",u"/scan_filtered")
+    min_range = rospy.get_param(u"~filter/min_range",0.16)
 
-    rospy.loginfo("filtering from topic {0} to topic {1} with {2} range".format(source,target,min_range))
+    rospy.loginfo(u"filtering from topic {0} to topic {1} with {2} range".format(source,target,min_range))
     node = FilterScan(source,target,min_range)
 
     # block the thread so process doesn't dy
     rospy.spin()
-    print("shutdown")
+    print u"shutdown"

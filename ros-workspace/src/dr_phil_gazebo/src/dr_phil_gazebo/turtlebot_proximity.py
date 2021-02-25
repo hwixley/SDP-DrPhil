@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from __future__ import absolute_import
 import rospy
 from std_msgs.msg import Float64MultiArray
 from std_msgs.msg import Float64
@@ -7,10 +8,10 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from time import time
 
-class ProximityLDS():
+class ProximityLDS(object):
     def __init__(self):    
         # input
-        self.input_sub = rospy.Subscriber('scan',LaserScan,self.callback) 
+        self.input_sub = rospy.Subscriber(u'scan',LaserScan,self.callback) 
 
     #TODO: Given an angle and range of nearest obstacle, instruct the robot to go to it
     def move_to_closest_obstacle(self,range,angle):
@@ -32,7 +33,7 @@ class ProximityLDS():
             self.move_motor(linear_vel, angular_vel)
 
     def move_motor(self,fwd,ang):
-        pub = rospy.Publisher('cmd_vel',Twist,queue_size = 10)
+        pub = rospy.Publisher(u'cmd_vel',Twist,queue_size = 10)
         mc = Twist()
         mc.linear.x = fwd
         mc.angular.z = ang
@@ -49,22 +50,22 @@ class ProximityLDS():
         #print(len(data.ranges))
         minRange = data.ranges[0]
         minRangeAngle = 0 
-        for i in range(0,len(data.ranges)):
+        for i in xrange(0,len(data.ranges)):
             if data.ranges[i] < minRange:
                 minRange = data.ranges[i]
                 minRangeAngle = i
-        print(minRangeAngle)
-        print(minRange)
+        print minRangeAngle
+        print minRange
         
         armLength = 0.3 #approximate
         if minRange > armLength:
             self.move_to_closest_obstacle(minRange, minRangeAngle)
 
 # when started as a script
-if __name__ == '__main__':
+if __name__ == u'__main__':
 
     # start up a new node
-    rospy.init_node('proximity',anonymous=True)
+    rospy.init_node(u'proximity',anonymous=True)
 
     # initialize behaviour
     proximity = ProximityLDS()

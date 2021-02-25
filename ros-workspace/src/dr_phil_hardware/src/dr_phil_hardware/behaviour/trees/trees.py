@@ -2,6 +2,7 @@
 #!/usr/bin/env python3
 
 
+from __future__ import absolute_import
 from time import time
 
 from numpy.core.fromnumeric import var
@@ -33,12 +34,12 @@ def create_exploration_completed_check(duration=60):
             duration: the time after which if no data is received on `/explore/frontiers` to return SUCCESS
     """
 
-    fail_no_new_data = MessageChanged(name="CmdVelChanged?",
-                                        topic_name="/cmd_vel",
+    fail_no_new_data = MessageChanged(name=u"CmdVelChanged?",
+                                        topic_name=u"/cmd_vel",
                                         topic_type=Twist)
     
 
-    hold_state = HoldStateForDuration(fail_no_new_data,"HoldFailureIgnoreRunning",duration,state=py_trees.common.Status.FAILURE,ignore_running=True)
+    hold_state = HoldStateForDuration(fail_no_new_data,u"HoldFailureIgnoreRunning",duration,state=py_trees.common.Status.FAILURE,ignore_running=True)
 
     f2rHold_state = py_trees.decorators.FailureIsRunning(hold_state)
     return f2rHold_state
@@ -46,7 +47,7 @@ def create_exploration_completed_check(duration=60):
 
     
 
-def create_set_positions_arm(parameters,name="positionArm"):
+def create_set_positions_arm(parameters,name=u"positionArm"):
 
     # clean inputs
     lower_limits = [0, -1.57, -1.57, -1.57, -1.57, -1]
@@ -63,7 +64,7 @@ def create_set_positions_arm(parameters,name="positionArm"):
         name=name,
         msg=positions,
         msg_type=Float64MultiArray,
-        topic="/joint_trajectory_point",
+        topic=u"/joint_trajectory_point",
         success_after_n_publishes=5,
         queue_size=10
     )
@@ -82,18 +83,18 @@ def create_explore_frontier_and_save_map(map_path=None,timeout=120,no_data_timeo
 
     neutral_pos = [0,0,0,0,0,0] # [0,0,-1.57,1.57,-1.57,-1]
     resetArmPosition = py_trees.decorators.OneShot(
-        create_set_positions_arm(neutral_pos,name="clearArmPosition"))
+        create_set_positions_arm(neutral_pos,name=u"clearArmPosition"))
 
-    exploration_kill_key = "/explore/kill"
+    exploration_kill_key = u"/explore/kill"
 
     # won't return success until exploration is killed and returns success
     parallel_process = py_trees.composites.Parallel()
 
-    startExplorationNodes = RunRos(name="runExplorationNodes",
-        blackboard_alive_key="/explore/alive",
+    startExplorationNodes = RunRos(name=u"runExplorationNodes",
+        blackboard_alive_key=u"/explore/alive",
         blackboard_kill_trigger_key=exploration_kill_key,
-        launch_file="explore_task.launch",
-        package="dr_phil_hardware"
+        launch_file=u"explore_task.launch",
+        package=u"dr_phil_hardware"
     )
 
 
@@ -101,29 +102,29 @@ def create_explore_frontier_and_save_map(map_path=None,timeout=120,no_data_timeo
 
     frontierEmptyCheck = create_exploration_completed_check(duration=no_data_timeout)
 
-    map_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"map")if map_path is None else map_path  
+    map_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),u"map")if map_path is None else map_path  
 
-    saveMap = RunRos(name="runSaveMap",
-        blackboard_alive_key="map/alive",
-        blackboard_kill_trigger_key="map/kill",
-        node_file="map_saver",
-        package="map_server",
-        args=["-f",map_path],
+    saveMap = RunRos(name=u"runSaveMap",
+        blackboard_alive_key=u"map/alive",
+        blackboard_kill_trigger_key=u"map/kill",
+        node_file=u"map_saver",
+        package=u"map_server",
+        args=[u"-f",map_path],
         success_on_non_error_exit=True) 
 
-    killExplorationNodes = py_trees.blackboard.SetBlackboardVariable(name="SetKillTrigger",
+    killExplorationNodes = py_trees.blackboard.SetBlackboardVariable(name=u"SetKillTrigger",
         variable_name=exploration_kill_key,
-        variable_value="night night")
+        variable_value=u"night night")
 
     haltMsg = Twist()
     haltMsg.linear.x = 0
     haltMsg.angular.z = 0 
 
     halt = PublishTopic(
-        name="haltCmdVel",
+        name=u"haltCmdVel",
         msg=haltMsg,
         msg_type=Twist,
-        topic="/cmd_vel",
+        topic=u"/cmd_vel",
         success_after_n_publishes=2
     )
     
@@ -143,7 +144,7 @@ def create_explore_frontier_and_save_map(map_path=None,timeout=120,no_data_timeo
 def create_idle(): 
     """ creates a subtree which causes the robot to idle on each tick, with status of RUNNING """
     
-    idle = py_trees.behaviours.Running(name="Idle")
+    idle = py_trees.behaviours.Running(name=u"Idle")
 
     return idle
 
@@ -160,30 +161,30 @@ def create_face_closest_obstacle(min_distance = 0.5,face_angle=0):
     root = py_trees.composites.Sequence()
 
     checkBB = py_trees.blackboard.CheckBlackboardVariable(
-        name="checkBB",
-        variable_name="scan")
+        name=u"checkBB",
+        variable_name=u"scan")
 
     sequence = py_trees.composites.Sequence()
     f2r = py_trees.decorators.FailureIsRunning(sequence)
 
-    closestObstacle = ClosestObstacle(name="closestObstacle2BB")
+    closestObstacle = ClosestObstacle(name=u"closestObstacle2BB")
     
     selector = py_trees.Selector()
 
     checkFacingObstacle = py_trees.blackboard.CheckBlackboardVariable(
-        name="checkFacingObstacleBB",
-        variable_name="closest_obstacle/angle",
+        name=u"checkFacingObstacleBB",
+        variable_name=u"closest_obstacle/angle",
         comparison_operator=operator.eq,
         expected_value=face_angle)
 
 
     parallel = py_trees.composites.Parallel(policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
 
-    selectorTurnRight = py_trees.composites.Sequence(name="Selector Turn Right")
+    selectorTurnRight = py_trees.composites.Sequence(name=u"Selector Turn Right")
 
     checkObstacleToRight = py_trees.blackboard.CheckBlackboardVariable(
-        name="checkObstacleOnRight",
-        variable_name="closest_obstacle/angle",
+        name=u"checkObstacleOnRight",
+        variable_name=u"closest_obstacle/angle",
         comparison_operator=operator.gt,
         expected_value=opposite_angle)
 
@@ -191,19 +192,19 @@ def create_face_closest_obstacle(min_distance = 0.5,face_angle=0):
     turnRightMsg.linear.x = 0
     turnRightMsg.angular.z = -0.1 
     turnRight = PublishTopic(
-        name="turnRight",
+        name=u"turnRight",
         msg=turnRightMsg,
         msg_type=Twist,
-        topic="/cmd_vel",
+        topic=u"/cmd_vel",
     )
 
     selectorTurnRight.add_children([checkObstacleToRight,turnRight])
     
-    selectorTurnLeft = py_trees.composites.Sequence(name="Selector Turn Left")
+    selectorTurnLeft = py_trees.composites.Sequence(name=u"Selector Turn Left")
 
     checkObstacleToLeft = py_trees.blackboard.CheckBlackboardVariable(
-        name="checkObstacleOnLeft",
-        variable_name="closest_obstacle/angle",
+        name=u"checkObstacleOnLeft",
+        variable_name=u"closest_obstacle/angle",
         comparison_operator=operator.lt,
         expected_value=opposite_angle)
 
@@ -211,10 +212,10 @@ def create_face_closest_obstacle(min_distance = 0.5,face_angle=0):
     turnLeftMsg.linear.x = 0
     turnLeftMsg.angular.z = 0.1 
     turnLeft = PublishTopic(
-        name="turnLeft",
+        name=u"turnLeft",
         msg=turnLeftMsg,
         msg_type=Twist,
-        topic="/cmd_vel",
+        topic=u"/cmd_vel",
     )
     selectorTurnLeft.add_children([checkObstacleToLeft,turnLeft])
 
@@ -241,21 +242,21 @@ def is_function_local(object):
 
 
 # for generating dotfiles for each subtree
-if __name__ == "__main__":
+if __name__ == u"__main__":
 
     trees = [
-        ("create_explore_frontier_and_save_map",create_explore_frontier_and_save_map()),
-        ("create_face_closest_obstacle",create_face_closest_obstacle())
+        (u"create_explore_frontier_and_save_map",create_explore_frontier_and_save_map()),
+        (u"create_face_closest_obstacle",create_face_closest_obstacle())
     ]
 
     
 
-    dir = os.path.join(os.path.dirname(os.path.realpath(__file__)),"docs","trees")
+    dir = os.path.join(os.path.dirname(os.path.realpath(__file__)),u"docs",u"trees")
 
     for (n,t) in trees:
         t = py_trees.composites.Sequence(name=n,children=[t])
         py_graph = py_trees.display.generate_pydot_graph(t,py_trees.common.VisibilityLevel.ALL)
-        py_graph.write(os.path.join(dir,n+".dot"))
-        py_graph.write_png(os.path.join(dir,n + ".png"))
+        py_graph.write(os.path.join(dir,n+u".dot"))
+        py_graph.write_png(os.path.join(dir,n + u".png"))
     
        
