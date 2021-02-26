@@ -1,18 +1,22 @@
 ---
 layout: default
-title: Home
+title: System
 ---
 
                <h1 style="text-align: center;"><u><b>The System</b></u></h1>
-                <h3>Concept</h3>
+                <h3><b>Concept</b></h3>
 <p>DRPHIL is a robot designed to sanitise points of contact in buildings. It will be able to automatically navigate through rooms in a floor and spray disinfectant on high priority contact points.</p>
 
 <p>Our key markets would be for hospitals and businesses with large floorplans that want more a sanitary environment. </p>
 
-<p>With Dr.Phil, we hope to increase the efficiency of janitors and at the same time reduce their risk of contacting possible contaminants.</p>
+<p>With Dr.Phil, we hope to increase the efficiency of janitors and at the same time reduce their risk of contacting possible contaminants. It will help create a safe environment where employees, customers or patients won't need to worry about their wellbeing.</p>
 
-<h3>Market research</h3>
-<p>There are a number of products, both robotic and more generic, which aim to tackle the problem of safe contact surfaces.</p>
+<h3><b>Functionality</b></h3>
+
+<p>Nice</p>
+
+<h3><b>Market research</b></h3>
+<p>There are a number of products, both robotic and more generic, which aim to tackle the problem of unsafe contact surfaces.</p>
 
 
 <p>A simpler solution is given by <a href="https://www.stepnpull.co.uk/">StepNPull</a>, a "device which allows you to open a door
@@ -21,25 +25,35 @@ title: Home
 
 <img src="images/stepnpull.png" style="max-width: 100%;">
 
-<p>These have the benefit of being cheaper and easier to install/maintain. However, they're not easily moveable and can't sanitise anything other than doors. Dr.Phil would be easily transportable to different buildings and in extensions support cleaning different types of contact points.</p>
+<p>These have the benefit of being cheaper (at only £33 per handle) and easier to install/maintain. However, they're not easily moveable and can't sanitise anything other than doors. Dr.Phil would be easily transportable to different buildings and in extensions support cleaning different types of contact points.</p>
 
 <p>A more comparable solution would be the UV roller robots, such as those by <a href = "https://www.uvd-robots.com/">UVD robots</a>. </p>
 
 <img src="images/uvdrobots.png" style="max-width: 100%;">
 
-<p>UV is an excellent method of killing micro-organisms, however UV is also dangerous to humans as a result, meaning it can't be used in occupied rooms. Dr. Phil will use a disinfectant which kills pathogens whilst not affecting humans, allowing it to be used under these scenarios (e.g. in hospital wards.) Furthermore , Dr.Phil will traverse through rooms with closed doors, which UV robots can't do (as they don't have arms). </p>
+<p>UV is an excellent method of killing micro-organisms, however UV is also dangerous to humans as a result, meaning it can't be used in occupied rooms. Dr. Phil will use a disinfectant which kills pathogens whilst not affecting humans, allowing it to be used under these scenarios (e.g. in hospital wards.) Furthermore , Dr.Phil will traverse through rooms with closed doors, which UV robots can't do as they don't have arms. </p>
 
-The products, not just in the disinfecting robot market, are still solutions for the same problem, hence we must consider them as an indirect competitor, these include the StepNPull door pedal, Purehold door handle, and others. These products can only be used for one door, hence in a large commercial building with over 50 doors, these solutions become extremely expensive when they cost around £30 per door (\hyperlink{stepnpull}{StepNpull, n.d.}; \hyperlink{purehold}{Purehold Ltd, n.d.}). 
-
-Companies that are developing and selling disinfectant robots will be our primary competition. From the initial market research, it is clear that the landscape of the market is not yet set. There are many big companies all building disinfectant robots, however, each robot is very specific to its task. A fully autonomous mobile disinfectant robot is yet to be seen. 
-
-What our product seeks to improve from its direct competitors is to provide a safer, more versatile, and cheaper solution to commercial sanitisation. The most significant problem with these UV rollers is that they use high-intensity rays to kill viruses, which can be very damaging to humans at this intensity (\hyperlink{fda}{FDA, 08/19/2020}). This not only adds a further safety hazard but also limits when and where this robot can be used. Furthermore, these UV rollers are unable to navigate buildings alone as they are unable to open doors, our product aims to solve this. Finally, we seek to provide a more affordable commercial solution given these UV rollers cost upwards of £50000. % I couldn't find a price for these - there was only one from a rather sketch site - https://www.servicerobots.com/uv-cleaning-robots/ listed at £24000
-
-In relation to janitors, they themselves are possible transmission vectors, cost on average £20000 per year \hyperlink{glassdoor}{(Glassdoor, n.d)}, and have limited working hours. Our product is an opportunity for companies to add automation to their sanitisation protocols. As a result, this will cut costs and the disinfectant routines would be more efficient.
+<p>In relation to janitors, they themselves are possible transmission vectors, cost on average £20000 per year, and have limited working hours. Our product is an opportunity for companies to add automation to their sanitisation protocols. As a result, this will cut costs and the disinfectant routines would be more efficient.</p>
 
 
-<h1>Potential for future development</h1>
+<h3><b>Potential for future development</b></h3>
 
+<p>We found a number of potential improvements to Dr. Phil, mostly revolving around sanitising more places and more things.</p>
+<ul>
+   <li>
+      <p><b>Accessing different floors via elevator:</b> Dr.Phil currently can only navigate one floor. Using vision, Dr.Phil can locate lifts and use them to traverse floors safely. This would mean a single robot could potentially be responsible for multiple floors/small multi-storey buildings. This would require a similar development process to door opening ; locating the lift/panels , pressing the buttons, going in and out. The arm would also need to be modified so it can press the floor buttons accurately.</p>
+
+   </li>
+
+   <li>
+      <p><b>Sanitising more kinds of door handles/contact points:</b> Dr.Phil currently can only disinfect lever door handles. By training more types of handles/contact points, Dr.Phil will be able to recognise these in buildings and disinfect those as well, increasing it's productivity. This will require more AI as well as improved grippers for navigating different types of doors (perhaps as an extension.)</p>
+   </li>
+
+   <li>
+      <p><b>Monitoring social distancing guidelines:</b>By detecting the number of people and their proximity to each other, as well as whether they were wearing masks or not, Dr.Phil will be able to help people adhere to social distancing guidelines. This can be done by extending it's vision capabilities to recognise masks and calculate distances between people. The data stored will have to be carefully handled to account for privacy concerns.</p>
+   </li>
+
+</ul>
 Further navigation capabilities"As  a  customer,  I  want  the  robot  to  be  able  toaccess other floors as well."Solution: The agent will be able to use elevators to goto different floors of a building.–Hardware1.  Configure grippers to use elevator buttons–Software1.Use ML image recognition to recognise a liftand it’s keypad2.Create a robot arm manipulation algorithmthat can interact with the elevator keypad3.  Be able to enter and exit the elevator door•Further sanitisation support"As a customer, we would like it if we can sanitisedifferent door handles and touch points around it."Solution:  The agent will be able to recognise andadapt to more types of door handles and touch pointsnear it for sanitisation.–Software1.Create an algorithm that can model many dif-ferent types of door handles and touch pointsaccurately•Further door opening support"As  a  customer,   we  would  like  it  if  the  robothas  no  problems  to  open  all  types  of  doors  withdifferent handles"Solution:  The agent will be able to recognise andadapt to more types of door handles for opening.–Hardware1.Fit it with suitable equipment so that it canopen locks/keypads–Software1.Create a ML door handle recognition modelthat can cater for many different types of doorhandle accurately2.Adapt to doors of varying weights and orien-tations
 Group Number: 13Project Plan•COVID patrol features"As   a   customer   buying   this   product,   it   wouldbe  useful  during  the  pandemic  if  the  robot  couldmonitor people’s distances in order for us to feel saferin our workspace."Solution: The agent will be able to detect how manypeople in the building were wearing masks,  socialdistancing, and what temperatures they had.–Software1.Use ML image recognition to detect if peopleare wearing masks and/or social distancing2.Store all statistics appropriately for easy in-terpretation from the user client 
 
