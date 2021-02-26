@@ -6,6 +6,7 @@ import vision.utils as utils
 from vision.ray import Ray
 import tf
 from tf2_msgs.msg import TFMessage
+import math
 
 class Lidar:
 
@@ -79,3 +80,10 @@ class Lidar:
 
         # unregister callback (run once only)
         self.input_sub.unregister()
+
+    def get_unit_vec_from_dir(angle):
+        """ return unit vector given an angle, counterclockwise from x-axis """
+        origin = np.array([[0],[0],[0]]
+        dir = np.array([[math.cos(angle)], [math.sin(angle)]])
+        length = 1
+        return Ray(origin, dir, length)
