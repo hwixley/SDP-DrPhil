@@ -7,7 +7,7 @@ from sensor_msgs.msg import Image as ImageMSG
 from cv_bridge import CvBridge, CvBridgeError
 import cv2
 from PIL import Image as ImagePIL
-# listens to the "joint_states" topic and sends them to "joint_callback" for processing
+
 
 
 class CameraSampler:
