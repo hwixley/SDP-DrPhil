@@ -1,0 +1,5 @@
+footprint: [[0.23, 0.14], [0.23, -0.14], [-0.20, -0.14], [-0.20, 0.14]]
+
+global_frame: map
+robot_base_frame: base_link
+always_send_full_costmap: true

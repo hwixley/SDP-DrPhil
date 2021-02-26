@@ -1,0 +1,24 @@
+<launch>
+  <arg name="map_measured" default="None" doc="name of map .yaml file in maps folder"/>
+  <arg name="map_truth" doc="name of map .yaml file in maps folder"/>
+  <arg name="map_measured_topic" default="/map"/>
+  <arg name="map_truth_topic" default="/map_truth"/>
+
+  <group if="$(eval arg('map_measured') != 'None')">
+    <node 
+      pkg="map_server" 
+      type="map_server" 
+      name="map_measured_server" 
+      args="$(find dr_phil_qa)/maps/$(arg map_measured).yaml">
+      <remap from="/map" to="$(arg map_measured_topic)" />
+    </node>
+  </group>
+  
+  <node 
+    pkg="map_server" 
+    type="map_server" 
+    name="map_truth_server" 
+    args="$(find dr_phil_qa)/maps/$(arg map_truth).yaml">
+    <remap from="/map" to="$(arg map_truth_topic)" />
+  </node>
+</launch>
