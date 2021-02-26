@@ -7,6 +7,9 @@
   <arg name="z_pos" default="0.0"/>
   <arg name="world" default="decoratedHouse-wDoors"/>
 
+  <!-- if this is false collisions with actors wont be registered !!! -->
+  <arg name="use_gpu_ray" default="false" />
+
   <env name="GAZEBO_MODEL_PATH" value="$(find dr_phil_gazebo)/models" />
 
   <!-- setup world -->
@@ -23,14 +26,16 @@
   <!-- spawn up dr-phil, save robot_description -->
 
   <!-- sets robot_description parameter for rviz and robot state publisher-->
-  <include file="$(find dr_phil_description)/launch/includes/description.launch.xml"/>
+  <include file="$(find dr_phil_description)/launch/includes/description.launch.xml">
+    <arg name="use_gpu_ray" value="$(arg use_gpu_ray)" />
+  </include>
 
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
     <param name="publish_frequency" type="double" value="50.0" />
     <param name="tf_prefix" value=""/>
   </node>
   
-  <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model dr-phil -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model dr-phil -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description " />
   <node name="px100_control_merger" pkg="dr_phil_gazebo" type="px100_joint_controller_merger.py" respawn="true" />
   <node name="battery_level" pkg="dr_phil_gazebo" type="battery_level.py" respawn="true" />
   
