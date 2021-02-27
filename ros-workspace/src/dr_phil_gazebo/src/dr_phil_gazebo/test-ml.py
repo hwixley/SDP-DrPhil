@@ -14,8 +14,8 @@ from sklearn.linear_model import LogisticRegression
 from PIL import Image as ImagePIL
 import copy
 
-DEFAULT_WEIGHTS = "yolov3-tiny-prn_best-merged.weights" #"yolov3_best-416-colored-v2.weights"
-DEFAULT_CONFIGURATION = "yolov3-tiny-prn.cfg"
+DEFAULT_WEIGHTS =  "yolov3_best-416-colored-v2.weights" #"yolov3-tiny-prn_best-merged.weights"
+DEFAULT_CONFIGURATION = "yolov3.cfg"
 DEFAULT_OBJ_NAMES = "obj.names" # contains the name of the classes the models were trained on ; (0) handle (1) door
 FOLDER_NAME_WITH_YOLO_MODEL = 'ML/Yolo'
 LOG_REG_PATH = os.getcwd() + "/../../ML/Logr/log-reg-model-504.pkl"
@@ -73,10 +73,24 @@ class CameraSampler:
 
         # Classify the frame
         log_reg_prediction = self.log_reg_model.predict(frame_array)[0]
+        print(self.log_reg_model.predict_proba(frame_array))
 
         # If the log. reg. model thinks there is a door in the frame it calls yolo
         if log_reg_prediction:
             self.yolov3(self.rgb_image)
+        else:
+            self.frame_id += 1
+
+            frame_no_door = self.rgb_image
+
+            font = cv2.FONT_HERSHEY_PLAIN
+            elapsed_time = time.time() - self.starting_time
+            fps = self.frame_id / elapsed_time
+            cv2.putText(frame_no_door, "FPS:" + str(round(fps, 2)),
+                        (10, 50), font, 2, (0, 0, 0), 1)
+
+            cv2.imshow("Image", frame_no_door)
+            key = cv2.waitKey(1)
 
        
        
