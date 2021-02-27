@@ -7,6 +7,9 @@ from sensor_msgs.msg import Image
 from sensor_msgs.msg import LaserScan
 import dr_phil_hardware.behaviour
 from dr_phil_hardware.behaviour.trees.trees import create_idle,create_face_closest_obstacle,create_explore_frontier_and_save_map,emergency_halt
+from dr_phil_hardware.behaviour.leafs.general import ClosestObstacle
+from dr_phil_hardware.behaviour.leafs.ros import RunRos
+
 import functools 
 from visualization_msgs.msg import MarkerArray
 import os
@@ -25,7 +28,7 @@ class Controller:
         self.root = self.create_tree() 
         # issue setup cycle on the tree with 10 ms timeout
         # not sure what the timeout does TODO: make sure this parameter is okay
-        self.root.setup(10)
+        self.root.setup(1)
 
         # visualisation
         snapshot_visitor = py_trees.visitors.SnapshotVisitor()
@@ -88,6 +91,17 @@ class Controller:
 
         root = py_trees.composites.Parallel("drphil")
 
+        # runNodes = py_trees.composites.Parallel()
+
+        # startMoveBase = RunRos(name="runMoveBase",
+        #     blackboard_alive_key="/move_base/alive",
+        #     blackboard_kill_trigger_key="/move_base/kill",
+        #     launch_file="move_base.launch",
+        #     package="dr_phil_hardware"
+        # )
+
+        # runNodes.add_children([startMoveBase])
+        
         # a branch for listening to data and putting it on the blackboard
 
         # we treat blackboard as one source of truth, keep everything synchronous and 
@@ -100,14 +114,20 @@ class Controller:
                                                             topic_name="/image",
                                                             topic_type=Image,
                                                             blackboard_variables={'image':None})
+        
+        scandatas2bb = py_trees.composites.Sequence()
+        
         scan2bb =  py_trees_ros.subscribers.ToBlackboard(name="scan2bb",
                                                             topic_name="/scan",
                                                             topic_type=LaserScan,
                                                             blackboard_variables={'scan':None})
+        closestObstacle2bb = ClosestObstacle("closestObstacle2bb")
+
+        scandatas2bb.add_children([scan2bb,closestObstacle2bb])
+
         battery2bb = py_trees_ros.battery.ToBlackboard(name="battery2bb",
-															topic_name="/battery/state",
-															
-															threshold=10.0
+															topic_name="/battery_state",
+															threshold=1.08
 															)
 
         # priorities  branch for main tasks, the rest of the tree is to go here
@@ -123,8 +143,9 @@ class Controller:
         # this will promote the re-use of behaviours
         idle = create_idle()
 
+
         root.add_child(topics2bb)
-        topics2bb.add_children([camera2bb,scan2bb,battery2bb])
+        topics2bb.add_children([camera2bb,scandatas2bb,battery2bb])
 
         root.add_child(priorities)
         priorities.add_children([emergency_checks, mapperOneShot])

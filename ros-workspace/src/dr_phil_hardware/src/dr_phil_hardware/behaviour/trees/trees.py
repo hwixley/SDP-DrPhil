@@ -29,6 +29,7 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 #from tf.trasnformations import quaternion_from_euler
 from tf import transformations
 from tf.transformations import quaternion_from_euler
+import rospy 
 
 def create_exploration_completed_check(duration=60):
     """ creates subtree which returns SUCCESS if no data has been received from the exploration nodes for the given duration.
@@ -153,10 +154,12 @@ def create_idle():
     return idle
 
 def emergency_halt():
-    safe_distance = 0.3;
+    safe_distance = 0.3
     
-    root = py_trees.composites.Parallel(policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
+    # root = py_trees.composites.Parallel(policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
     #root = py_trees.composites.Parallel()
+    root = py_trees.composites.Selector()
+
     sequence1 = py_trees.composites.Sequence()
     sequence2 = py_trees.composites.Sequence()
 
@@ -165,7 +168,7 @@ def emergency_halt():
     battery10 = py_trees.blackboard.CheckBlackboardVariable(
         name="Battery Ok?",
         variable_name='battery_low_warning',
-        expected_value=False
+        expected_value=True
         );                          #checks if battery is under 10%
 
     haltMsg = Twist()
@@ -183,6 +186,10 @@ def emergency_halt():
     goal.target_pose.header.frame_id = "map"
     #goal.target_pose.header.stamp = rospy.Time.now()
     orientation = quaternion_from_euler(0,0,0)
+    goal.target_pose.pose.position.x = 0
+    goal.target_pose.pose.position.y = 0
+    goal.target_pose.header.stamp = rospy.Time.now()
+
     goal.target_pose.pose.orientation.x = orientation[0]
     goal.target_pose.pose.orientation.y = orientation[1]
     goal.target_pose.pose.orientation.z = orientation[2]
@@ -194,8 +201,8 @@ def emergency_halt():
     goto00 = py_trees_ros.actions.ActionClient(
         name='goto_00',
         action_spec=move_base_msgs.msg.MoveBaseAction,
-        action_goal=move_base_msgs.msg.MoveBaseGoal(),
-        action_namespace='/action',
+        action_goal=goal,
+        action_namespace='/move_base',
         override_feedback_message_on_running='moving');
 
     distance_t = py_trees.blackboard.CheckBlackboardVariable(
