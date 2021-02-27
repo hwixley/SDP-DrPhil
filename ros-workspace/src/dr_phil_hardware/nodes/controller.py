@@ -6,7 +6,7 @@ import py_trees_ros
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import LaserScan
 import dr_phil_hardware.behaviour
-from dr_phil_hardware.behaviour.trees.trees import create_idle,create_face_closest_obstacle,create_explore_frontier_and_save_map
+from dr_phil_hardware.behaviour.trees.trees import create_idle,create_face_closest_obstacle,create_explore_frontier_and_save_map,emergency_halt
 import functools 
 from visualization_msgs.msg import MarkerArray
 import os
@@ -18,7 +18,7 @@ import sys
 class Controller:
     """ the controller responsible for dictating behaviours to dr-phil. Every node is to be controlled via this script and no node should command behaviours without going through the controller """
 
-    def __init__(self):
+    def __init__(self): 
 
         py_trees.logging.level = py_trees.logging.Level.INFO # set this to info for more information
 
@@ -104,7 +104,11 @@ class Controller:
                                                             topic_name="/scan",
                                                             topic_type=LaserScan,
                                                             blackboard_variables={'scan':None})
-        
+        battery2bb = py_trees_ros.battery.ToBlackboard(name="battery2bb",
+															topic_name="/battery/state",
+															
+															threshold=10.0
+															)
 
         # priorities  branch for main tasks, the rest of the tree is to go here
         priorities = py_trees.composites.Selector("priorities")
@@ -112,6 +116,7 @@ class Controller:
         map_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"map")
 
         runMapper = create_explore_frontier_and_save_map(timeout=600,no_data_timeout=60,map_path=map_path)
+        emergency_checks = emergency_halt()
         mapperOneShot = py_trees.decorators.OneShot(runMapper)
 
         # for convenience we keep granular behaviours in their own python files
@@ -119,10 +124,10 @@ class Controller:
         idle = create_idle()
 
         root.add_child(topics2bb)
-        topics2bb.add_children([camera2bb,scan2bb])
+        topics2bb.add_children([camera2bb,scan2bb,battery2bb])
 
         root.add_child(priorities)
-        priorities.add_children([mapperOneShot])
+        priorities.add_children([emergency_checks, mapperOneShot])
         
         return py_trees_ros.trees.BehaviourTree(root=root)
 

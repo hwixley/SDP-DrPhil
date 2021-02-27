@@ -24,6 +24,11 @@ import os
 import numpy as np
 from std_msgs.msg import Float64MultiArray
 from actionlib_msgs.msg import GoalStatusArray
+import move_base_msgs
+from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+#from tf.trasnformations import quaternion_from_euler
+from tf import transformations
+from tf.transformations import quaternion_from_euler
 
 def create_exploration_completed_check(duration=60):
     """ creates subtree which returns SUCCESS if no data has been received from the exploration nodes for the given duration.
@@ -147,7 +152,65 @@ def create_idle():
 
     return idle
 
+def emergency_halt():
+    safe_distance = 0.3;
+    
+    root = py_trees.composites.Parallel(policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
+    #root = py_trees.composites.Parallel()
+    sequence1 = py_trees.composites.Sequence()
+    sequence2 = py_trees.composites.Sequence()
 
+
+
+    battery10 = py_trees.blackboard.CheckBlackboardVariable(
+        name="Battery Ok?",
+        variable_name='battery_low_warning',
+        expected_value=False
+        );                          #checks if battery is under 10%
+
+    haltMsg = Twist()
+    haltMsg.linear.x = 0
+    haltMsg.angular.z = 0
+
+    halt = PublishTopic(                  #stops robot movement
+        name="haltCmdVel",
+        msg=haltMsg,
+        msg_type=Twist,
+        topic="/cmd_vel",
+    )
+
+    goal = MoveBaseGoal()
+    goal.target_pose.header.frame_id = "map"
+    #goal.target_pose.header.stamp = rospy.Time.now()
+    orientation = quaternion_from_euler(0,0,0)
+    goal.target_pose.pose.orientation.x = orientation[0]
+    goal.target_pose.pose.orientation.y = orientation[1]
+    goal.target_pose.pose.orientation.z = orientation[2]
+    goal.target_pose.pose.orientation.w = orientation[3]
+    
+    
+
+
+    goto00 = py_trees_ros.actions.ActionClient(
+        name='goto_00',
+        action_spec=move_base_msgs.msg.MoveBaseAction,
+        action_goal=move_base_msgs.msg.MoveBaseGoal(),
+        action_namespace='/action',
+        override_feedback_message_on_running='moving');
+
+    distance_t = py_trees.blackboard.CheckBlackboardVariable(
+        name="checkClosestObstacle",
+        variable_name="closest_obstacle/distance",
+        comparison_operator=operator.gt,
+        expected_value=safe_distance)
+
+    succ = py_trees.decorators.SuccessIsRunning(distance_t)
+
+    root.add_children([sequence1,sequence2])
+    #sequence1.add_children([battery10,halt,goto00])
+    sequence1.add_children([battery10,goto00])
+    sequence2.add_children([distance_t,halt,succ])
+    return root
 
 
 def create_face_closest_obstacle(min_distance = 0.5,face_angle=0): 
@@ -244,6 +307,7 @@ def is_function_local(object):
 if __name__ == "__main__":
 
     trees = [
+    	("emergency_halt",emergency_halt()),
         ("create_explore_frontier_and_save_map",create_explore_frontier_and_save_map()),
         ("create_face_closest_obstacle",create_face_closest_obstacle())
     ]
