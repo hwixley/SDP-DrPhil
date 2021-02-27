@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot name="dr-phil_sim" xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:arg name="laser_visual"  default="true"/>
+  <xacro:arg name="laser_visual"  default="false"/>
   <xacro:arg name="camera_visual" default="false"/>
   <xacro:arg name="imu_visual"    default="false"/>
   <xacro:arg name="use_gpu_ray"    default="false"/>
@@ -218,4 +218,12 @@
     </sensor>
   </gazebo>
 
+  <gazebo>
+    <plugin name="ground_truth" filename="libgazebo_ros_p3d.so">
+      <frameName>map</frameName>
+      <bodyName>base_footprint</bodyName>
+      <topicName>gt/odom</topicName>
+      <updateRate>30.0</updateRate>
+    </plugin>
+  </gazebo>
 </robot>

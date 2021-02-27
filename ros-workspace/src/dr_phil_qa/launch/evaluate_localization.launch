@@ -1,0 +1,44 @@
+<launch>
+
+    <arg name="map_truth" doc="[ the map path from /map folder ]"/>
+    <arg name="spawn_trajectory_player" default="true" />
+
+    <group if="$(eval arg('spawn_trajectory_player') ==true)">
+    <arg name="trajectory_file" doc="[ the trajectory to follow  in /data folder ]"/>
+    </group>
+
+    <node type="true_pose_in_map.py" pkg="dr_phil_qa" name="pose_calculator" output="screen" >
+        <param name="true_odom_topic" value="/gt/odom" />
+        <param name="map_topic" value="/map" />
+        <param name="pose_topic" value="/gt/pose" />
+    </node>
+
+    <include file="$(find dr_phil_hardware)/launch/localization_stack/amcl.launch"  output="log">
+        <arg name="initial_pose_x" value="-2.0" />
+        <arg name="initial_pose_y" value="-0.5" />
+    </include>
+
+    <include file="$(find dr_phil_hardware)/launch/navigation_stack/move_base.launch"  output="log"/>
+    
+
+    <node type="localization_evaluation.py" pkg="dr_phil_qa" name="localization_evaluator" output="screen" >
+        <param name="measured_topic" value="/amcl_pose" />
+        <param name="truth_topic" value="/gt/pose" />
+    </node>
+
+    <group if="$(eval arg('spawn_trajectory_player') ==true)">
+        <node type="goal_player.py" pkg="dr_phil_qa" name="goal_player" output="screen" >
+            <param name="trajectory_file" value="$(arg trajectory_file)" />
+            <param name="localization_evaluator_pose_topic" value="/true_path" />
+            <param name="localization_evaluator_service_stop" value="/localization_evaluator/stop_evaluate" />
+        </node>
+    </group>
+
+    <include file="$(find dr_phil_qa)/launch/map_management/serve_maps.launch" output="screen">
+        <arg name="map_truth" value="$(arg map_truth)"/>
+        <arg name="map_truth_topic" default="/map"/>
+    </include>
+
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find dr_phil_qa)/rviz/compare_localization.rviz" /> 
+
+</launch>

@@ -9,7 +9,8 @@
         <init_robot_x>-2.0</init_robot_x> 
         <init_robot_y>-0.5</init_robot_y>       
     </plugin>
-    
+
+
     <!-- A global light source -->
     <include>
       <uri>model://sun</uri>
