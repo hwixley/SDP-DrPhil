@@ -17,9 +17,9 @@ class CameraSampler:
         # initialize the bridge between openCV and ROS
         self.bridge = CvBridge()
         self.count = 0 
-        self.index = 0
+        self.index = 941
         rospack = rospkg.RosPack()
-        self.dr_phil_package_path = rospack.get_path('dr-phil')
+        self.dr_phil_package_path = rospack.get_path('dr_phil_gazebo')
         self.image_sub = rospy.Subscriber("image",ImageMSG, self.callback)
 
    def callback(self,rgb_msg):
