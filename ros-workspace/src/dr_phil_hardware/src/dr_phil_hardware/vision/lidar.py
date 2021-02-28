@@ -95,6 +95,8 @@ class Lidar:
         normal_origin = l_ray2_endpoint
         normal_length = 1
         
+        """ normal_dir might need to be ** -1 """"
+        
         return Ray(normal_origin, normal_dir, normal_length)
 
 
