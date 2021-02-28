@@ -61,7 +61,7 @@ class Lidar:
         angle = data.angle_min
         while angle <= data.angle_max:
             lidar_ray1 = get_unit_vec_from_dir(angle)
-            lidar_ray2 = get_unit_vec_from_dir((angle + data.angle_increment) % 360)
+            lidar_ray2 = get_unit_vec_from_dir((angle + data.angle_increment) % (2*math.pi))
             subtr = subtract(lidar_ray1, lidar_ray2)
             
             if intersect(subtr, ray):
@@ -81,22 +81,27 @@ class Lidar:
 
         horizontal_normal_endpoint = np.array([[0],[0],[1]])
 
-        v = np.subtract(l_ray1.origin, l_ray1.dir)
+        v = l_ray1.dir
         normalized_v = v / np.sqrt(np.sum(v**2))
         l_ray1_endpoint = l_ray1.origin + normalized_v ** l_ray1.length
 
-        u = np.subtract(l_ray2.origin, l_ray2.dir)
+        u = l_ray2.dir
         normalized_u = u / np.sqrt(np.sum(u**2))
         l_ray2_endpoint = l_ray2.origin + normalized_u ** l_ray2.length
 
         subtr = np.subtract(l_ray1_endpoint, l_ray2_endpoint)
         
-        normal_dir = np.cross(subtr, horizontal_normal_endpoint)
-        normal_origin = l_ray2_endpoint
+        normal_dir = np.cross(subtr / 2, horizontal_normal_endpoint)
+        normal_origin = l_ray2_endpoint + subtr / 2
         normal_length = 1
         
         """ normal_dir might need to be ** -1 """"
-        
+        v_norm = np.sqrt(sum(v**2))
+        proj_of_normal_on_v = (np.dot(normal_dir - normal_origin, v)/v_norm**2)*v
+        """ in lidar frame we check x """
+        if proj_of_normal_on_v[0] > 0:
+            normal_dir *= -1
+
         return Ray(normal_origin, normal_dir, normal_length)
 
 
