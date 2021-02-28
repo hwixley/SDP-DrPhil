@@ -79,14 +79,15 @@ class GoalPlayer():
             i+=1
 
         rospy.loginfo("played whole trajectory")
-        self.halt_proxy.call()
         self.loop_count -= 1
         
         if self.loop_count > 0:
             self.loop_count -= 1
             rospy.loginfo("repeating loop, loops left: {0}".format(self.loop_count))
             self.play_trajectory()
-            
+
+        self.halt_proxy.call()
+
         
 
 if __name__ == "__main__":

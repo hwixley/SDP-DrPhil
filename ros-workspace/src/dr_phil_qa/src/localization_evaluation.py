@@ -176,11 +176,19 @@ class LocalizationEvaluator():
     def publish_values(self):
         if self.path_true is not None:
             self.path_true.header.stamp = rospy.Time.now()
-            self.vis_true_path_pub.publish(self.path_true)
+
+            short_path = copy.copy(self.path_true)
+            short_path.poses = short_path.poses[-min(35,len(short_path.poses)-1):]
+
+            self.vis_true_path_pub.publish(short_path)
             
         if self.path_measured is not None:
             self.path_measured.header.stamp = rospy.Time.now()
-            self.vis_measured_path_pub.publish(self.path_measured)
+
+            short_path = copy.copy(self.path_measured)
+            short_path.poses = short_path.poses[-min(35,len(short_path.poses)-1):]
+
+            self.vis_measured_path_pub.publish(short_path)
 
     def spin(self):
         if self.activated == True and self.true_pose_recent is not None and self.measured_pose_recent is not None:
