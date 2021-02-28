@@ -1,0 +1,96 @@
+TebLocalPlannerROS:
+
+
+  # odom_topic: odom
+  # map_frame: /odom
+
+  # common 
+  footprint_model:
+
+    type: "polygon"
+
+    vertices:
+      - [0.23, 0.14]
+      - [0.23, -0.14]
+      - [-0.20, -0.14]
+      - [-0.20, 0.14]
+
+  # Robot Configuration Parameters
+  max_vel_x: 0.26
+
+  max_vel_y: 0.0
+  
+# The velocity when robot is moving in a straight line
+  max_vel_trans:  0.26
+  min_vel_trans:  0.13
+
+  max_vel_theta: 1.82
+  min_vel_theta: 0.9
+
+  acc_lim_x: 2.5
+  acc_lim_y: 0.0
+  acc_lim_theta: 3.2 
+
+# Trajectory Configuration Parameters 
+  allow_init_with_backwards_motion: true
+
+# Goal Tolerance Parametes
+
+  xy_goal_tolerance: 0.05
+  yaw_goal_tolerance: 0.17
+  free_goal_vel: false
+  complete_global_plan: false
+
+# optimisation parameters 
+  no_inner_iterations: 4
+  no_outer_iterations: 3
+  penalty_epsilon: 0.05 
+  weight_dynamic_obstacle: 1000
+  weight_obstacle: 50  # default 50
+  weight_inflation: 0.5 # 0.1
+  weight_viapoint: 1
+  weight_kinematics_nh: 10000 # degault 1000
+  weight_optimaltime: 10 # default 1
+  weight_max_vel_x: 2
+  weight_max_vel_theta: 1
+  weight_acc_lim_x: 1
+  weight_acc_lim_theta: 1
+  weight_kinematics_forward_drive: 0 # default 1
+  weight_kinematics_turning_radius: 1
+  
+
+# Obstacle parameters
+
+  min_obstacle_dist: 0.22
+  inflation_dist: 0.44
+  dynamic_obstacle_inflation_dist: 0.5
+  costmap_obstacles_behind_robot_dist: 0 # default 1, we dont want human collisions from behind
+  
+  include_dynamic_obstacles: true
+  include_costmap_obstacles: true
+  costmap_converter_plugin: "costmap_converter::CostmapToLinesDBSRANSAC"
+  costmap_converter_spin_thread: True
+  costmap_converter_rate: 5
+
+  # costmap_converter/CostmapToPolygonsDBSMCCH:
+  #   cluster_max_distance: 0.09
+  #   cluster_min_pts: 2
+  #   cluster_max_pts: 30
+  #   convex_hull_min_pt_separation: 0.05
+  
+  costmap_converter/CostmapToLinesDBSRANSAC:
+    cluster_max_distance: 0.1
+    cluster_min_pts: 2
+    cluster_max_pts: 30
+    convex_hull_min_pt_separation: 0.01
+    ransac_inlier_distance: 0.1
+    convex_hull_min_pt_separation: 0.01
+
+  # Parallel planning 
+
+  enable_homotopy_class_planning: false # disabled for now, probs too costly for no benefit
+  max_number_classes: 2
+  selection_obst_cost_scale: 10000
+  roadmap_graph_area_width: 5
+
+  # switching_blocking_period:
