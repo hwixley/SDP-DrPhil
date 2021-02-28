@@ -96,10 +96,9 @@ class Lidar:
         normal_length = 1
         
         """ normal_dir might need to be ** -1 """"
-        v_norm = np.sqrt(sum(v**2))
-        proj_of_normal_on_v = (np.dot(normal_dir - normal_origin, v)/v_norm**2)*v
-        """ in lidar frame we check x """
-        if proj_of_normal_on_v[0] > 0:
+        scalar_proj_of_normal_on_v = np.dot(normal_dir - normal_origin, v) / np.linalg.norm(v)
+   
+        if scalar_proj_of_normal_on_v[0] > 0:
             normal_dir *= -1
 
         return Ray(normal_origin, normal_dir, normal_length)
