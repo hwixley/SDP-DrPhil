@@ -78,6 +78,9 @@ class Lidar:
                 l_ray1: lidar ray
                 l_ray2: lidar ray
         """
+
+        horizontal_normal_endpoint = np.array([[0],[0],[1]])
+
         v = np.subtract(l_ray1.origin, l_ray1.dir)
         normalized_v = v / np.sqrt(np.sum(v**2))
         l_ray1_endpoint = l_ray1.origin + normalized_v ** l_ray1.length
@@ -86,7 +89,13 @@ class Lidar:
         normalized_u = u / np.sqrt(np.sum(u**2))
         l_ray2_endpoint = l_ray2.origin + normalized_u ** l_ray2.length
 
-        horizontal_normal_endpoint = np.array([[0],[0],[1]]
+        subtr = np.subtract(l_ray1_endpoint, l_ray2_endpoint)
+        
+        normal_dir = np.cross(subtr, horizontal_normal_endpoint)
+        normal_origin = l_ray2_endpoint
+        normal_length = 1
+        
+        return Ray(normal_origin, normal_dir, normal_length)
 
 
 
