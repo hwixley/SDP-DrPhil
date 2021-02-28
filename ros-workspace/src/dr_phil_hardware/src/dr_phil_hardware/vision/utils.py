@@ -2,6 +2,7 @@
 
 import numpy as np
 from dr_phil_hardware.vision.ray import Ray
+from shapely.geometry import LineString
 
 def invert_homog_mat(hm):
     """ inverts homogenous matrix expressing rotation and translation in 3D or 2D """  
@@ -22,6 +23,29 @@ def invert_homog_mat(hm):
 
     return hm
 
-def intersect(ray1, ray2):
-    """ returns true if rays intersect, false otherwise """
-    pass
+def intersect(segment, camera_ray):
+    """ returns true if 2D rays intersect, false otherwise """
+    base_start = tuple(segment.origin[:2])
+    base_end = tuple(segment.dir[:2]) 
+    segment = LineString([base_start, base_end])
+
+    camera_ray_start = tuple(camera_ray.origin[:2])
+    tmp_end = camera_ray.dir[:2]
+    """ make sure camera_ray segment is long enough to intersect the base segment """
+    while tmp_end[0] <= base_start[0]:
+        tmp_end *= 2
+    camera_ray_end = tuple(tmp_end)
+    camera_ray = LineString([camera_ray_start, camera_ray_end])
+
+    return camera_ray.intersects(segment)
+
+def subtract(ray1, ray2):
+    """ returns ray1 - ray2
+    the 2 rays have the same origin """
+    
+    origin = ray2.dir
+    dir = np.subtract(ray1.dir, ray2.dir)
+    length = math.sqrt(ray1.length ** 2 + ray2.length ** 2)
+
+    return Ray(origin, dir, length)
+    

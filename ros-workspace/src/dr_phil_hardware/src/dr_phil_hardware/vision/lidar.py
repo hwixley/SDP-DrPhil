@@ -51,19 +51,25 @@ class Lidar:
         dir[-1] = 0
         return Ray(origin, dir)
     
-    def get_ray_length(self, ray):
+    def get_ray_length(self, ray, data):
         """ returns a ray's length by averaging readings from the lidar sensor
             Args:
-                ray: must be in the plane formed by lidar rays
+                ray: camera ray that must be in the plane formed by lidar rays
+                data: lidar data
         """
-        self.input_sub = rospy.Subscriber('scan',LaserScan,self.callback) 
 
+        angle = data.angle_min
+        while angle <= data.angle_max:
+            lidar_ray1 = get_unit_vec_from_dir(angle)
+            lidar_ray2 = get_unit_vec_from_dir((angle + data.angle_increment) % 360)
+            subtr = subtract(lidar_ray1, lidar_ray2)
+            
+            if intersect(subtr, ray):
+                return (data.ranges[i] + data.ranges[i + 1]) / 2
+            
+            angle += data.angle_increment
 
-    def match_with_lidar_rays(self, ray):
-        """ returns the 2 closest lidar rays to the ray passed as argument
-            Args:
-                ray: must be in the plane formed by lidar rays
-        """
+        return 0
 
     def get_normal_to_plane(self, l_ray1, l_ray2):
         """ returns the normal to the plane formed by the 2 lidar rays 
@@ -72,14 +78,7 @@ class Lidar:
                 l_ray1: lidar ray
                 l_ray2: lidar ray
         """
-
-    def callback(self, data):
-        for (angle, distance) in enumerate(data, start = 0):
-            for (nxt_angle, nxt_distance) in enumerate(data, start=1):
-                
-
-        # unregister callback (run once only)
-        self.input_sub.unregister()
+        
 
     def get_unit_vec_from_dir(angle):
         """ return unit vector given an angle, counterclockwise from x-axis """
