@@ -51,7 +51,7 @@ class Lidar:
         dir[-1] = 0
         return Ray(origin, dir)
     
-    def get_ray_length(self, ray, data):
+    def get_camera_ray_length(self, ray, data):
         """ returns a ray's length by averaging readings from the lidar sensor
             Args:
                 ray: camera ray that must be in the plane formed by lidar rays
@@ -78,7 +78,17 @@ class Lidar:
                 l_ray1: lidar ray
                 l_ray2: lidar ray
         """
-        
+        v = np.subtract(l_ray1.origin, l_ray1.dir)
+        normalized_v = v / np.sqrt(np.sum(v**2))
+        l_ray1_endpoint = l_ray1.origin + normalized_v ** l_ray1.length
+
+        u = np.subtract(l_ray2.origin, l_ray2.dir)
+        normalized_u = u / np.sqrt(np.sum(u**2))
+        l_ray2_endpoint = l_ray2.origin + normalized_u ** l_ray2.length
+
+        horizontal_normal_endpoint = np.array([[0],[0],[1]]
+
+
 
     def get_unit_vec_from_dir(angle):
         """ return unit vector given an angle, counterclockwise from x-axis """
