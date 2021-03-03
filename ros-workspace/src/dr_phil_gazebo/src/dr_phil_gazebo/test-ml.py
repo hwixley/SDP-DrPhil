@@ -14,11 +14,11 @@ from sklearn.linear_model import LogisticRegression
 from PIL import Image as ImagePIL
 import copy
 
-DEFAULT_WEIGHTS =  "yolov3_best-416-colored-v2.weights" #"yolov3-tiny-prn_best-merged.weights"
-DEFAULT_CONFIGURATION = "yolov3.cfg"
+DEFAULT_WEIGHTS =  "yolov3-tiny-prn_best-merged.weights" #"yolov3-tiny-prn_best-merged.weights"
+DEFAULT_CONFIGURATION = "yolov3-tiny-prn.cfg"
 DEFAULT_OBJ_NAMES = "obj.names" # contains the name of the classes the models were trained on ; (0) handle (1) door
 FOLDER_NAME_WITH_YOLO_MODEL = 'ML/Yolo'
-LOG_REG_PATH = os.getcwd() + "/../../ML/Logr/log-reg-model-504.pkl"
+#LOG_REG_PATH = os.getcwd() + "/../../ML/Logr/log-reg-model-504.pkl"
 IMAGE_WIDTH = 1080
 IMAGE_HEIGHT = 1920
 
@@ -35,11 +35,12 @@ class CameraSampler:
         self.starting_time = time.time()
 
         # Load the log. reg. model
-        self.log_reg_model = pd.read_pickle(LOG_REG_PATH)
+        #self.log_reg_model = pd.read_pickle(LOG_REG_PATH)
 
         # Load the Yolo model
         self.load_network(weights, cfg, DEFAULT_OBJ_NAMES)
-
+        self.fps_per_frame_yolo = []
+        self.fps_per_frame_LR = [] 
         self.image_sub = rospy.Subscriber("image", ImageMSG, self.callback)
  
 
@@ -68,30 +69,24 @@ class CameraSampler:
             print(e)
 
         # Flatten the image so it can be passed into the logr model
-        pilImage = ImagePIL.fromarray(self.rgb_image)
-        frame_array = np.asarray(pilImage.resize((896, 504))).reshape(1, -1)
+        #pilImage = ImagePIL.fromarray(self.rgb_image)
+        #frame_array = np.asarray(pilImage.resize((896, 504))).reshape(1, -1)
 
         # Classify the frame
-        log_reg_prediction = self.log_reg_model.predict(frame_array)[0]
-        print(self.log_reg_model.predict_proba(frame_array))
+        #log_reg_prediction = self.log_reg_model.predict(frame_array)[0]
+        #print(self.log_reg_model.predict_proba(frame_array))
+        #print(log_reg_prediction)
 
         # If the log. reg. model thinks there is a door in the frame it calls yolo
-        if log_reg_prediction:
-            self.yolov3(self.rgb_image)
-        else:
-            self.frame_id += 1
+        #if log_reg_prediction:
+        #    self.yolov3(self.rgb_image)
+        #    print("yes")
+            
+        #else:
+       
+        self.frame_id += 1
 
-            frame_no_door = self.rgb_image
-
-            font = cv2.FONT_HERSHEY_PLAIN
-            elapsed_time = time.time() - self.starting_time
-            fps = self.frame_id / elapsed_time
-            cv2.putText(frame_no_door, "FPS:" + str(round(fps, 2)),
-                        (10, 50), font, 2, (0, 0, 0), 1)
-
-            cv2.imshow("Image", frame_no_door)
-            key = cv2.waitKey(1)
-
+        self.yolov3(self.rgb_image)
        
        
      
@@ -99,13 +94,14 @@ class CameraSampler:
 
         font = cv2.FONT_HERSHEY_PLAIN
 
-        self.frame_id += 1
+
+        
         
         # frame = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
         height, width, channels = frame.shape
         # detecting objects
         blob = cv2.dnn.blobFromImage(
-            frame, 0.00392, (128, 128), (0, 0, 0), True, crop=False)  # reduce 416 to 320
+            frame, 0.00392, (320, 320), (0, 0, 0), True, crop=False)  # reduce 416 to 320
 
         self.net.setInput(blob)
         outs = self.net.forward(self.outputlayers)
