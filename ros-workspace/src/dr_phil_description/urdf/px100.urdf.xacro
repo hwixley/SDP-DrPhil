@@ -255,7 +255,7 @@
   <light name ='led' type = 'spot'>
     <pose>0.06645 0 0.043 0 ${-pi/2} 0</pose><!--you can place light position here ,and it is useless to give position in link-->
     <attenuation>
-            <range>1</range>
+            <range>0</range>
           </attenuation>
           <diffuse>1 1 1 0</diffuse>
           <specular>1 1 1 0</specular>
