@@ -261,8 +261,17 @@ p{
   padding: 15px; /* Some padding */
   border-radius: 10px; /* Rounded corners */
   font-size: 18px; /* Increase font size */
+  
 }
 
 #myBtn:hover {
   background-color: #555; /* Add a dark-grey background on hover */
+}
+
+.competitor {
+  max-width: 60%;
+  display: block;
+  margin: auto;
+  padding: 1rem;
+  background-color: white;
 }
