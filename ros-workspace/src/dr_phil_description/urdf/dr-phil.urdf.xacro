@@ -102,6 +102,96 @@
                izz="1.4612727e-02" />
     </inertial>
   </link>
+  
+  
+  
+  
+  
+  <joint name="bottle_base_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="bottle_base_link" />
+    <origin xyz="0 0 0.010" rpy="0 0 0"/>
+  </joint>
+
+
+  <link name="bottle_base_link">
+    <visual>
+      <origin xyz="-0.088 -0.028 ${layer_3_z-0.0075}" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://dr_phil_description/meshes/spray_components/bottle_base.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.088 -0.028 ${layer_3_z-0.0075}" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://dr_phil_description/meshes/spray_components/bottle_base.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+    
+    <inertial>
+      <origin xyz="-0.088 -0.028 ${layer_3_z-0.0075}" rpy="0 0 0"/>
+      <mass value="0.036"/>
+      <inertia ixx="0.00" iyy="0.00" izz="0.000" ixy="0.0000000000" ixz="0.0000000000" iyz="0" />
+    </inertial>
+  </link>
+  
+  <joint name="bottle_joint" type="fixed">
+    <parent link="bottle_base_link"/>
+    <child link="bottle_link" />
+    <origin xyz="0 0 0.010" rpy="0 0 0"/>
+  </joint>
+
+
+  <link name="bottle_link">
+    <visual>
+      <origin xyz="-0.1695 -0.0965 ${layer_3_z}" rpy="0 0 ${pi/2}"/>
+      <geometry>
+        <mesh filename="package://dr_phil_description/meshes/spray_components/bottle_reduced_resized.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.1695 -0.0965 ${layer_3_z}" rpy="0 0 ${pi/2}"/>
+      <geometry>
+        <mesh filename="package://dr_phil_description/meshes/spray_components/bottle_reduced_resized.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="-0.1695 -0.0965 ${layer_3_z}" rpy="0 0 0"/>
+      <mass value="0.074"/>
+      <inertia ixx="0.00" iyy="0.00" izz="0.000" ixy="0.0000000000" ixz="0.0000000000" iyz="0" />
+    </inertial>
+  </link>
+  
+  <joint name="bottle_cap_joint" type="fixed">
+    <parent link="bottle_base_link"/>
+    <child link="bottle_cap_link" />
+    <origin xyz="0 0 0.010" rpy="0 0 0"/>
+  </joint>
+
+
+  <link name="bottle_cap_link">
+    <visual>
+      <origin xyz="-0.1519 -0.06 ${layer_3_z+0.096}" rpy="${pi} 0 0"/>
+      <geometry>
+        <mesh filename="package://dr_phil_description/meshes/spray_components/bottle_lid.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.1519 -0.06 ${layer_3_z+0.096}" rpy="${pi} 0 0"/>
+      <geometry>
+        <mesh filename="package://dr_phil_description/meshes/spray_components/bottle_lid.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="-0.1519 -0.06 ${layer_3_z+0.096}" rpy="0 0 0"/>
+      <mass value="0.016"/>
+      <inertia ixx="0.00" iyy="0.00" izz="0.000" ixy="0.0000000000" ixz="0.0000000000" iyz="0" />
+    </inertial>
+  </link>
+  
+  
+  
+  
 
   <joint name="wheel_left_joint" type="continuous">
     <parent link="base_link"/>
