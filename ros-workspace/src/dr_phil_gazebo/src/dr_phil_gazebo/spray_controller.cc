@@ -41,29 +41,6 @@ void sprayCallback(const std_msgs::Float32 &msg_range)
 int main(int _argc, char **_argv)
 {
   
-  // Load gazebo as a client
-  /*gazebo::client::setup(_argc, _argv);
-
-  // Create our node for communication
-  gazebo::transport::NodePtr node(new gazebo::transport::Node());
-  node->Init();
-  
-  // Publish to the  light/modify gazebo topic
-  gazebo::transport::PublisherPtr pub =
-    node->Advertise<gazebo::msgs::Light>("~/light/modify");
-    
-    // Wait for a subscriber to connect to this publisher
-  pub->WaitForConnection();
-  
-  // Create a lightmessage
-  gazebo::msgs::Light msg;
-  msg.set_name("dr-phil::px100/gripper_link::led");
-  msg.set_range(1);
-
-  // Send the message
-  pub->Publish(msg);
-  
-  gazebo::client::shutdown();*/
   ros::init(_argc, _argv, "spray_listener");
   
   ros::NodeHandle nh;
