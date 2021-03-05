@@ -1,0 +1,3 @@
+<launch>
+  <test test-name="lidar_test" pkg="dr_phil_hardware" type="lidar_test.py" />
+</launch>
