@@ -59,6 +59,7 @@ class Lidar:
                 data: LaserScan data
         """
         angle = data.angle_min
+        """ will have a problem if the angle increment is not an int when converted to deg """
         angle_deg = np.rad2deg(angle)
         while angle <= data.angle_max:
             lidar_ray1 = get_unit_vec_from_dir(angle)
@@ -127,7 +128,7 @@ class Lidar:
 
 
     def get_unit_vec_from_dir(self, angle):
-        """ return unit vector given an angle, counterclockwise from x-axis """
+        """ return unit vector given an angle in rad, counterclockwise from x-axis """
         origin = np.array([[0],[0],[0]]
         dir = np.array([[math.cos(angle)], [math.sin(angle)], [0]])
         length = 1
