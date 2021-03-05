@@ -126,7 +126,7 @@ class Lidar:
 
 
 
-    def get_unit_vec_from_dir(angle):
+    def get_unit_vec_from_dir(self, angle):
         """ return unit vector given an angle, counterclockwise from x-axis """
         origin = np.array([[0],[0],[0]]
         dir = np.array([[math.cos(angle)], [math.sin(angle)], [0]])
