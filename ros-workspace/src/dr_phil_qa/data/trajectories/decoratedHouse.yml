@@ -1,0 +1,36 @@
+- point: # the starting point
+    position:
+      x: -2.0
+      y: -0.5
+    orientation:
+      z: 0
+- point: # bit to the left
+    position:
+      x: -2.0
+      y: 0.3
+    orientation:
+      z: 1.5
+- point: # up
+    position:
+      x: 1
+      y: 0.3
+    orientation:
+      z: 0
+- point: # right
+    position:
+      x: 1
+      y: -3
+    orientation:
+      z: -1.5
+- point: # down
+    position:
+      x: -2
+      y: -3
+    orientation:
+      z: -3.14
+- point: # back home
+    position:
+      x: -2.0
+      y: -0.5
+    orientation:
+      z: 0

@@ -65,6 +65,8 @@
   <depend>dwa_local_planner</depend>
   <depend>explore_lite</depend>
   <depend>hector_mapping</depend>
+  <depend>teb_local_planner</depend>
+  <depend>costmap_converter</depend>
 
   <test_depend>rostest</test_depend>
   <test_depend>rosunit</test_depend>

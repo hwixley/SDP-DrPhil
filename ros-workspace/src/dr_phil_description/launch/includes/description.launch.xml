@@ -1,4 +1,5 @@
 <launch>
-  <arg name="urdf_file" default="$(find xacro)/xacro --inorder '$(find dr_phil_description)/urdf/dr-phil.urdf.xacro'" />
+  <arg name="use_gpu_ray" default="false" />
+  <arg name="urdf_file" default="$(find xacro)/xacro --inorder '$(find dr_phil_description)/urdf/dr-phil.urdf.xacro'  use_gpu_ray:=$(arg use_gpu_ray)" />
   <param name="robot_description" command="$(arg urdf_file)" />
 </launch>
