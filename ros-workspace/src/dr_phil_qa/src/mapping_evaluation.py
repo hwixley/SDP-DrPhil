@@ -10,7 +10,7 @@ import numpy as np
 from typing import Callable
 from numbers import Number
 import csv
-from dr_phil_qa.srv import EvaluateMapsResponse,EvaluateMaps
+from dr_phil_qa.srv import FileNameResponse,FileName
 import os
 import threading
 import yaml 
@@ -56,7 +56,7 @@ class MapEvaluator():
 
         self.data_home_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"..","data")
 
-        self.evaluate_trigger = rospy.Service("~evaluate",EvaluateMaps,self.evaluate)
+        self.evaluate_trigger = rospy.Service("~evaluate",FileName,self.evaluate)
         self.data_guard = threading.Lock()
         
         self.measured_map = None
@@ -227,7 +227,7 @@ class MapEvaluator():
                 with open(os.path.join(os.path.dirname(file_path),args.filename+"-explore.yml"), 'w') as f:
                     yaml.dump(explore_params,f,default_flow_style=False)
                     
-        return EvaluateMapsResponse()
+        return FileNameResponse()
 
     def true_positive_counter(self,m_val,GT_val):
         return 1 if m_val == GT_val == GRID_VALUES.OCCUPIED else 0
