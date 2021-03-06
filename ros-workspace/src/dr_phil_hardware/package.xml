@@ -66,6 +66,9 @@
   <depend>explore_lite</depend>
   <depend>hector_mapping</depend>
 
+  <!-- python deps -->
+  <run_depend>python-shapely</run_depend>
+
   <test_depend>rostest</test_depend>
   <test_depend>rosunit</test_depend>
   
