@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import rospy
-from vision.camera import Camera
-from vision.ray import Ray
+from dr_phil_hardware.vision.camera import Camera
+from dr_phil_hardware.vision.ray import Ray
 import numpy as np
 from sensor_msgs.msg import CameraInfo
 import tf
