@@ -1,0 +1,12 @@
+<launch>
+
+    <arg name="test_delay" default="100" />  
+
+    <include file="$(find dr_phil_gazebo)/launch/simulation.launch">
+        <arg name="headless" value="true"/> 
+    </include>
+
+
+    <test test-name="general_gazebo_tests" pkg="dr_phil_gazebo" type="general_gazebo_tests.py"/>
+
+</launch>
