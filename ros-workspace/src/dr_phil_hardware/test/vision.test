@@ -1,0 +1,18 @@
+<launch>
+
+    <!-- publish cameraInfo msg for fake camera-->
+    <node pkg="dr_phil_hardware" name="camera_info_pub" type="camera_info_pub.py"/>
+
+    <!-- publish fake transforms -->
+    <!-- make camera -0.1m above base link and same orienation difference as in the original robot (camera z points forward, x points right, y points down) -->
+    <!-- use `rosrun tf tf_echo /base_link /camera_rgb_optical_frame` to confirm when running sim-->
+    
+    <!-- WARNING: DO NOT CHANGE THESE VALUES, SOME TESTS ASSUME THIS IS THE CASE -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="base_2_camera" args="0 0 -0.1 -1.570 0 -1.570 /base_link /camera_rgb_optical_frame"/>
+   
+
+    <test test-name="vision_utils_test" pkg="dr_phil_hardware" type="vision_utils_test.py" />
+    <test test-name="lidar_test" pkg="dr_phil_hardware" type="lidar_test.py" />
+    <test test-name="camera_test" pkg="dr_phil_hardware" type="camera_test.py" />
+
+</launch>
