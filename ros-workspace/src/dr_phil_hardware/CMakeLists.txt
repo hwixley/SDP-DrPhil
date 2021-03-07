@@ -195,7 +195,7 @@ include_directories(
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
-  add_rostest(test/example.test)
+  add_rostest(test/unit_tests/vision/vision.test)
 endif()
 
 ## Add gtest based cpp test target and link libraries
