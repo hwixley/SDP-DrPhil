@@ -34,15 +34,10 @@ class Lidar:
         # unregister callback (run once only)
         self.tf_active_sub.unregister()
 
-    def get_ray_in_lidar_frame(self, ray):
+    def get_ray_in_lidar_frame(self, ray : Ray):
         """ transforms ray() from robot to lidar space """
         
-        dir = ray.dir
-        dir = np.append(dir,np.array([[1]]),axis=0)
-        robot_origin_rf = self.extrinsic_mat_inv @ np.array([[0],[0],[0],[1]])
-
-        ray = Ray(robot_origin_rf[:-1,:],(self.extrinsic_mat_inv[:,:-1] @ dir[:-1,:]) )
-        return ray
+        return ray.get_transformed(self.extrinsic_mat_inv)
     
     def get_ray_projection(self, ray):
         """ returns projected ray in the same plane as lidar's rays (flatten) """
