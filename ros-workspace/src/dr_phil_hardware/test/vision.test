@@ -3,6 +3,9 @@
     <!-- publish cameraInfo msg for fake camera-->
     <node pkg="dr_phil_hardware" name="camera_info_pub" type="camera_info_pub.py"/>
 
+    <!-- publish fake scan data -->
+    <node pkg="dr_phil_hardware" name="fake_scan_pub" type="fake_scan_pub.py"/>
+
     <!-- publish fake transforms -->
     <!-- use `rosrun tf tf_echo /base_link /camera_rgb_optical_frame` to confirm when running sim-->
     
