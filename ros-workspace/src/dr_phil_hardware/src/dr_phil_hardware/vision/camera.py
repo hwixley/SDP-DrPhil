@@ -29,10 +29,6 @@ class Camera:
         self.extrinsic_mat = rob2cam
         self.extrinsic_mat_inv = utils.invert_homog_mat(rob2cam)
 
-        # for transforming directions
-        self.extrinsic_mat_inv_no_trans = np.copy(self.extrinsic_mat_inv)
-        self.extrinsic_mat_inv_no_trans[:-1,3]  = 0
-
     def get_pixel_through_ray(self,ray : Ray):
         """ assumes ray is going through origin of camera """
 
@@ -58,15 +54,5 @@ class Camera:
     def get_ray_in_robot_frame(self,ray : Ray) -> Ray: 
         """ transforms ray () from camera to robot space """
         
-        dir = ray.dir
-        dir = np.append(dir,np.array([[1]]),axis=0)
-
-        # we rotate the direction but not translate it
-        dir = (self.extrinsic_mat_inv_no_trans @ dir)[:-1,:]
-
-        cam_origin_rf = self.extrinsic_mat_inv @ np.array([[0],[0],[0],[1]])
-
-        ray = Ray(cam_origin_rf[:-1,:],dir,length=1)
-          
-        return ray
+        return ray.get_transformed(self.extrinsic_mat_inv)
 
