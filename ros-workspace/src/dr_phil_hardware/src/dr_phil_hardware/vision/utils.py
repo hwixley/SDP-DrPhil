@@ -16,8 +16,8 @@ def invert_homog_mat(hm):
 def intersect(ray1 : Ray, ray2 : Ray):
     """ returns true if 2D rays intersect, false otherwise """
 
-    segment1 = LineString([tuple(ray1.origin),tuple(ray1.dir * ray1.length)])
-    segment2 = LineString([tuple(ray2.origin),tuple(ray2.dir * ray2.length)])
+    segment1 = LineString([tuple(ray1.origin),tuple(ray1.dir * ray1.length + ray1.origin)])
+    segment2 = LineString([tuple(ray2.origin),tuple(ray2.dir * ray2.length + ray2.origin)])
 
     return segment1.intersects(segment2)
 
