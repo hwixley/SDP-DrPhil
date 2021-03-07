@@ -11,24 +11,7 @@ def invert_homog_mat(hm):
     
     return t.inverse_matrix(hm)
 
-    # # if 3D transformation matrix
-    # if hm.shape[0] == 4 == hm.shape[1]:
-    #     newH = 3
-    # elif hm.shape[0] == 3 == hm.shape[1]:
-    #     newH = 2
-    # else:
-    #     raise Exception("Invalid matrix shape: " + hm.shape)
 
-
-    # nHm = np.zeros((newH+1,newH+1))
-
-    # rotI = hm[0:newH,0:newH].T
-    # transI = rotI @ -hm[0:newH,newH]
-
-    # nHm[0:newH,0:newH] = rotI
-    # nHm[0:newH,newH] = transI
-    # nHm[newH,newH] = 1
-    # return nHm
 
 def intersect(ray1 : Ray, ray2 : Ray):
     """ returns true if 2D rays intersect, false otherwise """
