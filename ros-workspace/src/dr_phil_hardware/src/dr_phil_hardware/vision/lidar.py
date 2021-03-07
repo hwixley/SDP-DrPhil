@@ -7,6 +7,7 @@ from dr_phil_hardware.vision.ray import Ray
 import tf
 from tf2_msgs.msg import TFMessage
 import math
+import rospy 
 
 class Lidar:
 
@@ -59,14 +60,16 @@ class Lidar:
                 data: LaserScan data
         """
         angle = data.angle_min
-        """ will have a problem if the angle increment is not an int when converted to deg """
+        
+        # will have a problem if the angle increment is not an int when converted to deg 
+
         angle_deg = np.rad2deg(angle)
         while angle <= data.angle_max:
-            lidar_ray1 = get_unit_vec_from_dir(angle)
-            lidar_ray2 = get_unit_vec_from_dir((angle + data.angle_increment) % (2*math.pi))
-            subtr = subtract(lidar_ray1, lidar_ray2)
+            lidar_ray1 = self.get_unit_vec_from_dir(angle)
+            lidar_ray2 = self.get_unit_vec_from_dir((angle + data.angle_increment) % (2*math.pi))
+            subtr = utils.subtract(lidar_ray1, lidar_ray2)
             
-            if intersect(subtr, ray):
+            if utils.intersect(subtr, camera_ray):
                 lidar_ray1.length = data.ranges[angle_deg]
                 lidar_ray2.length = data.ranges[(angle_deg + np.rad2deg(data.angle_increment)) % 360]
                 return lidar_ray1, lidar_ray2
@@ -83,7 +86,7 @@ class Lidar:
                 data: lidar data
         """
 
-        lidar_ray1, lidar_ray2 = get_corresponding_lidar_rays(camera_ray, data)
+        lidar_ray1, lidar_ray2 = self.get_corresponding_lidar_rays(camera_ray, data)
         if lidar_ray1 != None:
             return (lidar_ray1.length + lidar_ray2.length) / 2
         else:
@@ -117,7 +120,7 @@ class Lidar:
         normal_origin = halved_subtr.origin
         normal_length = 1
         
-        """ normal_dir might need to be * -1 """"
+        # normal_dir might need to be * -1 
         scalar_proj_of_normal_on_v = np.dot(normal_dir - normal_origin, v) / np.linalg.norm(v)
    
         if scalar_proj_of_normal_on_v[0] > 0:
@@ -129,7 +132,7 @@ class Lidar:
 
     def get_unit_vec_from_dir(self, angle):
         """ return unit vector given an angle in rad, counterclockwise from x-axis """
-        origin = np.array([[0],[0],[0]]
+        origin = np.array([[0],[0],[0]])
         dir = np.array([[math.cos(angle)], [math.sin(angle)], [0]])
         length = 1
         return Ray(origin, dir, length)
