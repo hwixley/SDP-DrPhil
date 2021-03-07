@@ -3,6 +3,7 @@
 import numpy as np
 from dr_phil_hardware.vision.ray import Ray
 from shapely.geometry import LineString
+import math 
 
 def invert_homog_mat(hm):
     """ inverts homogenous matrix expressing rotation and translation in 3D or 2D """  
@@ -14,30 +15,25 @@ def invert_homog_mat(hm):
         newH = 2
     else:
         raise Exception("Invalid matrix shape: " + hm.shape)
-        
+
+
+    nHm = np.zeros((newH+1,newH+1))
+
     rotI = hm[0:newH,0:newH].T
-    transI = -rotI @ hm[0:newH,newH]
+    transI = rotI @ -hm[0:newH,newH]
 
-    hm[0:newH,0:newH] = rotI
-    hm[0:newH,newH] = transI
+    nHm[0:newH,0:newH] = rotI
+    nHm[0:newH,newH] = transI
+    nHm[newH,newH] = 1
+    return nHm
 
-    return hm
-
-def intersect(segment, camera_ray):
+def intersect(ray1 : Ray, ray2 : Ray):
     """ returns true if 2D rays intersect, false otherwise """
-    base_start = tuple(segment.origin[:2])
-    base_end = tuple(segment.origin[:2] + segment.dir[:2]) 
-    base_segment = LineString([base_start, base_end])
 
-    camera_ray_start = tuple(camera_ray.origin[:2])
-    tmp_camera_ray = np.subtract(camera_ray.dir[:2], camera_ray.origin[:2])
-    unit_camera_ray = tmp_camera_ray / np.linalg.norm(tmp_camera_ray)
-        """ lidar range_max argument provides the maximum range of a lidar reading
-        make sure camera_ray segment is long enough to intersect the base segment """
-    camera_ray_end = tuple(camera_ray_start + 2 * data.range_max * unit_camera_ray)
-    camera_ray = LineString([camera_ray_start, camera_ray_end])
+    segment1 = LineString([tuple(ray1.origin),tuple(ray1.dir * ray1.length)])
+    segment2 = LineString([tuple(ray2.origin),tuple(ray2.dir * ray2.length)])
 
-    return camera_ray.intersects(base_segment)
+    return segment1.intersects(segment2)
 
 def subtract(ray1, ray2):
     """ returns ray1 - ray2
