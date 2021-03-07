@@ -8,6 +8,7 @@ import tf
 from tf2_msgs.msg import TFMessage
 import math
 import rospy 
+from sensor_msgs.msg import LaserScan
 
 class Lidar:
 
@@ -20,21 +21,31 @@ class Lidar:
         self.extrinsic_mat_inv = utils.invert_homog_mat(rob2scan)
 
 
+    def get_ray_in_robot_frame(self,ray:Ray):
+        return ray.get_transformed(self.extrinsic_mat)
 
     def get_ray_in_lidar_frame(self, ray : Ray):
         """ transforms ray() from robot to lidar space """
         
         return ray.get_transformed(self.extrinsic_mat_inv)
     
-    def get_ray_projection(self, ray):
+    def get_ray_projection(self, ray : Ray):
         """ returns projected ray in the same plane as lidar's rays (flatten) """
         """ set z component of direction to 0"""
+
+        original_v = ray.get_vec()
+
         origin = ray.origin
         dir = ray.dir
         dir[-1] = 0
-        return Ray(origin, dir)
+
+        new_v = origin + dir
+
+        dot = original_v @ new_v.T
+        new_length = np.linalg.norm(new_v)
+        return Ray(origin, dir,length=new_length )
     
-    def get_corresponding_lidar_rays(self, camera_ray, data):
+    def get_corresponding_lidar_rays(self, camera_ray, data: LaserScan) -> tuple :
         """ returns the 2 corresponding lidar rays to a camera ray
             given in the lidar frame
             Args:
@@ -42,10 +53,12 @@ class Lidar:
                 data: LaserScan data
         """
         angle = data.angle_min
-        
+
+        camera_ray.length = data.range_max * 2
+
         # will have a problem if the angle increment is not an int when converted to deg 
 
-        angle_deg = np.rad2deg(angle)
+        angle_deg = int(np.rad2deg(angle))
         while angle <= data.angle_max:
             lidar_ray1 = self.get_unit_vec_from_dir(angle)
             lidar_ray2 = self.get_unit_vec_from_dir((angle + data.angle_increment) % (2*math.pi))
@@ -53,11 +66,11 @@ class Lidar:
             
             if utils.intersect(subtr, camera_ray):
                 lidar_ray1.length = data.ranges[angle_deg]
-                lidar_ray2.length = data.ranges[(angle_deg + np.rad2deg(data.angle_increment)) % 360]
+                lidar_ray2.length = data.ranges[(angle_deg + int(np.rad2deg(data.angle_increment))) % 360]
                 return lidar_ray1, lidar_ray2
             
             angle += data.angle_increment
-            angle_deg = np.rad2deg(angle)
+            angle_deg = int(np.rad2deg(angle))
 
         return None, None
 
@@ -85,21 +98,20 @@ class Lidar:
         horizontal_normal_endpoint = np.array([[0],[0],[1]])
 
         v = l_ray1.dir
-        normalized_v = v.dir / np.sqrt(np.sum(v.dir**2))
+        normalized_v = v / np.sqrt(np.sum(v**2))
         l_ray1_endpoint = l_ray1.origin + normalized_v ** l_ray1.length
 
         u = l_ray2.dir
-        normalized_u = u.dir / np.sqrt(np.sum(u.dir**2))
+        normalized_u = u / np.sqrt(np.sum(u**2))
         l_ray2_endpoint = l_ray2.origin + normalized_u ** l_ray2.length
 
-        subtr = np.subtract(l_ray1_endpoint, l_ray2_endpoint)
-        normalized_subtr = subtr.dir / np.sqrt(np.sum(subtr.dir**2))
-        halved_subtr_origin = subtr.origin + (normalized_subtr * subtr.length) / 2
-        halved_subtr_dir = halved_subtr_origin + (normalized_subtr * subtr.length) / 2
-        halved_subtr = Ray(halved_subtr_origin, halved_subtr_dir, subtr.length / 2)
+        subtr = l_ray1_endpoint - l_ray2_endpoint
+        normalized_subtr = subtr / np.linalg.norm(subtr)
 
-        normal_dir = np.cross(halved_subtr.dir, horizontal_normal_endpoint)
-        normal_origin = halved_subtr.origin
+        halved_subtr = subtr * 0.5 
+
+        normal_dir = np.cross(halved_subtr, horizontal_normal_endpoint,axisa=0,axisb=0)
+        normal_origin = l_ray2_endpoint
         normal_length = 1
         
         # normal_dir might need to be * -1 
