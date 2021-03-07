@@ -12,27 +12,14 @@ import rospy
 class Lidar:
 
     def __init__(self):
-        self.robot_transform_listener = tf.TransformListener()
-        self.tf_active_sub = rospy.Subscriber("/tf",TFMessage,self.setup_transform)
-        self.transformerRos = tf.TransformerROS()
+        pass
     
-    def setup_transform(self,data):
+    def setup_transform(self,rob2scan):
 
-        (trans,rot) = self.robot_transform_listener.lookupTransform(
-            '/base_link',
-            '/base_scan',
-            rospy.Time(0))
+        self.extrinsic_mat = rob2scan
+        self.extrinsic_mat_inv = utils.invert_homog_mat(rob2scan)
 
-        try:
-            transform = self.transformerRos.fromTranslationRotation(trans,rot)
-        except (tf.ConnectivityException,tf.LookupException,tf.ExtrapolationException):
-            print("Could not find robot transform!")
 
-        self.extrinsic_mat = transform
-        self.extrinsic_mat_inv = utils.invert_homog_mat(transform)
-
-        # unregister callback (run once only)
-        self.tf_active_sub.unregister()
 
     def get_ray_in_lidar_frame(self, ray : Ray):
         """ transforms ray() from robot to lidar space """
