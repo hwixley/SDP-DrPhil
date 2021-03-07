@@ -4,7 +4,7 @@ import unittest
 import sys
 import numpy as np
 
-PKG='dr_phil_gazebo'
+PKG='dr_phil_hardware'
 import roslib; roslib.load_manifest(PKG)
 # all unit tests are compatibile with ros
 # only requirement is that we return results in an appropriate xml format 
