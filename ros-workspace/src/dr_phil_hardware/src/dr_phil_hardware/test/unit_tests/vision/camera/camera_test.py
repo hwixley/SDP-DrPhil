@@ -14,7 +14,7 @@ import rospy
 import tf
 import math
 
-PKG='dr_phil_gazebo'
+PKG='dr_phil_hardware'
 import roslib; roslib.load_manifest(PKG)
 # all unit tests are compatibile with ros
 # only requirement is that we return results in an appropriate xml format 
@@ -66,7 +66,7 @@ class CameraTest(unittest.TestCase):
         except (tf.ConnectivityException,tf.LookupException,tf.ExtrapolationException):
             self.fail("Could not setup transforms")
 
-    def test_center_pixel_camera_ray(self):
+    def test_center_pixel_to_camera_ray(self):
 
         # vector pointing forward in camera
         correct_ray = Ray(np.array([[0],[0],[0]]),np.array([[0],[0],[1]]),length=1)
@@ -79,7 +79,7 @@ class CameraTest(unittest.TestCase):
         assertRayEquals(self,correct_ray,ray_img,
             msg="correct: \n {} \n was: \n {}".format(correct_ray,ray_img))
 
-    def test_center_pixel_robot_ray(self):
+    def test_center_pixel_to_robot_ray(self):
         correct_ray_cam = Ray(np.array([[0],[0],[0]]),np.array([[0],[0],[1]]),length=1)
 
         correct_ray = Ray(np.array([[0],[0],[-0.1]]),np.array([[1],[0],[0]]),length=1)
