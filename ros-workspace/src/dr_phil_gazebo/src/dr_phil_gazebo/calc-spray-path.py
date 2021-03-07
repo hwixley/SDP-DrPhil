@@ -53,23 +53,23 @@ def calc_rotation_angle(line1, line2):
     if not ((line1.segment == line2.segment and line1.gradient < 0 and line1.gradient < line2.gradient) or \
             (line1.segment == line2.segment and line1.gradient > 0 and line1.gradient > line2.gradient) or \
             (line1.segment == 3 and line2.segment == 0) or (line1.segment < line2.segment)):
-        print("neg")
         angle = -1 * abs(angle)
 
-    if line2.segment in [1,2]:
-        angle = 2*math.pi - angle
+    if line2.segment in [1, 2]:
+        angle = 2 * math.pi - angle
 
     return math.degrees(angle)
 
+
 # Transform the points given the angle of rotation
-def transform_points(points, center, vector):
+def transform_points(points, handle_center, vector):
     vector_line = LineGraph(vector)
-    origin_line = LineGraph(ORIGIN)
+    origin_line = LineGraph(Coord(0, 0, 0))
     angle = calc_rotation_angle(origin_line, vector_line)
 
     center_matrix = np.empty((2, 3))
-    center_matrix[0, :] = center.z
-    center_matrix[1, :] = center.x
+    center_matrix[0, :] = handle_center.z
+    center_matrix[1, :] = handle_center.x
 
     c, s = np.cos(angle), np.sin(angle)
     rotation_matrix = np.array(((c, -s), (s, c)))
@@ -102,48 +102,70 @@ def calc_y_spray_centroids(center_y):
 
 
 # Calculates the xz locations around the handle for spraying
-def calc_xz_spray_centroids(center, vector):
+def calc_xz_spray_centroids(handle_center, vector):
     xz_coords = np.empty((2, 3))
-    xz_coords[:, 0] = [center.x - DISTANCE_FROM_HANDLE, center.z]
-    xz_coords[:, 1] = [center.x, center.z - DISTANCE_FROM_HANDLE]
-    xz_coords[:, 2] = [center.x, center.z + DISTANCE_FROM_HANDLE]
+    xz_coords[:, 0] = [handle_center.x - DISTANCE_FROM_HANDLE, handle_center.z]
+    xz_coords[:, 1] = [handle_center.x, handle_center.z - DISTANCE_FROM_HANDLE]
+    xz_coords[:, 2] = [handle_center.x, handle_center.z + DISTANCE_FROM_HANDLE]
 
-    new_points = transform_points(xz_coords, center, vector)
+    new_points = transform_points(xz_coords, handle_center, vector)
 
     return new_points
 
 
-# Compiles xyz coordinates into a matrix
-def calc_coords(center, vector):
-    xz_coords = calc_xz_spray_centroids(center, vector)
-    y_coords = calc_y_spray_centroids(center.y)
+# Calculates the vectors which represent spray directions
+def calc_vectors(vector):
+    vectors = np.zeros((3, 3))
+    vectors[0, :] = [vector.x, 0, vector.z]
 
-    coords = np.empty(((len(y_coords) * xz_coords.shape[1]), 3))
+    points = np.array([[vector.z], [vector.x]])
+    center_matrix = np.array([[0], [0]])
+
+    new_angles = [-90, 90]
+    for i in range(2):
+        angle = math.radians(new_angles[i])
+
+        c, s = np.cos(angle), np.sin(angle)
+        rotation_matrix = np.array(((c, -s), (s, c)))
+
+        spray_vector = np.matmul(rotation_matrix, points - center_matrix) + center_matrix
+        vectors[i + 1, :] = [spray_vector[1, 0], 0, spray_vector[0, 0]]
+
+    return vectors
+
+
+# Compiles xyz coordinates and their vectors into a matrix
+def get_coords_and_vectors(handle_center, vector):
+    xz_coords = calc_xz_spray_centroids(handle_center, vector)
+    y_coords = calc_y_spray_centroids(handle_center.y)
+    vectors = calc_vectors(vector)
+
+    coords_and_vectors = np.empty(((len(y_coords) * xz_coords.shape[1]), 6))
 
     row = 0
     for a in range(xz_coords.shape[1]):
         for s in range(len(y_coords)):
-            coords[row, 0] = xz_coords[0, a]
-            coords[row, 1] = y_coords[s]
-            coords[row, 2] = xz_coords[1, a]
+            coords_and_vectors[row, 0] = xz_coords[0, a]
+            coords_and_vectors[row, 1] = y_coords[s]
+            coords_and_vectors[row, 2] = xz_coords[1, a]
+            coords_and_vectors[row, 3:6] = vectors[a, :]
             row += 1
 
-    return coords
+    return coords_and_vectors
 
 
-def main(center, vector):
+def main(handle_center, vector):
     print("Calculating spray coordinates...")
 
     if vector.x == 0 and vector.z == 0 and vector.y == 0:
         print("ERROR: cannot have unit vector direction (0,0,0)")
         exit(1)
     else:
-        coords = calc_coords(center, vector)
-        print(coords)
+        data = get_coords_and_vectors(handle_center, vector)
+        print(data)
 
 
 if __name__ == '__main__':
-    ORIGIN = Coord(0, 0, 0)
     center = Coord(0.0, 0.0, 0.0)
     direction = Coord(1.0, 0.0, 0.0)
 
