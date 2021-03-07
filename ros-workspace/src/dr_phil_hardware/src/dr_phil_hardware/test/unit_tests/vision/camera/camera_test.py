@@ -60,7 +60,6 @@ class CameraTest(unittest.TestCase):
             self.robot_frame,
             rospy.Time.now())
         
-
         try:
             self.rob2cam = transformerRos.fromTranslationRotation(trans,rot)
             self.camera.setup_transform(self.rob2cam)
@@ -68,21 +67,34 @@ class CameraTest(unittest.TestCase):
             self.fail("Could not setup transforms")
 
     def test_center_pixel_camera_ray(self):
-        mid_point = (self.camera_info.width//2,self.camera_info.height//2)
+
+        # vector pointing forward in camera
+        correct_ray = Ray(np.array([[0],[0],[0]]),np.array([[0],[0],[1]]),length=1)
+        
+        #notice inversion of pixels
+        mid_point = self.camera.get_pixel_through_ray(correct_ray) 
         ray_img = self.camera.get_ray_through_image(mid_point)
 
-        # check points forward
-        correct_ray = Ray(np.array([[0],[0],[0]]),np.array([[0],[0],[1]]),length=1)
-        assertRayEquals(self,correct_ray,ray_img)
+
+        assertRayEquals(self,correct_ray,ray_img,
+            msg="correct: \n {} \n was: \n {}".format(correct_ray,ray_img))
 
     def test_center_pixel_robot_ray(self):
-        mid_point = (960.5,540.5)
+        correct_ray_cam = Ray(np.array([[0],[0],[0]]),np.array([[0],[0],[1]]),length=1)
+
+        correct_ray = Ray(np.array([[0],[0],[-0.1]]),np.array([[1],[0],[0]]),length=1)
+
+        mid_point = self.camera.get_pixel_through_ray(correct_ray_cam)
         ray_img = self.camera.get_ray_through_image(mid_point)
         ray_rob = self.camera.get_ray_in_robot_frame(ray_img)
 
-        correct_ray = Ray(np.array([[0],[0],[-0.1]]),np.array([[1],[0],[0]]),length=1)
         
-        assertRayEquals(self,correct_ray,ray_rob,msg="correct: \n {} \n was: \n {}".format(correct_ray,ray_rob))
+        # notice low abs_tol, transforms can have large errors in this case
+        # we're talking milimiter differences though (2mm max)
+        assertRayEquals(self,correct_ray,ray_rob,
+            msg="correct: \n {} \n was: \n {}".format(correct_ray,ray_rob),
+            abs_tol=2e-3)
+
 
 if __name__ == "__main__":
     import rostest
