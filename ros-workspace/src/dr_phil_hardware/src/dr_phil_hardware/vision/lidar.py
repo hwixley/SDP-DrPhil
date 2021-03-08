@@ -33,7 +33,7 @@ class Lidar:
         """ returns projected ray in the same plane as lidar's rays (flatten) """
         """ set z component of direction to 0"""
 
-        original_v = ray.get_vec()
+        #original_v = ray.get_vec()
 
         origin = ray.origin
         dir = ray.dir
@@ -41,9 +41,9 @@ class Lidar:
 
         new_v = origin + dir
 
-        dot = original_v @ new_v.T
-        new_length = np.linalg.norm(new_v)
-        return Ray(origin, dir,length=new_length )
+        #dot = original_v @ new_v.T
+        #new_length = np.linalg.norm(new_v)
+        return Ray(origin, dir,length=1 )
     
     def get_corresponding_lidar_rays(self, camera_ray, data: LaserScan) -> tuple :
         """ returns the 2 corresponding lidar rays to a camera ray

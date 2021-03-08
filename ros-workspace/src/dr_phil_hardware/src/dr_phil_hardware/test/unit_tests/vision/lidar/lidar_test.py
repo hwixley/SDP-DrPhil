@@ -10,6 +10,7 @@ from tf2_msgs.msg import TFMessage
 from dr_phil_hardware.test.test_utils.test_utils import assertRayEquals 
 from dr_phil_hardware.vision.ray import Ray
 import numpy as np
+import math
 
 
 PKG='dr_phil_hardware'
@@ -30,6 +31,11 @@ class LidarTest(unittest.TestCase):
         # setup the lidar and transforms
         transform_listener = tf.TransformListener()
         transformerRos = tf.TransformerROS()
+
+        try:
+            self.lidar_data = rospy.wait_for_message("/scan_filtered", LaserScan)
+        except:
+            self.fail("Could not setup lidar")
 
         self.lidar = Lidar()
 
@@ -74,7 +80,25 @@ class LidarTest(unittest.TestCase):
         assertRayEquals(self,correct_ray_lidar,ray_lidar,
             msg="correct: \n {} \n was: \n {}".format(correct_ray_lidar,ray_lidar))
 
+    def test_get_ray_projection_1(self):
+        input = Ray(np.array([0, 0, 0]), np.array([0, 2, 3]))
+        flattened_input = Ray(np.array([0, 0, 0]), np.array([0, 2, 0]), length=1)
+
+        output = self.lidar.get_ray_projection(input)
+        assertRayEquals(self,flattened_input,output,
+            msg="correct: \n {} \n output: \n {}".format(flattened_input,output))
     
+    def test_get_ray_projection_2(self):
+        input = Ray(np.array([1, 5, 4]), np.array([1, 2, 0]))
+        flattened_input = Ray(np.array([1, 5, 4]), np.array([1, 2, 0]), length=1)
+
+        output = self.lidar.get_ray_projection(input)
+        assertRayEquals(self,flattened_input,output,
+            msg="correct: \n {} \n output: \n {}".format(flattened_input,output))
+    
+    def test_get_corresponding_lidar_rays(self):
+        print(self.lidar_data)
+        self.assertTrue(True, False)
 
 if __name__ == "__main__":
     import rostest
