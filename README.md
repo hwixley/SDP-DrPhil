@@ -42,6 +42,12 @@ to run the behaviour tree launch `rosrun dr_phil_hardware controller.py`, The tr
 
 This will initialize the main behaviour tree, see example behaviours for tips on building other behaviours.
 
+### Running MoveIt
+
+1. `roslaunch dr_phil_hardware moveit.launch` to launch move groups
+2. `roslaunch dr_phil_gazebo moveit_rviz.launch` (optional) to use GUI 
+
+
 ### Testing
 I've setup the gazebo and hardware packages for unit and integration testing,
 each test is a node in the test/ directory in each package and needs to be executable,
