@@ -5,6 +5,9 @@ controller_list:
       - joint2
       - joint3
       - joint4
+  - name: fake_gripper_controller
+      - gripper
+      
 initial:  # Define initial robot poses.
   - group: arm
     pose: default

@@ -9,6 +9,12 @@ project(dr_phil_hardware)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS 
     rospy
+    roscpp
+    actionlib
+    control_msgs
+    std_msgs
+    trajectory_msgs
+    moveit_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -37,7 +43,16 @@ catkin_python_setup()
 ##   * add "message_generation" and every package in MSG_DEP_SET to
 ##     find_package(catkin REQUIRED COMPONENTS ...)
 ##   * add "message_runtime" and every package in MSG_DEP_SET to
-##     catkin_package(CATKIN_DEPENDS ...)
+catkin_package(
+  INCLUDE_DIRS include 
+  CATKIN_DEPENDS 
+    roscpp
+    actionlib
+    control_msgs
+    std_msgs
+    trajectory_msgs
+    moveit_msgs
+    )
 ##   * uncomment the add_*_files sections below as needed
 ##     and list every .msg/.srv/.action file to be processed
 ##   * uncomment the generate_messages entry below
@@ -113,14 +128,18 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
-# ${catkin_INCLUDE_DIRS}
+ include
+ ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/dr_phil_hardware.cpp
 # )
+
+add_executable(dr_phil_hardware_bringup src/dr_phil_hardware_bringup.cpp)
+add_dependencies(dr_phil_hardware_bringup ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(dr_phil_hardware_bringup ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -163,9 +182,9 @@ include_directories(
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
-# install(TARGETS ${PROJECT_NAME}_node
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+install(TARGETS dr_phil_hardware_bringup
+   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark libraries for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_libraries.html
@@ -176,11 +195,9 @@ include_directories(
 # )
 
 ## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-# )
+ install(DIRECTORY launch
+   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+ )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES

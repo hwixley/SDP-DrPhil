@@ -68,6 +68,13 @@
   <depend>teb_local_planner</depend>
   <depend>costmap_converter</depend>
 
+
+  <depend>roscpp</depend>
+  <depend>actionlib</depend>
+  <depend>control_msgs</depend>
+  <depend>trajectory_msgs</depend>
+  <depend>moveit_msgs</depend>
+
   <test_depend>rostest</test_depend>
   <test_depend>rosunit</test_depend>
   
