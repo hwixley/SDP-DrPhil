@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: dr_phil_description
+    relative_path: urdf/dr-phil.urdf.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/dr-phil.srdf
+  CONFIG:
+    author_name: maks
+    author_email: makspl17@gmail.com
+    generated_timestamp: 1615222391
