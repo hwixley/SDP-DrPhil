@@ -5,6 +5,14 @@
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
       <robotNamespace>/</robotNamespace>
     </plugin>
+
+    <plugin name="libroboticsgroup_gazebo_mimic_joint_plugin" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
+      <joint>gripper</joint>
+      <mimicJoint>gripper_sub</mimicJoint>
+      <multiplier>-1</multiplier>
+      <has_pid>true</has_pid>
+    </plugin>
+
   </gazebo>
   <xacro:arg name="robot_name" default = "px100"/>
   <xacro:arg name="base_link_frame" default="${arm_base_frame}"/>
