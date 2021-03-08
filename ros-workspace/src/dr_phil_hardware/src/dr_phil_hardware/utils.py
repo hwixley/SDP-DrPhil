@@ -4,12 +4,12 @@ from graphviz import Source
 import rospy
 import sys
 from std_msgs.msg import String
+import py_trees
 
 ## Utility script used to visualise controller tree
 ## requires graphviz python package to be installed
 def visualise_tree():
     received = False
-
 
     def receive(data):
         received = True

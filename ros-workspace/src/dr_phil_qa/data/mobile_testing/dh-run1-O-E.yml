@@ -1,0 +1,14 @@
+metrics:
+  abs_error_per_measurement: 0.030725455923633134
+  abs_error_per_minute: 1.8517037094597586
+  abs_error_per_true_path_meter: 0.013869597493386381
+  measured_over_true_path_length: 0.9934639702693295
+raw:
+  absolute_error: 4.731720212239503
+  measured_path_length: 338.92789970989645
+  measurements_count: 154
+  time_passed: 2.555333333333333
+  true_path_length: 341.1577166890236
+
+
+non_reactive_collisions: 2
