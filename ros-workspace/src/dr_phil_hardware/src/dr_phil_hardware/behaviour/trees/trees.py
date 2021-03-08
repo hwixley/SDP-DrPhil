@@ -24,6 +24,7 @@ import os
 import numpy as np
 from std_msgs.msg import Float64MultiArray
 from actionlib_msgs.msg import GoalStatusArray
+from dr_phil_hardware.arm_interface.command_arm import ArmCommander
 
 def create_exploration_completed_check(duration=60):
     """ creates subtree which returns SUCCESS if no data has been received from the exploration nodes for the given duration.
@@ -47,7 +48,7 @@ def create_exploration_completed_check(duration=60):
     
 
 def create_set_positions_arm(parameters,name="positionArm"):
-
+    
     # clean inputs
     lower_limits = [0, -1.57, -1.57, -1.57, -1.57, -1]
     upper_limits = [0, 1.57, 1.57, 1.57, 1.57, 1.57]
@@ -67,6 +68,7 @@ def create_set_positions_arm(parameters,name="positionArm"):
         success_after_n_publishes=5,
         queue_size=10
     )
+    
 
     return position_arm
 

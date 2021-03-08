@@ -17,6 +17,7 @@ try:
 except ImportError:
     from Queue import Queue,LifoQueue, Empty  # python 2.x
 
+from dr_phil_hardware.arm_interface.command_arm import ArmCommander,MoveGroup
 
 log_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)),"..","..","logs")
 
@@ -297,6 +298,50 @@ class PublishTopic(py_trees.behaviour.Behaviour):
                 return py_trees.common.Status.SUCCESS
         else:
             return py_trees.common.Status.RUNNING       
+
+class MoveGroupJointTarget(py_trees.behaviour.Behaviour):
+    """ a behaviour which publishes a certain message and returning RUNNING on success. Can be set to return success on publish"""
+
+    def __init__(self,):
+        """ 
+        Args:
+            name: the name of the behaviour
+            msg_type: the type of message to be published
+            topic: the topic on which to publish the message
+            queue_size: the publisher queue size
+            success_on_publish: when true, will return SUCCESS after publishing each time
+            success_after_n_publishes: when set to any integer, will return success after publishing n times without failure
+        """
+
+        super().__init__(name=name)
+        self.msg = msg
+
+
+        self.publisher = rospy.Publisher(topic,msg_type,queue_size=queue_size)
+        self.success_on_publish = success_on_publish    
+        self.n_target = -1 if success_after_n_publishes is None else success_after_n_publishes
+
+    def initialise(self):
+        pass
+
+    def update(self):
+        self.feedback_message = "Waiting for data"
+        try:
+            self.feedback_message = "Published"
+            self.publisher.publish(self.msg)
+        except:
+            self.feedback_message = "Publisher failure"
+            return py_trees.common.Status.FAILURE
+
+        if self.success_on_publish or self.n_target >= 0:
+            self.n_target -= 1
+            if self.n_target > 0:
+                return py_trees.common.Status.RUNNING
+            else:
+                return py_trees.common.Status.SUCCESS
+        else:
+            return py_trees.common.Status.RUNNING       
+
 
 
 class MessageChanged(py_trees_ros.subscribers.Handler):
