@@ -32,3 +32,9 @@ controller_list:
       - joint2
       - joint3
       - joint4
+  - name: gripper_controller
+    action_ns: follow_joint_trajectory
+    default: True
+    type: FollowJointTrajectory
+    joints:
+      - gripper
