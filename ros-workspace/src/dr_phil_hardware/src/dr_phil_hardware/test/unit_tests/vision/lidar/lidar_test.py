@@ -138,9 +138,9 @@ class LidarTest(unittest.TestCase):
         self.assertTrue((angle1, angle2) == (314, 315) or (angle1, angle2) == (315, 316))
     
     def test_get_unit_vec_from_dir(self):
-        for angle in [0, 45, 90, 135, 180, 225, 270, 315]
-        ray = self.lidar.get_unit_vec_from_dir(angle)
-        self.assertTrue(self.lidar.get_angle_from_unit_vec(ray1) == angle)
+        for angle in [0, 45, 90, 135, 180, 225, 270, 315]:
+            ray = self.lidar.get_unit_vec_from_dir(angle)
+            self.assertTrue(self.lidar.get_angle_from_unit_vec(ray) == angle)
 
 if __name__ == "__main__":
     import rostest
