@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		164EAF1A2D512DA66E33F727 /* Pods_DrPhil_Controller_DrPhil_ControllerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FD719694D117B2A617FF991 /* Pods_DrPhil_Controller_DrPhil_ControllerUITests.framework */; };
+		1A060E880D0FFB1BE7989B37 /* Pods_DrPhil_Controller.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8B79D07A0801156774C6201 /* Pods_DrPhil_Controller.framework */; };
+		A79C48208D050C48F2C0B9B0 /* Pods_DrPhil_ControllerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B3A255C7EF86AB1BF7D3543 /* Pods_DrPhil_ControllerTests.framework */; };
 		C043404125C86FAF001C9B1F /* ctrlReturnViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C043404025C86FAF001C9B1F /* ctrlReturnViewController.swift */; };
 		C06B434525BF5C090017D14B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434425BF5C090017D14B /* AppDelegate.swift */; };
 		C06B434725BF5C090017D14B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434625BF5C090017D14B /* SceneDelegate.swift */; };
@@ -45,6 +48,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3B3A255C7EF86AB1BF7D3543 /* Pods_DrPhil_ControllerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DrPhil_ControllerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3FD719694D117B2A617FF991 /* Pods_DrPhil_Controller_DrPhil_ControllerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DrPhil_Controller_DrPhil_ControllerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		46FE6657995AEA2F8C093DD6 /* Pods-DrPhil ControllerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DrPhil ControllerTests.release.xcconfig"; path = "Target Support Files/Pods-DrPhil ControllerTests/Pods-DrPhil ControllerTests.release.xcconfig"; sourceTree = "<group>"; };
+		5BC353A1CC1FCE61DB241CFE /* Pods-DrPhil ControllerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DrPhil ControllerTests.debug.xcconfig"; path = "Target Support Files/Pods-DrPhil ControllerTests/Pods-DrPhil ControllerTests.debug.xcconfig"; sourceTree = "<group>"; };
+		5EE82F060F6E74E2C58676F5 /* Pods-DrPhil Controller.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DrPhil Controller.debug.xcconfig"; path = "Target Support Files/Pods-DrPhil Controller/Pods-DrPhil Controller.debug.xcconfig"; sourceTree = "<group>"; };
+		8004C6A0EC9C76EAECAC831E /* Pods-DrPhil Controller-DrPhil ControllerUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DrPhil Controller-DrPhil ControllerUITests.debug.xcconfig"; path = "Target Support Files/Pods-DrPhil Controller-DrPhil ControllerUITests/Pods-DrPhil Controller-DrPhil ControllerUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		B1A52D9FF8A5615FBC2ABCA0 /* Pods-DrPhil Controller.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DrPhil Controller.release.xcconfig"; path = "Target Support Files/Pods-DrPhil Controller/Pods-DrPhil Controller.release.xcconfig"; sourceTree = "<group>"; };
+		B8B79D07A0801156774C6201 /* Pods_DrPhil_Controller.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DrPhil_Controller.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B91C23CE86766363A7BCAFD0 /* Pods-DrPhil Controller-DrPhil ControllerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DrPhil Controller-DrPhil ControllerUITests.release.xcconfig"; path = "Target Support Files/Pods-DrPhil Controller-DrPhil ControllerUITests/Pods-DrPhil Controller-DrPhil ControllerUITests.release.xcconfig"; sourceTree = "<group>"; };
 		C043404025C86FAF001C9B1F /* ctrlReturnViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ctrlReturnViewController.swift; sourceTree = "<group>"; };
 		C06B434125BF5C090017D14B /* DrPhil.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DrPhil.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C06B434425BF5C090017D14B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -76,6 +88,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A060E880D0FFB1BE7989B37 /* Pods_DrPhil_Controller.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,6 +96,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A79C48208D050C48F2C0B9B0 /* Pods_DrPhil_ControllerTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,6 +104,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				164EAF1A2D512DA66E33F727 /* Pods_DrPhil_Controller_DrPhil_ControllerUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,6 +118,8 @@
 				C06B435A25BF5C0C0017D14B /* DrPhil ControllerTests */,
 				C06B436525BF5C0C0017D14B /* DrPhil ControllerUITests */,
 				C06B434225BF5C090017D14B /* Products */,
+				CAD214B7EDF794CC87C3D4B1 /* Pods */,
+				DF934B3AA68AEBE4E008605D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -174,6 +191,30 @@
 			path = SupportingFiles;
 			sourceTree = "<group>";
 		};
+		CAD214B7EDF794CC87C3D4B1 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				5EE82F060F6E74E2C58676F5 /* Pods-DrPhil Controller.debug.xcconfig */,
+				B1A52D9FF8A5615FBC2ABCA0 /* Pods-DrPhil Controller.release.xcconfig */,
+				8004C6A0EC9C76EAECAC831E /* Pods-DrPhil Controller-DrPhil ControllerUITests.debug.xcconfig */,
+				B91C23CE86766363A7BCAFD0 /* Pods-DrPhil Controller-DrPhil ControllerUITests.release.xcconfig */,
+				5BC353A1CC1FCE61DB241CFE /* Pods-DrPhil ControllerTests.debug.xcconfig */,
+				46FE6657995AEA2F8C093DD6 /* Pods-DrPhil ControllerTests.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		DF934B3AA68AEBE4E008605D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B8B79D07A0801156774C6201 /* Pods_DrPhil_Controller.framework */,
+				3FD719694D117B2A617FF991 /* Pods_DrPhil_Controller_DrPhil_ControllerUITests.framework */,
+				3B3A255C7EF86AB1BF7D3543 /* Pods_DrPhil_ControllerTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -181,9 +222,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C06B436B25BF5C0C0017D14B /* Build configuration list for PBXNativeTarget "DrPhil Controller" */;
 			buildPhases = (
+				23FE8E98BAF30ED1E35912F8 /* [CP] Check Pods Manifest.lock */,
 				C06B433D25BF5C090017D14B /* Sources */,
 				C06B433E25BF5C090017D14B /* Frameworks */,
 				C06B433F25BF5C090017D14B /* Resources */,
+				D39F702094538558A71E1F44 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -198,6 +241,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C06B436E25BF5C0C0017D14B /* Build configuration list for PBXNativeTarget "DrPhil ControllerTests" */;
 			buildPhases = (
+				0877A6F532C645AFAFBFBDAA /* [CP] Check Pods Manifest.lock */,
 				C06B435325BF5C0C0017D14B /* Sources */,
 				C06B435425BF5C0C0017D14B /* Frameworks */,
 				C06B435525BF5C0C0017D14B /* Resources */,
@@ -216,9 +260,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C06B437125BF5C0C0017D14B /* Build configuration list for PBXNativeTarget "DrPhil ControllerUITests" */;
 			buildPhases = (
+				49A2885A702719C32B7979E0 /* [CP] Check Pods Manifest.lock */,
 				C06B435E25BF5C0C0017D14B /* Sources */,
 				C06B435F25BF5C0C0017D14B /* Frameworks */,
 				C06B436025BF5C0C0017D14B /* Resources */,
+				1CF8B91828BDB4490DA7B8B0 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -299,6 +345,109 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		0877A6F532C645AFAFBFBDAA /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-DrPhil ControllerTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		1CF8B91828BDB4490DA7B8B0 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-DrPhil Controller-DrPhil ControllerUITests/Pods-DrPhil Controller-DrPhil ControllerUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-DrPhil Controller-DrPhil ControllerUITests/Pods-DrPhil Controller-DrPhil ControllerUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-DrPhil Controller-DrPhil ControllerUITests/Pods-DrPhil Controller-DrPhil ControllerUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		23FE8E98BAF30ED1E35912F8 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-DrPhil Controller-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		49A2885A702719C32B7979E0 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-DrPhil Controller-DrPhil ControllerUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D39F702094538558A71E1F44 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-DrPhil Controller/Pods-DrPhil Controller-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-DrPhil Controller/Pods-DrPhil Controller-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-DrPhil Controller/Pods-DrPhil Controller-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C06B433D25BF5C090017D14B /* Sources */ = {
@@ -488,6 +637,7 @@
 		};
 		C06B436C25BF5C0C0017D14B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5EE82F060F6E74E2C58676F5 /* Pods-DrPhil Controller.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -505,6 +655,7 @@
 		};
 		C06B436D25BF5C0C0017D14B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B1A52D9FF8A5615FBC2ABCA0 /* Pods-DrPhil Controller.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -522,6 +673,7 @@
 		};
 		C06B436F25BF5C0C0017D14B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5BC353A1CC1FCE61DB241CFE /* Pods-DrPhil ControllerTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -543,6 +695,7 @@
 		};
 		C06B437025BF5C0C0017D14B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 46FE6657995AEA2F8C093DD6 /* Pods-DrPhil ControllerTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -564,6 +717,7 @@
 		};
 		C06B437225BF5C0C0017D14B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8004C6A0EC9C76EAECAC831E /* Pods-DrPhil Controller-DrPhil ControllerUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -583,6 +737,7 @@
 		};
 		C06B437325BF5C0C0017D14B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B91C23CE86766363A7BCAFD0 /* Pods-DrPhil Controller-DrPhil ControllerUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;

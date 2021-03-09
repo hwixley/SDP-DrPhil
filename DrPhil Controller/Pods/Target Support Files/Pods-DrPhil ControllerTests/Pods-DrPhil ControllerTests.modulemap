@@ -1,0 +1,6 @@
+framework module Pods_DrPhil_ControllerTests {
+  umbrella header "Pods-DrPhil ControllerTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
