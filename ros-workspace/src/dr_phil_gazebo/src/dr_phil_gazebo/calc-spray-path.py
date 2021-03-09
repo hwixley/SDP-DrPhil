@@ -25,13 +25,13 @@ class SprayPathVisualiser:
         spray_direction = []
         for data in spray_data:
             point = Point()
-            point.x = (data[0] * 0.001)  #convert to m 
-            point.y = (data[1] * 0.001)  #convert to m 
-            point.z = (data[2] * 0.001)  #convert to m
+            point.x = (data[0])  #in meters
+            point.y = (data[1])  #in meters
+            point.z = (data[2])  #in meters
             end_point = Point()
-            end_point.x = data[3] * 0.001
-            end_point.y = data[4] * 0.001
-            end_point.z = data[5] * 0.001
+            end_point.x = data[3] *0.001 #in meters
+            end_point.y = data[4] *0.001#in meters
+            end_point.z = data[5] *0.001#in meters
             points.append(point)
             spray_direction.append(end_point)
         
@@ -114,7 +114,7 @@ class SprayPathVisualiser:
             point_camera.action = 0 # add/modify
             point_camera.points = arrow
             point_camera.pose.orientation.w = 1
-            point_camera.color.a = 1
+            point_camera.color.a = 0.5
             point_camera.color.g = 1 
             point_camera.scale.x = 0.01
             point_camera.scale.y = 0.01
