@@ -168,13 +168,13 @@ def calc_y_spray_centroids(center_y):
 
     current_y = center_y
     while current_y < top:
-        current_y += CIRCLE_EDGE
+        current_y += CIRCLE_EDGE*2
         spray_centroids[index] = current_y
         index += 1
 
     current_y = center_y
     while current_y > bottom:
-        current_y -= CIRCLE_EDGE
+        current_y -= CIRCLE_EDGE*2
         spray_centroids[index] = current_y
         index += 1
 
@@ -232,7 +232,7 @@ def get_coords_and_vectors(handle_center, vector):
             row += 1
 
     coords_and_vectors[:, 0:3] = coords_and_vectors[:, 0:3]*0.001  # Convert to metres
-    
+
     # Change coordinate axes (xy is 2d in rviz, whereas xz is 2d in this implementation)
     y = coords_and_vectors[:, 1]
     coords_and_vectors[:, 1] = coords_and_vectors[:, 2]
