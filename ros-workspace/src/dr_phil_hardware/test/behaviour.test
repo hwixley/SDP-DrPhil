@@ -1,0 +1,5 @@
+<launch>
+    <node pkg="dr_phil_hardware" name="mock_action_server" type="mock_action_server.py"/>
+
+    <test test-name="action_client_connect_on_init_test" pkg="dr_phil_hardware" type="action_client_connect_on_init_test.py" />
+</launch>

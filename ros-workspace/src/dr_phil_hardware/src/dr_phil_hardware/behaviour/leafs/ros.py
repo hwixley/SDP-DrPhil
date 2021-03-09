@@ -475,7 +475,6 @@ class ActionClientConnectOnInit(py_trees_ros.actions.ActionClient):
         self.action_client = None
         self.connected = False
         self.time_start = rospy.get_time()
-        self.time_waited
 
     def update(self):
        # we change slightly the behaviour on when action client is missing
