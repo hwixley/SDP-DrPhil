@@ -4,6 +4,7 @@ import numpy as np
 import copy
 
 from visualization_msgs.msg import Marker
+from visualization_msgs.msg import MarkerArray
 from geometry_msgs.msg import Point
 import resource_retriever as Retriever
 import rospy
@@ -21,13 +22,18 @@ SPRAY_CONFIDENCE = 10  # (mm)
 class SprayPathVisualiser:
     def __init__(self, spray_data):
         points = []
-        vectors = []
+        spray_direction = []
         for data in spray_data:
             point = Point()
-            point.x = (data[0] * 0.001)  #convert to m 
-            point.y = (data[1] * 0.001)  #convert to m 
-            point.z = (data[2] * 0.001)  #convert to m
+            point.x = (data[0])  #in meters
+            point.y = (data[1])  #in meters
+            point.z = (data[2])  #in meters
+            end_point = Point()
+            end_point.x = data[3] *0.001 #in meters
+            end_point.y = data[4] *0.001#in meters
+            end_point.z = data[5] *0.001#in meters
             points.append(point)
+            spray_direction.append(end_point)
         
   
         rospy.init_node('spray_path_visualiser',anonymous=True)
@@ -42,6 +48,13 @@ class SprayPathVisualiser:
         rospy.sleep(2)
         door_marker = self.display_door_and_handle()
         self.door_pub.publish(door_marker)
+        
+        
+        spray_direction_topic = 'spray_direction_visualisation'
+        self.vis_arrow_pub = rospy.Publisher(spray_direction_topic, MarkerArray, queue_size=100)
+        rospy.sleep(2)
+        path_direction = self.visualise_spray_direction(points,spray_direction)
+        self.vis_arrow_pub.publish(path_direction)
         
  
     def configurate_rviz_marker(self,points):
@@ -65,7 +78,7 @@ class SprayPathVisualiser:
      
     def display_door_and_handle(self):
         door_marker = Marker()
-        door_marker.header.frame_id = "camera_rgb_frame"
+        door_marker.header.frame_id = "odom"
         door_marker.header.stamp = rospy.Time.now()
         door_marker.ns = "door positions"
         door_marker.id = 0
@@ -87,9 +100,32 @@ class SprayPathVisualiser:
         door_marker.mesh_use_embedded_materials = True
         return door_marker
 
-
+    def visualise_spray_direction(self,points, end_points):
+        arrows = MarkerArray()
+        for i in range(0,len(points)):
+            point_camera = Marker()
+            arrow = [] 
+            arrow.append(points[i])
+            arrow.append(end_points[i])
+            point_camera.header.frame_id = "camera_rgb_frame"
+            point_camera.header.stamp = rospy.Time.now()
+            point_camera.id = 0
+            point_camera.type = 0 # arrow
+            point_camera.action = 0 # add/modify
+            point_camera.points = arrow
+            point_camera.pose.orientation.w = 1
+            point_camera.color.a = 0.5
+            point_camera.color.g = 1 
+            point_camera.scale.x = 0.01
+            point_camera.scale.y = 0.01
+            point_camera.scale.z = 0.01
+            point_camera.ns = "Goal-%u"%i
+            point_camera.lifetime = rospy.Duration(10)
+            
+            arrows.markers.append(point_camera) 
+        return arrows
         
-       
+        
     
 class Coord:
     def __init__(self, x, y, z):
