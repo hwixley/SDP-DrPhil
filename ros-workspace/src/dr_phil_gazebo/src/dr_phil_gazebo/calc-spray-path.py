@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import math
 import numpy as np
 import copy
@@ -202,13 +202,13 @@ def calc_y_spray_centroids(center_y):
     spray_centroids = np.zeros(num_sprays)
     index = 0
 
-    current_y = center_y
+    current_y = center_y - CIRCLE_EDGE
     while current_y < top:
         current_y += CIRCLE_EDGE*2
         spray_centroids[index] = current_y
         index += 1
 
-    current_y = center_y
+    current_y = center_y + CIRCLE_EDGE
     while current_y > bottom:
         current_y -= CIRCLE_EDGE*2
         spray_centroids[index] = current_y
