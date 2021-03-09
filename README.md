@@ -44,9 +44,15 @@ This will initialize the main behaviour tree, see example behaviours for tips on
 
 ### Running MoveIt
 
-1. `roslaunch dr_phil_hardware moveit.launch` to launch move groups
-2. `roslaunch dr_phil_gazebo moveit_rviz.launch` (optional) to use GUI 
+`roslaunch dr_phil_gazebo moveit_rviz.launch` to use GUI 
 
+use the static class `commander = ArmCommander()` available in  dr_phil_hardware.arm_interface.command_arm module to use the python API of move it made available (will be expanded),
+overall the moveit ROS interface is the most flexible, and includes feedback on started plans (see moveit docs)
+
+
+### Operating gripper
+
+To command the gripper by itself, publish to the `/gripper_position` topic, which will move the gripper and keep the rest of the joints at the last published position (initially all zeroes, so watch out)
 
 ### Testing
 I've setup the gazebo and hardware packages for unit and integration testing,
