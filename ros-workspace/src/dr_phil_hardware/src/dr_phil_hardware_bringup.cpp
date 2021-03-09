@@ -18,6 +18,7 @@
 
 #include "dr_phil_hardware_bringup/dr_phil_hardware_bringup.h"
 #include <ros/console.h>
+#include <std_msgs/MultiArrayDimension.h>
 
 Turtlebot3ManipulationBringup::Turtlebot3ManipulationBringup()
 : nh_(""),
@@ -32,15 +33,12 @@ Turtlebot3ManipulationBringup::Turtlebot3ManipulationBringup()
   // Init subscriber
   gripper_pos_sub_ = nh_.subscribe("gripper_position",100,&Turtlebot3ManipulationBringup::gripperPosCallback,this);
 
-  // curr_state.dim.push_back(std_msgs::MultiArrayDimension())
-  // curr_state.layout.dim[0].size = 6;
-  // curr_state.dim[0].stride = 1;
-  // curr_state.dim[0].label = "x";
-  // curr_state.data.clear();
-  
-  // for(int i = 0; i < 6; i++){
-  //   curr_state.data[i] = 0;
-  // }
+  curr_state = std_msgs::Float64MultiArray();
+  curr_state.data.resize(6);
+  for(int i = 0; i < 6; i++){
+    curr_state.data[i] = 0;
+  }
+
   arm_action_server_.start();
 }
 
@@ -52,9 +50,14 @@ void Turtlebot3ManipulationBringup::publishPoint(const std_msgs::Float64MultiArr
 }
 
 void Turtlebot3ManipulationBringup::gripperPosCallback(const std_msgs::Float64 &msg){
+  ROS_ERROR("%s",msg);
   gripper_state = msg;
-  // curr_state.data[5] = gripper_state.data;
-  // publishPoint(curr_state);
+  ROS_ERROR("%f",msg.data);
+  curr_state.data[5] = msg.data;
+  ROS_ERROR("%f",msg.data);
+  publishPoint(curr_state);
+
+
 }
 
 void Turtlebot3ManipulationBringup::armActionCallback(const control_msgs::FollowJointTrajectoryGoalConstPtr &goal)
