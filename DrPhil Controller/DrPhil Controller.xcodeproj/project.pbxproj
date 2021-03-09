@@ -10,11 +10,14 @@
 		164EAF1A2D512DA66E33F727 /* Pods_DrPhil_Controller_DrPhil_ControllerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FD719694D117B2A617FF991 /* Pods_DrPhil_Controller_DrPhil_ControllerUITests.framework */; };
 		1A060E880D0FFB1BE7989B37 /* Pods_DrPhil_Controller.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8B79D07A0801156774C6201 /* Pods_DrPhil_Controller.framework */; };
 		A79C48208D050C48F2C0B9B0 /* Pods_DrPhil_ControllerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B3A255C7EF86AB1BF7D3543 /* Pods_DrPhil_ControllerTests.framework */; };
+		C03A667F25F7AF2200FC15CE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C03A667E25F7AF2200FC15CE /* GoogleService-Info.plist */; };
+		C03A668025F7AF2200FC15CE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C03A667E25F7AF2200FC15CE /* GoogleService-Info.plist */; };
+		C03A668125F7AF2200FC15CE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C03A667E25F7AF2200FC15CE /* GoogleService-Info.plist */; };
 		C03E95B325F787BE00542494 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C03E95B225F787BE00542494 /* Default-568h@2x.png */; };
 		C043404125C86FAF001C9B1F /* ctrlReturnViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C043404025C86FAF001C9B1F /* ctrlReturnViewController.swift */; };
 		C06B434525BF5C090017D14B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434425BF5C090017D14B /* AppDelegate.swift */; };
 		C06B434725BF5C090017D14B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434625BF5C090017D14B /* SceneDelegate.swift */; };
-		C06B434925BF5C090017D14B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434825BF5C090017D14B /* ViewController.swift */; };
+		C06B434925BF5C090017D14B /* StartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434825BF5C090017D14B /* StartViewController.swift */; };
 		C06B434C25BF5C090017D14B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C06B434A25BF5C090017D14B /* Main.storyboard */; };
 		C06B434E25BF5C0B0017D14B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C06B434D25BF5C0B0017D14B /* Assets.xcassets */; };
 		C06B435125BF5C0B0017D14B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C06B434F25BF5C0B0017D14B /* LaunchScreen.storyboard */; };
@@ -58,12 +61,13 @@
 		B1A52D9FF8A5615FBC2ABCA0 /* Pods-DrPhil Controller.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DrPhil Controller.release.xcconfig"; path = "Target Support Files/Pods-DrPhil Controller/Pods-DrPhil Controller.release.xcconfig"; sourceTree = "<group>"; };
 		B8B79D07A0801156774C6201 /* Pods_DrPhil_Controller.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DrPhil_Controller.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B91C23CE86766363A7BCAFD0 /* Pods-DrPhil Controller-DrPhil ControllerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DrPhil Controller-DrPhil ControllerUITests.release.xcconfig"; path = "Target Support Files/Pods-DrPhil Controller-DrPhil ControllerUITests/Pods-DrPhil Controller-DrPhil ControllerUITests.release.xcconfig"; sourceTree = "<group>"; };
+		C03A667E25F7AF2200FC15CE /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C03E95B225F787BE00542494 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		C043404025C86FAF001C9B1F /* ctrlReturnViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ctrlReturnViewController.swift; sourceTree = "<group>"; };
 		C06B434125BF5C090017D14B /* DrPhil.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DrPhil.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C06B434425BF5C090017D14B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C06B434625BF5C090017D14B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		C06B434825BF5C090017D14B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		C06B434825BF5C090017D14B /* StartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartViewController.swift; sourceTree = "<group>"; };
 		C06B434B25BF5C090017D14B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C06B434D25BF5C0B0017D14B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C06B435025BF5C0B0017D14B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -168,13 +172,13 @@
 			children = (
 				C06B434425BF5C090017D14B /* AppDelegate.swift */,
 				C06B434625BF5C090017D14B /* SceneDelegate.swift */,
-				C06B434825BF5C090017D14B /* ViewController.swift */,
+				C06B434825BF5C090017D14B /* StartViewController.swift */,
 				C06B437725C1BA1D0017D14B /* HomeViewController.swift */,
 				C06B437925C1BA2E0017D14B /* ControlViewController.swift */,
 				C06B437B25C1BA3D0017D14B /* StatsViewController.swift */,
 				C06B437D25C1BA4D0017D14B /* MenuViewController.swift */,
-				C06B434A25BF5C090017D14B /* Main.storyboard */,
 				C043404025C86FAF001C9B1F /* ctrlReturnViewController.swift */,
+				C06B434A25BF5C090017D14B /* Main.storyboard */,
 				C0B1AA3525C590570072D124 /* CleanSchedule.swift */,
 				C06B437F25C1CDBB0017D14B /* ctrlScheduleCleaningViewController.swift */,
 				C0B1AA3B25C5B93E0072D124 /* DailyStats.swift */,
@@ -190,6 +194,7 @@
 				C06B434D25BF5C0B0017D14B /* Assets.xcassets */,
 				C06B434F25BF5C0B0017D14B /* LaunchScreen.storyboard */,
 				C06B435225BF5C0C0017D14B /* Info.plist */,
+				C03A667E25F7AF2200FC15CE /* GoogleService-Info.plist */,
 			);
 			path = SupportingFiles;
 			sourceTree = "<group>";
@@ -328,6 +333,7 @@
 			files = (
 				C06B435125BF5C0B0017D14B /* LaunchScreen.storyboard in Resources */,
 				C03E95B325F787BE00542494 /* Default-568h@2x.png in Resources */,
+				C03A667F25F7AF2200FC15CE /* GoogleService-Info.plist in Resources */,
 				C06B434E25BF5C0B0017D14B /* Assets.xcassets in Resources */,
 				C06B434C25BF5C090017D14B /* Main.storyboard in Resources */,
 			);
@@ -337,6 +343,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C03A668025F7AF2200FC15CE /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -344,6 +351,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C03A668125F7AF2200FC15CE /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -457,7 +465,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C06B434925BF5C090017D14B /* ViewController.swift in Sources */,
+				C06B434925BF5C090017D14B /* StartViewController.swift in Sources */,
 				C0B1AA3C25C5B93E0072D124 /* DailyStats.swift in Sources */,
 				C0B1AA3A25C5983B0072D124 /* ContentView.swift in Sources */,
 				C043404125C86FAF001C9B1F /* ctrlReturnViewController.swift in Sources */,

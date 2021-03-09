@@ -6,7 +6,9 @@ target 'DrPhil Controller' do
   use_frameworks!
 
   # Pods for DrPhil Controller
-	pod 'RBSManager'
+	pod 'Firebase/Analytics'
+	pod 'Firebase/Auth'
+	pod 'Firebase/Firestore'
 
   target 'DrPhil ControllerTests' do
     inherit! :search_paths
