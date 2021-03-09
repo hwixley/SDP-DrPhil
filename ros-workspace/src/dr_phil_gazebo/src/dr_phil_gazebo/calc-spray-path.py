@@ -232,6 +232,11 @@ def get_coords_and_vectors(handle_center, vector):
             row += 1
 
     coords_and_vectors[:, 0:3] = coords_and_vectors[:, 0:3]*0.001  # Convert to metres
+    
+    # Change coordinate axes (xy is 2d in rviz, whereas xz is 2d in this implementation)
+    y = coords_and_vectors[:, 1]
+    coords_and_vectors[:, 1] = coords_and_vectors[:, 2]
+    coords_and_vectors[:, 2] = y
 
     return coords_and_vectors
 
