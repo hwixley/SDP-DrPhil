@@ -56,15 +56,21 @@ def create_set_positions_arm(parameters,name="positionArm"):
     clean_upper = min(clean_lower,upper_limits)
     parameters = list(clean_upper)
 
-    
-    sequence = py_trees.composites.Sequence()
-    
-    position_arm = JointTargetSetAndForget(name,MoveGroup.ARM,parameters[1:-1])
-    position_gripper = JointTargetSetAndForget(name,MoveGroup.gripper,[parameters[-1],-parameters[-1]])
+    # create message
+    positions = Float64MultiArray()
+    positions.data = parameters 
 
-    sequence.add_children([position_arm,position_gripper])
+    position_arm = PublishTopic(
+        name=name,
+        msg=positions,
+        msg_type=Float64MultiArray,
+        topic="/joint_trajectory_point",
+        success_after_n_publishes=5,
+        queue_size=10
+    )
+    
 
-    return sequence
+    return position_arm
 
 def create_explore_frontier_and_save_map(map_path=None,timeout=120,no_data_timeout=20):
     """ creates subtree which executes frontier exploration, generates a map and saves it to the given map_name 
