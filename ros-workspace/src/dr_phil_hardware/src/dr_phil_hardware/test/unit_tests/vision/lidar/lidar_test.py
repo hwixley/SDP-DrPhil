@@ -154,6 +154,9 @@ class LidarTest(unittest.TestCase):
             ray = self.lidar.get_unit_vec_from_dir(np.deg2rad(angle))
             self.assertTrue(self.lidar.get_angle_from_unit_vec(ray) == angle)
 
+    def test_get_normal_to_plane(self):
+        pass
+
 if __name__ == "__main__":
     import rostest
     rostest.rosrun(PKG,'lidar_test',LidarTest)
