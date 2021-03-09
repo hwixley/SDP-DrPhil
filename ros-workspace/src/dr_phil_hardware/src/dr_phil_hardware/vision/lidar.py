@@ -62,11 +62,13 @@ class Lidar:
         while angle <= data.angle_max:
             lidar_ray1 = self.get_unit_vec_from_dir(angle)
             lidar_ray2 = self.get_unit_vec_from_dir((angle + data.angle_increment) % (2*math.pi))
+            lidar_ray1.length = data.ranges[angle_deg]
+            lidar_ray2.length = data.ranges[(angle_deg + int(np.rad2deg(data.angle_increment))) % 360]
+
             subtr = utils.subtract(lidar_ray1, lidar_ray2)
-            
+            print("\nCurrently checking: \nlray1 angle: {}\nlray2 angle: {}\n".format(self.get_angle_from_unit_vec(lidar_ray1), self.get_angle_from_unit_vec(lidar_ray2)))
             if utils.intersect(subtr, camera_ray):
-                lidar_ray1.length = data.ranges[angle_deg]
-                lidar_ray2.length = data.ranges[(angle_deg + int(np.rad2deg(data.angle_increment))) % 360]
+                print("intersecting!!!")
                 return lidar_ray1, lidar_ray2
             
             angle += data.angle_increment

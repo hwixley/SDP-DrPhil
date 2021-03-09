@@ -18,15 +18,14 @@ def intersect(ray1 : Ray, ray2 : Ray):
 
     segment1 = LineString([list(ray1.origin),list(ray1.dir * ray1.length + ray1.origin)])
     segment2 = LineString([list(ray2.origin),list(ray2.dir * ray2.length + ray2.origin)])
-    print(segment1)
     return segment1.intersects(segment2)
 
 def subtract(ray1, ray2):
     """ returns ray1 - ray2
     the 2 rays have the same origin """
     
-    origin = ray2.origin + ray2.dir
-    dir = np.subtract(ray1.origin + ray1.dir, ray2.origin + ray2.dir)
+    origin = ray2.get_vec()
+    dir = np.subtract(ray1.get_vec(), ray2.get_vec())
     length = math.sqrt(ray1.length ** 2 + ray2.length ** 2)
 
     return Ray(origin, dir, length)
