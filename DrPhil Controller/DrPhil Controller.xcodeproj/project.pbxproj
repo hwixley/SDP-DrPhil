@@ -3,13 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		164EAF1A2D512DA66E33F727 /* Pods_DrPhil_Controller_DrPhil_ControllerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FD719694D117B2A617FF991 /* Pods_DrPhil_Controller_DrPhil_ControllerUITests.framework */; };
 		1A060E880D0FFB1BE7989B37 /* Pods_DrPhil_Controller.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8B79D07A0801156774C6201 /* Pods_DrPhil_Controller.framework */; };
 		A79C48208D050C48F2C0B9B0 /* Pods_DrPhil_ControllerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B3A255C7EF86AB1BF7D3543 /* Pods_DrPhil_ControllerTests.framework */; };
+		C03E95B325F787BE00542494 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C03E95B225F787BE00542494 /* Default-568h@2x.png */; };
 		C043404125C86FAF001C9B1F /* ctrlReturnViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C043404025C86FAF001C9B1F /* ctrlReturnViewController.swift */; };
 		C06B434525BF5C090017D14B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434425BF5C090017D14B /* AppDelegate.swift */; };
 		C06B434725BF5C090017D14B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434625BF5C090017D14B /* SceneDelegate.swift */; };
@@ -57,6 +58,7 @@
 		B1A52D9FF8A5615FBC2ABCA0 /* Pods-DrPhil Controller.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DrPhil Controller.release.xcconfig"; path = "Target Support Files/Pods-DrPhil Controller/Pods-DrPhil Controller.release.xcconfig"; sourceTree = "<group>"; };
 		B8B79D07A0801156774C6201 /* Pods_DrPhil_Controller.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DrPhil_Controller.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B91C23CE86766363A7BCAFD0 /* Pods-DrPhil Controller-DrPhil ControllerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DrPhil Controller-DrPhil ControllerUITests.release.xcconfig"; path = "Target Support Files/Pods-DrPhil Controller-DrPhil ControllerUITests/Pods-DrPhil Controller-DrPhil ControllerUITests.release.xcconfig"; sourceTree = "<group>"; };
+		C03E95B225F787BE00542494 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		C043404025C86FAF001C9B1F /* ctrlReturnViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ctrlReturnViewController.swift; sourceTree = "<group>"; };
 		C06B434125BF5C090017D14B /* DrPhil.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DrPhil.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C06B434425BF5C090017D14B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 		C06B433825BF5C090017D14B = {
 			isa = PBXGroup;
 			children = (
+				C03E95B225F787BE00542494 /* Default-568h@2x.png */,
 				C06B434325BF5C090017D14B /* DrPhil Controller */,
 				C06B435A25BF5C0C0017D14B /* DrPhil ControllerTests */,
 				C06B436525BF5C0C0017D14B /* DrPhil ControllerUITests */,
@@ -201,7 +204,6 @@
 				5BC353A1CC1FCE61DB241CFE /* Pods-DrPhil ControllerTests.debug.xcconfig */,
 				46FE6657995AEA2F8C093DD6 /* Pods-DrPhil ControllerTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -325,6 +327,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C06B435125BF5C0B0017D14B /* LaunchScreen.storyboard in Resources */,
+				C03E95B325F787BE00542494 /* Default-568h@2x.png in Resources */,
 				C06B434E25BF5C0B0017D14B /* Assets.xcassets in Resources */,
 				C06B434C25BF5C090017D14B /* Main.storyboard in Resources */,
 			);

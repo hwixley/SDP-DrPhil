@@ -7,6 +7,11 @@
 		<key>DrPhil Controller.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
+			<integer>6</integer>
+		</dict>
+		<key>DrPhil-Controller.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
 	</dict>
