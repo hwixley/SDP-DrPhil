@@ -10,9 +10,13 @@ class Ray():
         if not (origin.size == dir.size):
             raise ValueError("The origin and direction have different dimensionality: {} and {}".format(origin.size,dir.size))
 
+    def get_point(self):
+        """ converts the ray to a point, with origin at the rays origin  (i.e. in the frame of the ray)"""
+        return ((self.dir * self.length) + self.origin)
+
     def get_vec(self):
         """ returns ray as vector from origin in direction of the ray's length """
-        return ((self.dir * self.length) + self.origin) - self.origin
+        return self.get_point() - self.origin
 
     def __repr__(self):
         return "Ray:"+str(self.origin) + "\n->\n" + str(self.dir) + "\nLength: " + str(self.length) + "\n"
