@@ -11,3 +11,4 @@ gripper_controller:
   action_monitor_rate: 10
   gains: # Required because we're controlling an effort interface
     gripper: {p: 100.0,  d: 1.0, i: 0.0}
+

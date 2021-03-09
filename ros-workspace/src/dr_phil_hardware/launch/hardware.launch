@@ -7,10 +7,10 @@
     <param name="filter/min_range" value="0.2"/>
   </node>
 
-  <include file="$(file dr_phil_hardware)/launch/arm_stack/moveit.launch"/>
-  
+  <include file="$(find dr_phil_hardware)/launch/arm_stack/moveit.launch"/>
+  <include file="$(find dr_phil_hardware)/launch/dr_phil_hardware_bringup.launch"/>
+
   <!-- only run if we are not running a simulation -->
   <group if="$(eval arg('simulation')=='false')">
-    <include file="$(file dr_phil_hardware)/launch/dr_phil_hardware_bringup.launch"/>
   </group>
 </launch>

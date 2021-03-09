@@ -41,7 +41,7 @@
     <param name="tf_prefix" value=""/>
   </node>
   
-  <!-- <node name="px100_control_merger" pkg="dr_phil_gazebo" type="px100_joint_controller_merger.py" respawn="false" /> -->
+  <node name="px100_control_merger" pkg="dr_phil_gazebo" type="px100_joint_controller_merger.py" respawn="false" />
   <node name="battery_level" pkg="dr_phil_gazebo" type="battery_level.py" respawn="false" />
   <node name="spray_controller" pkg="dr_phil_gazebo" type="spray_controller" respawn="true" />
   <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model dr-phil -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description " />

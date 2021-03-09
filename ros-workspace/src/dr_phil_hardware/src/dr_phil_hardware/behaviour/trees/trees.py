@@ -5,13 +5,14 @@
 from time import time
 
 from numpy.core.fromnumeric import var
+from dr_phil_hardware.arm_interface.command_arm import MoveGroup
 import py_trees
 from py_trees.composites import Parallel
 from py_trees.decorators import FailureIsRunning
 from py_trees.meta import oneshot
 import py_trees_ros
 
-from dr_phil_hardware.behaviour.leafs.ros import PublishTopic,RunRos,MessageChanged
+from dr_phil_hardware.behaviour.leafs.ros import PublishTopic,RunRos,MessageChanged,JointTargetSetAndForget
 from dr_phil_hardware.behaviour.leafs.general import ClosestObstacle
 
 from dr_phil_hardware.behaviour.decorators import HoldStateForDuration
@@ -24,7 +25,6 @@ import os
 import numpy as np
 from std_msgs.msg import Float64MultiArray
 from actionlib_msgs.msg import GoalStatusArray
-from dr_phil_hardware.arm_interface.command_arm import ArmCommander
 
 def create_exploration_completed_check(duration=60):
     """ creates subtree which returns SUCCESS if no data has been received from the exploration nodes for the given duration.
@@ -56,21 +56,15 @@ def create_set_positions_arm(parameters,name="positionArm"):
     clean_upper = min(clean_lower,upper_limits)
     parameters = list(clean_upper)
 
-    # create message
-    positions = Float64MultiArray()
-    positions.data = parameters 
-
-    position_arm = PublishTopic(
-        name=name,
-        msg=positions,
-        msg_type=Float64MultiArray,
-        topic="/joint_trajectory_point",
-        success_after_n_publishes=5,
-        queue_size=10
-    )
     
+    sequence = py_trees.composites.Sequence()
+    
+    position_arm = JointTargetSetAndForget(name,MoveGroup.ARM,parameters[1:-1])
+    position_gripper = JointTargetSetAndForget(name,MoveGroup.gripper,[parameters[-1],-parameters[-1]])
 
-    return position_arm
+    sequence.add_children([position_arm,position_gripper])
+
+    return sequence
 
 def create_explore_frontier_and_save_map(map_path=None,timeout=120,no_data_timeout=20):
     """ creates subtree which executes frontier exploration, generates a map and saves it to the given map_name 

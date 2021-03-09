@@ -300,51 +300,24 @@ class PublishTopic(py_trees.behaviour.Behaviour):
         else:
             return py_trees.common.Status.RUNNING       
 
-# class MoveGroupJointTarget(py_trees.behaviour.Behaviour):
-#     """ a behaviour which publishes a certain message and returning RUNNING on success. Can be set to return success on publish"""
+class JointTargetSetAndForget(py_trees.behaviour.Behaviour):
+    """ behaviour which sets move groups target and leaves it running with SUCCESS """
 
-#     def __init__(self,):
-#         """ 
-#         Args:
-#             name: the name of the behaviour
-#             msg_type: the type of message to be published
-#             topic: the topic on which to publish the message
-#             queue_size: the publisher queue size
-#             success_on_publish: when true, will return SUCCESS after publishing each time
-#             success_after_n_publishes: when set to any integer, will return success after publishing n times without failure
-#         """
-
-#         super().__init__(name=name)
-#         self.msg = msg
+    def __init__(self,name,move_group,joint_target):
+        
+        super().__init__(name=name)
+        self.target = joint_target 
+        self.move_group = move_group
 
 
-#         self.publisher = rospy.Publisher(topic,msg_type,queue_size=queue_size)
-#         self.success_on_publish = success_on_publish    
-#         self.n_target = -1 if success_after_n_publishes is None else success_after_n_publishes
+    def initialise(self):
+        pass
 
-#     def initialise(self):
-#         pass
-
-#     def update(self):
-#         self.feedback_message = "Waiting for data"
-#         try:
-#             self.feedback_message = "Published"
-#             self.publisher.publish(self.msg)
-#         except:
-#             self.feedback_message = "Publisher failure"
-#             return py_trees.common.Status.FAILURE
-
-#         if self.success_on_publish or self.n_target >= 0:
-#             self.n_target -= 1
-#             if self.n_target > 0:
-#                 return py_trees.common.Status.RUNNING
-#             else:
-#                 return py_trees.common.Status.SUCCESS
-#         else:
-#             return py_trees.common.Status.RUNNING       
-
-
-
+    def update(self):
+        commander = ArmCommander()
+        commander.set_joint_target_async(self.move_group,self.target)
+        return py_trees.Status.SUCCESS
+        
 class MessageChanged(py_trees_ros.subscribers.Handler):
     
     """ Listens to topic and returns running before receiving 2 messages, which are then compared for changes

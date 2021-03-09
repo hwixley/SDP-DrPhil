@@ -3,6 +3,7 @@ from enum import Enum
 
 import moveit_commander
 import sys
+import rospy 
 
 class MoveGroup(str,Enum):
     ARM="arm"
@@ -24,9 +25,12 @@ class ArmCommander():
         
             for mg in self.robot.get_group_names():
                     self.move_groups[mg] = moveit_commander.MoveGroupCommander(mg)
+                    
 
         def set_joint_target_async(self,group:MoveGroup,goal:list):
-            self.move_groups[group].go(goal,wait=False)
+            mg =  self.move_groups[group]
+            rospy.loginfo("setting goal:{} -> {} for move group: {}".format(mg.get_current_joint_values(),goal,group))
+            mg.go(goal,wait=False)
 
     instance = None
 
@@ -36,5 +40,13 @@ class ArmCommander():
         else:
             pass
 
-    def __getattr__(self,name):
-        return getattr(self.instance, name)
+    def __getattribute__(self,name):
+        if name == "instance":
+            return ArmCommander.instance
+        else:
+            return getattr(self.instance, name)
+
+
+    # JUST FOR TYPE HINTS
+    def set_joint_target_async(self,group:MoveGroup,goal:list) -> None:
+        assert(False)
