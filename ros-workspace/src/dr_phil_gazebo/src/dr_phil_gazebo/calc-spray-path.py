@@ -220,9 +220,9 @@ def calc_y_spray_centroids(center_y):
 # Calculates the xz locations around the handle for spraying
 def calc_xz_spray_centroids(handle_center, vector):
     xz_coords = np.empty((2, 3))
-    xz_coords[:, 0] = [handle_center.x - DISTANCE_FROM_HANDLE, handle_center.z]
-    xz_coords[:, 1] = [handle_center.x, handle_center.z - DISTANCE_FROM_HANDLE]
-    xz_coords[:, 2] = [handle_center.x, handle_center.z + DISTANCE_FROM_HANDLE]
+    xz_coords[:, 0] = [handle_center.z, handle_center.x - DISTANCE_FROM_HANDLE]
+    xz_coords[:, 1] = [handle_center.z - DISTANCE_FROM_HANDLE, handle_center.x]
+    xz_coords[:, 2] = [handle_center.z + DISTANCE_FROM_HANDLE, handle_center.x]
 
     new_points = transform_points(xz_coords, handle_center, vector)
 
@@ -266,6 +266,8 @@ def get_coords_and_vectors(handle_center, vector):
             coords_and_vectors[row, 2] = xz_coords[1, a]
             coords_and_vectors[row, 3:6] = vectors[a, :]
             row += 1
+
+    coords_and_vectors[:, 0:3] = coords_and_vectors[:, 0:3]*0.001  # Convert to metres
 
     return coords_and_vectors
 
