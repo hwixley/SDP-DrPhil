@@ -4,12 +4,14 @@ import unittest
 import sys
 import rospy 
 from sensor_msgs.msg import CameraInfo
+from sensor_msgs.msg import LaserScan
 from dr_phil_hardware.vision.lidar import Lidar
 import tf 
 from tf2_msgs.msg import TFMessage
 from dr_phil_hardware.test.test_utils.test_utils import assertRayEquals 
 from dr_phil_hardware.vision.ray import Ray
 import numpy as np
+import math
 
 
 PKG='dr_phil_hardware'
@@ -30,7 +32,12 @@ class LidarTest(unittest.TestCase):
         # setup the lidar and transforms
         transform_listener = tf.TransformListener()
         transformerRos = tf.TransformerROS()
-
+        
+        try:
+            self.lidar_data = rospy.wait_for_message("/scan_filtered", LaserScan)
+        except:
+            self.fail("Could not setup lidar")
+        
         self.lidar = Lidar()
 
         # this will block
@@ -74,7 +81,66 @@ class LidarTest(unittest.TestCase):
         assertRayEquals(self,correct_ray_lidar,ray_lidar,
             msg="correct: \n {} \n was: \n {}".format(correct_ray_lidar,ray_lidar))
 
+    def test_get_ray_projection_1(self):
+        input = Ray(np.array([0, 0, 0]), np.array([0, 2, 3]))
+        flattened_input = Ray(np.array([0, 0, 0]), np.array([0, 2, 0]), length=1)
+
+        output = self.lidar.get_ray_projection(input)
+        assertRayEquals(self,flattened_input,output,
+            msg="correct: \n {} \n output: \n {}".format(flattened_input,output))
     
+    def test_get_ray_projection_2(self):
+        input = Ray(np.array([1, 5, 4]), np.array([1, 2, 0]))
+        flattened_input = Ray(np.array([1, 5, 4]), np.array([1, 2, 0]), length=1)
+
+        output = self.lidar.get_ray_projection(input)
+        assertRayEquals(self,flattened_input,output,
+            msg="correct: \n {} \n output: \n {}".format(flattened_input,output))
+    
+    def test_get_corresponding_lidar_rays_1(self):
+        camera_ray = Ray(np.array([0, 0, 0]), np.array([1, 0, 0]), length=1)
+        ray1, ray2 = self.lidar.get_corresponding_lidar_rays(camera_ray, self.lidar_data)
+        angle1 = self.lidar.get_angle_from_unit_vec(ray1)
+        angle2 = self.lidar.get_angle_from_unit_vec(ray2)
+        print(angle1, angle2)
+        self.assertTrue((angle1, angle2) == (359, 0) or (angle1, angle2) == (0, 1))
+    
+    def test_get_corresponding_lidar_rays_2(self):
+        camera_ray = Ray(np.array([0, 0, 0]), np.array([0, 1, 0]), length=1)
+        ray1, ray2 = self.lidar.get_corresponding_lidar_rays(camera_ray, self.lidar_data)
+        angle1 = self.lidar.get_angle_from_unit_vec(ray1)
+        angle2 = self.lidar.get_angle_from_unit_vec(ray2)
+        print(angle1, angle2)
+        self.assertTrue((angle1, angle2) == (89, 90) or (angle1, angle2) == (90, 91))
+    
+    def test_get_corresponding_lidar_rays_3(self):
+        camera_ray = Ray(np.array([0, 0, 0]), np.array([-1, 0, 0]), length=1)
+        ray1, ray2 = self.lidar.get_corresponding_lidar_rays(camera_ray, self.lidar_data)
+        angle1 = self.lidar.get_angle_from_unit_vec(ray1)
+        angle2 = self.lidar.get_angle_from_unit_vec(ray2)
+        print(angle1, angle2)
+        self.assertTrue((angle1, angle2) == (179, 180) or (angle1, angle2) == (180, 181))
+    
+    def test_get_corresponding_lidar_rays_4(self):
+        camera_ray = Ray(np.array([0, 0, 0]), np.array([0, -1, 0]), length=1)
+        ray1, ray2 = self.lidar.get_corresponding_lidar_rays(camera_ray, self.lidar_data)
+        angle1 = self.lidar.get_angle_from_unit_vec(ray1)
+        angle2 = self.lidar.get_angle_from_unit_vec(ray2)
+        print(angle1, angle2)
+        self.assertTrue((angle1, angle2) == (269, 270) or (angle1, angle2) == (270, 271))
+    
+    def test_get_corresponding_lidar_rays_5(self):
+        camera_ray = Ray(np.array([0, 0, 0]), np.array([1, -1, 0]), length=1)
+        ray1, ray2 = self.lidar.get_corresponding_lidar_rays(camera_ray, self.lidar_data)
+        angle1 = self.lidar.get_angle_from_unit_vec(ray1)
+        angle2 = self.lidar.get_angle_from_unit_vec(ray2)
+        print(angle1, angle2)
+        self.assertTrue((angle1, angle2) == (314, 315) or (angle1, angle2) == (315, 316))
+    
+    def test_get_unit_vec_from_dir(self):
+        for angle in [0, 45, 90, 135, 180, 225, 270, 315]
+        ray = self.lidar.get_unit_vec_from_dir(angle)
+        self.assertTrue(self.lidar.get_angle_from_unit_vec(ray1) == angle)
 
 if __name__ == "__main__":
     import rostest
