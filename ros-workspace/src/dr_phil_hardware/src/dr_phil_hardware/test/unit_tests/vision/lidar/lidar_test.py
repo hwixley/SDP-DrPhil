@@ -6,7 +6,7 @@ import rospy
 from sensor_msgs.msg import CameraInfo
 from sensor_msgs.msg import LaserScan
 from dr_phil_hardware.vision.lidar import Lidar
-import tf 
+import tf
 from tf2_msgs.msg import TFMessage
 from dr_phil_hardware.test.test_utils.test_utils import assertRayEquals 
 from dr_phil_hardware.vision.ray import Ray
@@ -99,56 +99,16 @@ class LidarTest(unittest.TestCase):
     
     def test_get_corresponding_lidar_rays(self):
         origin = [0, 0, 0]
-        dirs = [[1, 0, 0], [1, 1, 0], [0, 1, 0], [-1, 1, 0], [-1, 0, 0], [-1, -1, 0], [0, -1, 0], [1, -1, 0]]
-        angles = [0, 45, 90, 135, 180, 225, 270, 315]
+        dirs = [[1, 0, 0], [1, 1, 0], [0, 1, 0], [-1, 1, 0], [-1, 0, 0], [-1, -1, 0], [0, -1, 0], [1, -1, 0], [math.sqrt(3)/2, -1/2, 0]]
+        angles = [0, 45, 90, 135, 180, 225, 270, 315, 330]
         for i, dir in enumerate(dirs):
             camera_ray = Ray(np.array(origin), np.array(dir), length=1)
             ray1, ray2 = self.lidar.get_corresponding_lidar_rays(camera_ray, self.lidar_data)
             angle1 = self.lidar.get_angle_from_unit_vec(ray1)
             angle2 = self.lidar.get_angle_from_unit_vec(ray2)
             print("\n\nCorresponding lidar rays found at angles:\nlray1 angle: {}\nlray2 angle: {}\ncamera_ray_angle: {}\n<------>\n".format(angle1, angle2, angles[i]))
-            self.assertTrue(True)
-    """
-    def test_get_corresponding_lidar_rays_1(self):
-        camera_ray = Ray(np.array([0, 0, 0]), np.array([1, 0, 0]), length=1)
-        ray1, ray2 = self.lidar.get_corresponding_lidar_rays(camera_ray, self.lidar_data)
-        angle1 = self.lidar.get_angle_from_unit_vec(ray1)
-        angle2 = self.lidar.get_angle_from_unit_vec(ray2)
-        print(angle1, angle2)
-        self.assertTrue(angle1 in [359, 0] and angle2 in [0, 1])
-    
-    def test_get_corresponding_lidar_rays_2(self):
-        camera_ray = Ray(np.array([0, 0, 0]), np.array([0, 1, 0]), length=1)
-        ray1, ray2 = self.lidar.get_corresponding_lidar_rays(camera_ray, self.lidar_data)
-        angle1 = self.lidar.get_angle_from_unit_vec(ray1)
-        angle2 = self.lidar.get_angle_from_unit_vec(ray2)
-        print(angle1, angle2)
-        self.assertTrue(angle1 in [89, 90] and angle2 in [90, 91])
+            self.assertTrue(angle1 in range(angles[i] - 1, angles[i] + 1) and angle2 in range(angles[i], angles[i] + 2))
 
-    def test_get_corresponding_lidar_rays_3(self):
-        camera_ray = Ray(np.array([0, 0, 0]), np.array([-1, -0.001, 0]), length=1)
-        ray1, ray2 = self.lidar.get_corresponding_lidar_rays(camera_ray, self.lidar_data)
-        angle1 = self.lidar.get_angle_from_unit_vec(ray1)
-        angle2 = self.lidar.get_angle_from_unit_vec(ray2)
-        print(angle1, angle2)
-        self.assertTrue(angle1 in [179, 180] and angle2 in [180, 181])
-
-    def test_get_corresponding_lidar_rays_4(self):
-        camera_ray = Ray(np.array([0, 0, 0]), np.array([0, -1, 0]), length=1)
-        ray1, ray2 = self.lidar.get_corresponding_lidar_rays(camera_ray, self.lidar_data)
-        angle1 = self.lidar.get_angle_from_unit_vec(ray1)
-        angle2 = self.lidar.get_angle_from_unit_vec(ray2)
-        print(angle1, angle2)
-        self.assertTrue(angle1 in [269, 270] and angle2 in [270, 271])
-
-    def test_get_corresponding_lidar_rays_5(self):
-        camera_ray = Ray(np.array([0, 0, 0]), np.array([1, -1, 0]), length=1)
-        ray1, ray2 = self.lidar.get_corresponding_lidar_rays(camera_ray, self.lidar_data)
-        angle1 = self.lidar.get_angle_from_unit_vec(ray1)
-        angle2 = self.lidar.get_angle_from_unit_vec(ray2)
-        print(angle1, angle2)
-        self.assertTrue(angle1 in [314, 315] and angle2 in [315, 316])
-    """
     def test_get_unit_vec_from_dir(self):
         for angle in [0, 45, 90, 135, 180, 225, 270, 315]:
             ray = self.lidar.get_unit_vec_from_dir(np.deg2rad(angle))
