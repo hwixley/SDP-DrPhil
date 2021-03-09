@@ -130,3 +130,7 @@ class Lidar:
         dir = np.array([[math.cos(angle)], [math.sin(angle)], [0]])
         length = 1
         return Ray(origin, dir, length)
+    
+    def get_angle_from_unit_vec(self, ray: Ray):
+        """ return angle made with Ox by vector converted to deg """
+        return (int(np.rad2deg(math.atan2(ray.dir[1], ray.dir[0]))) + 360) % 360
