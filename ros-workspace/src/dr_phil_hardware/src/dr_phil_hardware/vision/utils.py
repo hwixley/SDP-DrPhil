@@ -25,7 +25,7 @@ def subtract(ray1, ray2):
     """ returns ray1 - ray2
     the 2 rays have the same origin """
     
-    origin = ray2.get_vec()
+    origin = ray2.origin + ray2.get_vec()
     dir = np.subtract(ray1.get_vec(), ray2.get_vec())
     length = math.sqrt(ray1.length ** 2 + ray2.length ** 2)
 

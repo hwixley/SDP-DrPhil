@@ -155,7 +155,12 @@ class LidarTest(unittest.TestCase):
             self.assertTrue(self.lidar.get_angle_from_unit_vec(ray) == angle)
 
     def test_get_normal_to_plane(self):
-        pass
+        origin = np.array([[0], [0], [0]])
+        dir1 = np.array([[1], [0], [0]])
+        dir2 = np.array([[0], [1], [0]])
+        length = 1
+        l_ray1 = Ray(origin, dir1, length)
+        l_ray2 = Ray(origin, dir2, length)
 
 if __name__ == "__main__":
     import rostest
