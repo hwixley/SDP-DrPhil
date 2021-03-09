@@ -66,6 +66,7 @@ class Lidar:
             lidar_ray2.length = data.ranges[(angle_deg + int(np.rad2deg(data.angle_increment))) % 360]
 
             subtr = utils.subtract(lidar_ray1, lidar_ray2)
+            
             print("\nCurrently checking: \nlray1 angle: {}\nlray2 angle: {}\n".format(self.get_angle_from_unit_vec(lidar_ray1), self.get_angle_from_unit_vec(lidar_ray2)))
             if utils.intersect(subtr, camera_ray):
                 print("intersecting!!!")
