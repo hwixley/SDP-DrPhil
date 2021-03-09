@@ -11,6 +11,7 @@ import signal
 from threading  import Thread
 import sys
 import time 
+import actionlib
 
 try:
     from queue import Queue,LifoQueue, Empty
@@ -299,48 +300,48 @@ class PublishTopic(py_trees.behaviour.Behaviour):
         else:
             return py_trees.common.Status.RUNNING       
 
-class MoveGroupJointTarget(py_trees.behaviour.Behaviour):
-    """ a behaviour which publishes a certain message and returning RUNNING on success. Can be set to return success on publish"""
+# class MoveGroupJointTarget(py_trees.behaviour.Behaviour):
+#     """ a behaviour which publishes a certain message and returning RUNNING on success. Can be set to return success on publish"""
 
-    def __init__(self,):
-        """ 
-        Args:
-            name: the name of the behaviour
-            msg_type: the type of message to be published
-            topic: the topic on which to publish the message
-            queue_size: the publisher queue size
-            success_on_publish: when true, will return SUCCESS after publishing each time
-            success_after_n_publishes: when set to any integer, will return success after publishing n times without failure
-        """
+#     def __init__(self,):
+#         """ 
+#         Args:
+#             name: the name of the behaviour
+#             msg_type: the type of message to be published
+#             topic: the topic on which to publish the message
+#             queue_size: the publisher queue size
+#             success_on_publish: when true, will return SUCCESS after publishing each time
+#             success_after_n_publishes: when set to any integer, will return success after publishing n times without failure
+#         """
 
-        super().__init__(name=name)
-        self.msg = msg
+#         super().__init__(name=name)
+#         self.msg = msg
 
 
-        self.publisher = rospy.Publisher(topic,msg_type,queue_size=queue_size)
-        self.success_on_publish = success_on_publish    
-        self.n_target = -1 if success_after_n_publishes is None else success_after_n_publishes
+#         self.publisher = rospy.Publisher(topic,msg_type,queue_size=queue_size)
+#         self.success_on_publish = success_on_publish    
+#         self.n_target = -1 if success_after_n_publishes is None else success_after_n_publishes
 
-    def initialise(self):
-        pass
+#     def initialise(self):
+#         pass
 
-    def update(self):
-        self.feedback_message = "Waiting for data"
-        try:
-            self.feedback_message = "Published"
-            self.publisher.publish(self.msg)
-        except:
-            self.feedback_message = "Publisher failure"
-            return py_trees.common.Status.FAILURE
+#     def update(self):
+#         self.feedback_message = "Waiting for data"
+#         try:
+#             self.feedback_message = "Published"
+#             self.publisher.publish(self.msg)
+#         except:
+#             self.feedback_message = "Publisher failure"
+#             return py_trees.common.Status.FAILURE
 
-        if self.success_on_publish or self.n_target >= 0:
-            self.n_target -= 1
-            if self.n_target > 0:
-                return py_trees.common.Status.RUNNING
-            else:
-                return py_trees.common.Status.SUCCESS
-        else:
-            return py_trees.common.Status.RUNNING       
+#         if self.success_on_publish or self.n_target >= 0:
+#             self.n_target -= 1
+#             if self.n_target > 0:
+#                 return py_trees.common.Status.RUNNING
+#             else:
+#                 return py_trees.common.Status.SUCCESS
+#         else:
+#             return py_trees.common.Status.RUNNING       
 
 
 
@@ -429,3 +430,77 @@ class MessageChanged(py_trees_ros.subscribers.Handler):
 
 
 
+class ActionClientConnectOnInit(py_trees_ros.actions.ActionClient):
+    """ A version of the action client behaviour which initializes the 
+        connection to the server in init """
+
+    def __init__(self, name, action_spec, action_goal, action_namespace, override_feedback_message_on_running, connection_timeout=1):
+        """ 
+            A generic action client interface. This simply sends a pre-configured
+            goal to the action client.
+
+            Cases where you might want to subclass and extend this behaviour:
+
+            * Update the goal data in :meth:`~py_trees_ros.actions.ActionClient.initialise()`
+
+            * e.g. use blackboard data to determine the new characteristics of your goal
+            * Trigger true pre-emption by sending a new goal in :meth:`~py_trees_ros.actions.ActionClient.update()`
+
+            Args:
+                name (:obj:`str`): name of the behaviour
+                action_spec (:obj:`any`): spec type for the action (e.g. move_base_msgs.msg.MoveBaseAction)
+                action_goal (:obj:`any`): preconfigured action goal (e.g. move_base_msgs.msg.MoveBaseGoal())
+                action_namespace (:obj:`str`): where you can find the action topics
+                override_feedback_message_on_running (:obj:`str`): override the feedback message from the server
+                connection_timeout (:obj:`float`) : the time to wait for a connection on initialisation, after which the behaviour will fail
+
+            Feedback messages are often accompanied with detailed messages that continuously change - since these
+            are not significant and we don't want to log every change due to these messages, you can provide an override
+            here that simply signifies the action is running.
+
+        """
+        super().__init__(name=name, action_spec=action_spec, action_goal=action_goal, action_namespace=action_namespace, override_feedback_message_on_running=override_feedback_message_on_running)
+
+        self.connection_timeout = connection_timeout
+
+    def setup(self, timeout):
+        # we override the default setup behaviour which happens 
+        # when the tree is initialized
+        return True 
+
+    def initialise(self):
+
+        super().initialise()
+
+        self.action_client = None
+        self.connected = False
+        self.time_start = rospy.get_time()
+        self.time_waited
+
+    def update(self):
+       # we change slightly the behaviour on when action client is missing
+       # and also setup the action client here in a non blocking way
+        time_left = self.connection_timeout - (rospy.get_time() -  self.time_start)
+        if not self.connected and time_left > 0:
+            if not self.action_client:
+                self.action_client = actionlib.SimpleActionClient(
+                    self.action_namespace,
+                    self.action_spec
+                )
+            if self.action_client.wait_for_server(
+                rospy.Duration(min(time_left,1))): # wait for at most a second each time
+                self.connected = True 
+            else: return py_trees.Status.RUNNING             
+
+        # the super() implementation will expect self.action_client to be non null iff connected
+        if not self.connected:
+            self.action_client = None 
+            self.logger.error("{0}.could not connect to the action server at '{1}'".format(self.__class__.__name__, self.action_namespace))
+
+        super_state = super().update()
+
+        # we just don't return invalid as super does, flip it to failure
+        if super_state == py_trees.Status.INVALID:
+            return py_trees.Status.FAILURE
+        else:
+            return super_state
