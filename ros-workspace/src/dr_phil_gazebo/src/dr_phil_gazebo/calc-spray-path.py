@@ -9,6 +9,10 @@ from geometry_msgs.msg import Point
 import resource_retriever as Retriever
 import rospy
 
+from dr_phil_hardware.vision.localisation import *
+from dr_phil_hardware.vision.vision_handle_axis_algorithm import define_handle_features_heursitic
+ 
+
 
 # CONSTANTS
 DISTANCE_FROM_HANDLE = 100  # (mm)
@@ -29,9 +33,9 @@ class SprayPathVisualiser:
             point.y = (data[1])  #in meters
             point.z = (data[2])  #in meters
             end_point = Point()
-            end_point.x = data[3] *0.001 #in meters
-            end_point.y = data[4] *0.001#in meters
-            end_point.z = data[5] *0.001#in meters
+            end_point.x = data[3] #in meters
+            end_point.y = data[4] #in meters
+            end_point.z = data[5] #in meters
             points.append(point)
             spray_direction.append(end_point)
         
@@ -251,6 +255,7 @@ def calc_vectors(vector):
 
 
 # Compiles xyz coordinates and their vectors into a matrix
+# Returns them in meters
 def get_coords_and_vectors(handle_center, vector):
     xz_coords = calc_xz_spray_centroids(handle_center, vector)
     y_coords = calc_y_spray_centroids(handle_center.y)
@@ -267,7 +272,7 @@ def get_coords_and_vectors(handle_center, vector):
             coords_and_vectors[row, 3:6] = vectors[a, :]
             row += 1
 
-    coords_and_vectors[:, 0:3] = coords_and_vectors[:, 0:3]*0.001  # Convert to metres
+    coords_and_vectors[:, 0:6] = coords_and_vectors[:, 0:6]*0.001  # Convert to metres
 
     return coords_and_vectors
 
@@ -292,7 +297,9 @@ def main(handle_center, vector):
 
 
 if __name__ == '__main__':
+    
     center = Coord(0.0, 0.0, 0.0)
     direction = Coord(1.0, 0.0, 0.0)
+    
 
     main(center, direction)
