@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import math
 import numpy as np
-import copy
 
 #from visualization_msgs.msg import Marker
 #from visualization_msgs.msg import MarkerArray
@@ -9,6 +8,9 @@ import copy
 #import resource_retriever as Retriever
 #import rospy
 
+#from dr_phil_hardware.vision.localisation import *
+#from dr_phil_hardware.vision.vision_handle_axis_algorithm import define_handle_features_heursitic
+ 
 
 # CONSTANTS
 DISTANCE_FROM_HANDLE = 100  # (mm)
@@ -29,9 +31,9 @@ class SprayPathVisualiser:
             point.y = (data[1])  #in meters
             point.z = (data[2])  #in meters
             end_point = Point()
-            end_point.x = data[3] *0.001 #in meters
-            end_point.y = data[4] *0.001#in meters
-            end_point.z = data[5] *0.001#in meters
+            end_point.x = data[3] #in meters
+            end_point.y = data[4] #in meters
+            end_point.z = data[5] #in meters
             points.append(point)
             spray_direction.append(end_point)
         
