@@ -77,26 +77,39 @@ class LidarTest(unittest.TestCase):
         #notice inversion of pixels
         ray_lidar = self.lidar.get_ray_in_lidar_frame(correct_ray_robot)
 
+    def test_non_zero_origin_robot_ray_to_lidar(self):
 
-        assertRayEquals(self,correct_ray_lidar,ray_lidar,
-            msg="correct: \n {} \n was: \n {}".format(correct_ray_lidar,ray_lidar))
+        # vector pointing forward in robot space
+        correct_ray_robot = Ray(np.array([[1],[2],[3]]),np.array([[1],[0],[0]]),length=1)
+        # correct ray originates -0.2m but with same direction
+        correct_ray_lidar = Ray(np.array([[1],[2],[2.8]]),np.array([[1],[0],[0]]),length=1)
+
+        #notice inversion of pixels
+        ray_lidar = self.lidar.get_ray_in_lidar_frame(correct_ray_robot)
+
+        assertRayEquals(self,correct_ray_lidar,ray_lidar)
 
     def test_get_ray_projection_1(self):
-        input = Ray(np.array([0, 0, 0]), np.array([0, 2, 3]))
-        flattened_input = Ray(np.array([0, 0, 0]), np.array([0, 2, 0]), length=1)
+        input = Ray(np.array([[1], [0], [0]]), np.array([[0], [0], [1]]),length=1)
+        flattened_input = Ray(np.array([[1], [0], [0]]), np.array([[0], [0], [1]]), length=0)
 
         output = self.lidar.get_ray_projection(input)
-        assertRayEquals(self,flattened_input,output,
-            msg="correct: \n {} \n output: \n {}".format(flattened_input,output))
+        assertRayEquals(self,flattened_input,output)
     
     def test_get_ray_projection_2(self):
-        input = Ray(np.array([1, 5, 4]), np.array([1, 2, 0]))
-        flattened_input = Ray(np.array([1, 5, 4]), np.array([1, 2, 0]), length=1)
+        input = Ray(np.array([[1], [0], [0]]), np.array([[1], [0], [0]]),length=1)
+        flattened_input = Ray(np.array([[1], [0], [0]]), np.array([[1], [0], [0]]), length=1)
 
         output = self.lidar.get_ray_projection(input)
-        assertRayEquals(self,flattened_input,output,
-            msg="correct: \n {} \n output: \n {}".format(flattened_input,output))
-    
+        assertRayEquals(self,flattened_input,output)
+
+    def test_get_ray_projection_3(self):
+        input = Ray(np.array([[1], [0], [0]]), np.array([[0], [1], [1]]),length=2)
+        flattened_input = Ray(np.array([[1], [0], [0]]), np.array([[0], [1], [0]]), length=math.sqrt(2))
+
+        output = self.lidar.get_ray_projection(input)
+        assertRayEquals(self,flattened_input,output)
+
     def test_get_corresponding_lidar_rays(self):
         origin = [0, 0, 0]
         dirs = [[1, 0, 0], [1, 1, 0], [0, 1, 0], [-1, 1, 0], [-1, 0, 0], [-1, -1, 0], [0, -1, 0], [1, -1, 0], [math.sqrt(3)/2, -1/2, 0]]
@@ -114,22 +127,31 @@ class LidarTest(unittest.TestCase):
             ray = self.lidar.get_unit_vec_from_dir(np.deg2rad(angle))
             self.assertTrue(self.lidar.get_angle_from_unit_vec(ray) == angle)
 
-    def test_get_normal_to_plane(self):
-        origin = np.array([0, 0, 0])
-        dir1 = np.array([1, 0, 0])
-        dir2 = np.array([0, 1, 0])
-        length = 1
-        l_ray1 = Ray(origin, dir1, length)
-        l_ray2 = Ray(origin, dir2, length)
+    def test_get_normal_to_plane_1(self):
+        origin = np.array([[0], [0], [0]])
+        l_ray1 = Ray(origin, np.array([[1], [0], [0]]), 1)
+        l_ray2 = Ray(origin, np.array([[0], [1], [0]]), 1)
 
-        normal_to_plane = np.array([-1., -1., 0.])
-        normal_to_plane /= np.linalg.norm(normal_to_plane) # normalize
+        normal_to_plane = np.array([[-1.], [-1.], [0.]])
+        correct_ray = Ray(np.array([[0.5],[0.5],[0]]),normal_to_plane,length=1)
 
         computed_normal_ray = self.lidar.get_normal_to_plane(l_ray1, l_ray2)
-        #print("\ncomputed_normal_ray: {}\n".format(computed_normal_ray))
-        #print("\ncorrect_normal_ray: {}\n".format(normal_to_plane))
-        self.assertTrue(np.array_equal(computed_normal_ray.dir, normal_to_plane))
 
+        assertRayEquals(self,correct_ray,computed_normal_ray)
+
+    def test_get_normal_to_plane_1_flipped(self):
+        origin = np.array([[0], [0], [0]])
+        l_ray1 = Ray(origin, np.array([[0], [1], [0]]), 1)
+        l_ray2 = Ray(origin, np.array([[1], [0], [0]]), 1)
+
+        normal_to_plane = np.array([[-1.], [-1.], [0.]])
+        correct_ray = Ray(np.array([[0.5],[0.5],[0]]),normal_to_plane,length=1)
+
+        computed_normal_ray = self.lidar.get_normal_to_plane(l_ray1, l_ray2)
+
+        assertRayEquals(self,correct_ray,computed_normal_ray)
+
+    
 
 if __name__ == "__main__":
     import rostest
