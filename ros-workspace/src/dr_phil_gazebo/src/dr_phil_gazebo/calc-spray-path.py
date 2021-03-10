@@ -3,11 +3,11 @@ import math
 import numpy as np
 import copy
 
-from visualization_msgs.msg import Marker
-from visualization_msgs.msg import MarkerArray
-from geometry_msgs.msg import Point
-import resource_retriever as Retriever
-import rospy
+#from visualization_msgs.msg import Marker
+#from visualization_msgs.msg import MarkerArray
+#from geometry_msgs.msg import Point
+#import resource_retriever as Retriever
+#import rospy
 
 
 # CONSTANTS
@@ -131,33 +131,31 @@ class Coord:
     def __init__(self, x, y, z):
         self.x = x
         self.y = y
-        self.z = z       
-
+        self.z = z
 
 class LineGraph:
     def __init__(self, vector):
         self.vector = vector
 
-        if self.vector.z == 0:
+        if self.vector.x == 0:
             self.gradient = float("inf")  # Vertical lines have infinity gradient
         else:
-            self.gradient = self.vector.x / self.vector.z
+            self.gradient = self.vector.y / self.vector.x
 
         # Segments correspond to CAST plot and are used to determine the rotation direction
-        if vector.x >= 0:
-            if vector.z >= 0:
+        if vector.y >= 0:
+            if vector.x >= 0:
                 self.segment = 0
             else:
                 self.segment = 1
-        elif vector.x < 0:
-            if vector.z >= 0:
+        elif vector.y < 0:
+            if vector.x >= 0:
                 self.segment = 3
             else:
                 self.segment = 2
 
 
-# Calculates the rotation angle (including direction) between two lines
-# PARAMS: Line1 represents current axes, Line2 represents destination axes
+# Line1 represents current axes and Line2 represents destination axes
 def calc_rotation_angle(line1, line2):
     angle = math.atan(line2.gradient) - math.atan(line1.gradient)
 
@@ -174,104 +172,113 @@ def calc_rotation_angle(line1, line2):
     if line2.segment in [1, 2]:
         angle = 2 * math.pi - angle
 
-    return math.degrees(angle)
+    return angle
 
 
 # Transform the points given the angle of rotation
 def transform_points(points, handle_center, vector):
     vector_line = LineGraph(vector)
-    origin_line = LineGraph(Coord(0, 0, 0))
+    origin_line = LineGraph(Coord(0, 1, 0))
     angle = calc_rotation_angle(origin_line, vector_line)
 
     center_matrix = np.empty((2, 3))
-    center_matrix[0, :] = handle_center.z
-    center_matrix[1, :] = handle_center.x
+    center_matrix[0, :] = handle_center.x
+    center_matrix[1, :] = handle_center.y
 
-    c, s = np.cos(angle), np.sin(angle)
+    c, s = math.cos(angle), math.sin(angle)
     rotation_matrix = np.array(((c, -s), (s, c)))
 
-    return np.matmul(rotation_matrix, points - center_matrix) + center_matrix
+    return np.dot(rotation_matrix, points - center_matrix) + center_matrix
 
 
-# Calculates y coordinates by starting at the center and going up and down the handle until the handle has been covered
+# Given the center point and height to spray we can calculate the spray centroids
 def calc_z_spray_centroids(center_z):
-    top = (center_z + HANDLE_DIMENSIONS[1] / 2) + SPRAY_CONFIDENCE
-    bottom = (center_z - HANDLE_DIMENSIONS[1] / 2) - SPRAY_CONFIDENCE
-    num_sprays = 2 * int(math.ceil(HANDLE_DIMENSIONS[1] / (2 * CIRCLE_EDGE)))
+    top = (center_z + HANDLE_DIMENSIONS[1]/2) + SPRAY_CONFIDENCE
+    bottom = (center_z - HANDLE_DIMENSIONS[1]/2) - SPRAY_CONFIDENCE
+    num_sprays = 2*int(math.ceil(HANDLE_DIMENSIONS[1]/(2*CIRCLE_EDGE)))
 
     spray_centroids = np.zeros(num_sprays)
     index = 0
 
     current_z = center_z - CIRCLE_EDGE
     while current_z < top:
-        current_z += CIRCLE_EDGE*2
+        current_z += CIRCLE_EDGE * 2
         spray_centroids[index] = current_z
         index += 1
 
     current_z = center_z + CIRCLE_EDGE
     while current_z > bottom:
-        current_z -= CIRCLE_EDGE*2
+        current_z -= CIRCLE_EDGE * 2
         spray_centroids[index] = current_z
         index += 1
 
     return spray_centroids
 
 
-# Calculates the xz locations around the handle for spraying
-def calc_yx_spray_centroids(handle_center, vector):
-    yx_coords = np.empty((2, 3))
-    yx_coords[:, 0] = [handle_center.z, handle_center.x - DISTANCE_FROM_HANDLE]
-    yx_coords[:, 1] = [handle_center.z - DISTANCE_FROM_HANDLE, handle_center.x]
-    yx_coords[:, 2] = [handle_center.z + DISTANCE_FROM_HANDLE, handle_center.x]
+def calc_xy_spray_centroids(handle_center, vector):
+    xy_coords = np.empty((2, 3))
+    xy_coords[:, 0] = [handle_center.x, handle_center.y - DISTANCE_FROM_HANDLE]
+    xy_coords[:, 1] = [handle_center.x - DISTANCE_FROM_HANDLE, handle_center.y]
+    xy_coords[:, 2] = [handle_center.x + DISTANCE_FROM_HANDLE, handle_center.y]
 
-    new_points = transform_points(yx_coords, handle_center, vector)
+    new_points = transform_points(xy_coords, handle_center, vector)
 
     return new_points
 
 
-# Calculates the vectors which represent spray directions
+# NOT USED FOR RVIZ: calculates the vectors which represent spray directions
 def calc_vectors(vector):
     vectors = np.zeros((3, 3))
-    vectors[0, :] = [vector.z, vector.x, 0]
+    vectors[0, :] = [vector.x, vector.y, 0]
 
-    points = np.array([[vector.z], [vector.x]])
+    points = np.array([[vector.x], [vector.y]])
     center_matrix = np.array([[0], [0]])
 
     new_angles = [-90, 90]
     for i in range(2):
         angle = math.radians(new_angles[i])
 
-        c, s = np.cos(angle), np.sin(angle)
+        c, s = math.cos(angle), math.sin(angle)
         rotation_matrix = np.array(((c, -s), (s, c)))
 
-        spray_vector = np.matmul(rotation_matrix, points - center_matrix) + center_matrix
+        spray_vector = np.dot(rotation_matrix, points - center_matrix) + center_matrix
         vectors[i + 1, :] = [spray_vector[0, 0], spray_vector[1, 0], 0]
 
     return vectors
 
 
-# Compiles xyz coordinates and their vectors into a matrix
-def get_coords_and_vectors(handle_center, vector):
-    vector = Coord(vector.y, vector.z, vector.x)
-    yx_coords = calc_yx_spray_centroids(handle_center, vector)
-    z_coords = calc_z_spray_centroids(handle_center.y)
-    vectors = calc_vectors(vector)
+def get_coords_and_vectors(handle_center, vector, output_is_vector):
+    xy_coords = calc_xy_spray_centroids(handle_center, vector)
+    z_coords = calc_z_spray_centroids(handle_center.z)
 
-    coords_and_vectors = np.empty(((len(z_coords) * yx_coords.shape[1]), 6))
+    coords_and_vectors = np.empty(((len(z_coords) * xy_coords.shape[1]), 6))
 
-    row = 0
-    for a in range(yx_coords.shape[1]):
-        for s in range(len(z_coords)):
-            vector = DISTANCE_FROM_HANDLE * (vectors[a, :] / np.sum(abs(vectors[a, :])))  # Makes vector of magnitude DFH
-            coords_and_vectors[row, 0] = yx_coords[0, a]
-            coords_and_vectors[row, 1] = yx_coords[1, a]
-            coords_and_vectors[row, 2] = z_coords[s]
+    if output_is_vector:
+        vectors = calc_vectors(handle_center, vector)
+        row = 0
+        for a in range(xy_coords.shape[1]):
+            for s in range(len(z_coords)):
+                coords_and_vectors[row, 0] = xy_coords[0, a]
+                coords_and_vectors[row, 1] = xy_coords[1, a]
+                coords_and_vectors[row, 2] = z_coords[s]
+                coords_and_vectors[row, 3:6] = vectors[a, :]
 
-            vector += coords_and_vectors[row, 0:3]  # Calculates the destination point of the vector
-            coords_and_vectors[row, 3:6] = vector  # vectors[a, :] <-- old assignment
-            row += 1
+                row += 1
+    else:
+        coords_and_vectors[:, 3] = handle_center.x
+        coords_and_vectors[:, 4] = handle_center.y
 
-    coords_and_vectors[:, 0:3] = coords_and_vectors[:, 0:3]*0.001  # Convert to metres
+        row = 0
+        for a in range(xy_coords.shape[1]):
+            for s in range(len(z_coords)):
+                coords_and_vectors[row, 0] = xy_coords[0, a]
+                coords_and_vectors[row, 1] = xy_coords[1, a]
+                coords_and_vectors[row, 2] = z_coords[s]
+                coords_and_vectors[row, 5] = z_coords[s]
+
+                row += 1
+
+    coords_and_vectors[:, 0:3] = coords_and_vectors[:, 0:3] * 0.001  # Convert to metres
 
     return coords_and_vectors
 
@@ -283,12 +290,11 @@ def main(handle_center, vector):
         print("ERROR: cannot have unit vector direction (0,0,0)")
         exit(1)
     else:
-        data = get_coords_and_vectors(handle_center, vector)
+        data = get_coords_and_vectors(handle_center, vector, False)
         print(data)
         
         visualiser = SprayPathVisualiser(data)
-        
-        
+
     try:
         rospy.spin()
     except KeyboardInterrupt:
@@ -297,6 +303,6 @@ def main(handle_center, vector):
 
 if __name__ == '__main__':
     center = Coord(0.0, 0.0, 0.0)
-    direction = Coord(0.0, 1.0, 0.0)
+    direction = Coord(1.0, 0.0, 0.0)
 
     main(center, direction)
