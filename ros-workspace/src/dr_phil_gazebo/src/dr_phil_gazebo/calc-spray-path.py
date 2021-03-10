@@ -3,11 +3,11 @@ import math
 import numpy as np
 import copy
 
-from visualization_msgs.msg import Marker
-from visualization_msgs.msg import MarkerArray
-from geometry_msgs.msg import Point
-import resource_retriever as Retriever
-import rospy
+#from visualization_msgs.msg import Marker
+#from visualization_msgs.msg import MarkerArray
+#from geometry_msgs.msg import Point
+#import resource_retriever as Retriever
+#import rospy
 
 from dr_phil_hardware.vision.localisation import *
 from dr_phil_hardware.vision.vision_handle_axis_algorithm import define_handle_features_heursitic
@@ -267,8 +267,8 @@ def get_coords_and_vectors(handle_center, vector):
     for a in range(xz_coords.shape[1]):
         for s in range(len(y_coords)):
             vector = DISTANCE_FROM_HANDLE * (vectors[a, :] / np.sum(abs(vectors[a, :])))  # Makes vector of magnitude DFH
-            coords_and_vectors[row, 0] = xz_coords[0, a]
-            coords_and_vectors[row, 1] = xz_coords[1, a]
+            coords_and_vectors[row, 0] = xz_coords[1, a]
+            coords_and_vectors[row, 1] = xz_coords[0, a]
             coords_and_vectors[row, 2] = y_coords[s]
 
             vector += coords_and_vectors[row, 0:3]  # Calculates the destination point of the vector
