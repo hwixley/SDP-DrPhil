@@ -95,9 +95,6 @@ class HandleLocalizer:
         except (tf.ConnectivityException,tf.LookupException,tf.ExtrapolationException):
             rospy.logerr("Could not find camera transform!")
 
-        # chain transforms to get cam2lid
-        self.cam2lid = self.rob2lid @ invert_homog_mat(self.rob2cam)
-
         rospy.loginfo("Received camera info")
 
         # get rid of subscriber
@@ -108,6 +105,9 @@ class HandleLocalizer:
 
     def create_point_from_vec(self,vec,id):
         pnt = Marker()
+
+        if pnt is None:
+            return pnt
 
         pnt.header.frame_id = self.robot_frame
         pnt.header.stamp = rospy.Time.now()
@@ -132,7 +132,11 @@ class HandleLocalizer:
         return pnt 
 
     def create_arrow_from_ray(self,ray,id):
+        
         arw = Marker()
+
+        if ray is None:
+            return arw
 
         arw.header.frame_id = self.robot_frame
         arw.header.stamp = rospy.Time.now()
@@ -141,12 +145,13 @@ class HandleLocalizer:
         arw.id = id
         arw.type = 0 # arrow
 
+
         p1 = Point()
         orig = ray.origin
         p1.x,p1.y,p1.z = (orig[0],orig[1],orig[2])
         
         p2 = Point()
-        p2.x,p2.y,p2.z = (ray.dir[0]+ orig[0],ray.dir[1]+ orig[1],ray.dir[2]+ orig[2]) 
+        p2.x,p2.y,p2.z = (ray.get_point()[0],ray.get_point()[1],ray.get_point()[2]) 
 
         arw.points = [p1,p2]
         arw.pose.orientation.w = 1
@@ -168,16 +173,24 @@ class HandleLocalizer:
         camera_ray = self.camera.get_ray_through_image(point_np)
 
         camera_ray_robot = self.camera.get_ray_in_robot_frame(camera_ray)
-        
-
+        camera_ray_lidar = self.lidar.get_ray_in_lidar_frame(camera_ray_robot)
+    
         markers = MarkerArray()
 
-        camera_mrkr = self.create_arrow_from_ray(camera_ray_robot,0)
+        camera_mrkr = self.create_arrow_from_ray(camera_ray,0)
+        camera_mrkr.header.frame_id = self.camera.get_frame_id()
+        camera_lidar_mrkr = self.create_arrow_from_ray(camera_ray_lidar,1)
+        camera_lidar_mrkr.color.r = 1
+        camera_lidar_mrkr.header.frame_id = self.lidar_frame
 
-        (point3d,normal) = localize_pixel(point_np,self.camera,self.lidar,self.scan,self.cam2lid)
-        point3dmrkr = self.create_point_from_vec(point3d,1) 
-        
-        markers.markers = [camera_mrkr,point3dmrkr]
+        (point3d,normal) = localize_pixel(point_np,self.camera,self.lidar,self.scan)
+
+        if point3d is not None:
+            point3dmrkr = self.create_point_from_vec(point3d,2) 
+            normal3dmrkr = self.create_arrow_from_ray(normal,3)
+            markers.markers = [camera_mrkr,camera_lidar_mrkr,point3dmrkr,normal3dmrkr]
+        else:
+            markers.markers = [camera_mrkr,camera_lidar_mrkr]
 
         self.feature_pub.publish(markers)
 
