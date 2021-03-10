@@ -65,6 +65,8 @@
   <depend>dwa_local_planner</depend>
   <depend>explore_lite</depend>
   <depend>hector_mapping</depend>
+  <depend>teb_local_planner</depend>
+  <depend>costmap_converter</depend>
 
   <!-- python deps -->
   <exec_depend>python-shapely</exec_depend>

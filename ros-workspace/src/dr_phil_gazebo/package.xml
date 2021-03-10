@@ -60,9 +60,8 @@
   <depend>effort_controllers</depend>
   <depend>joint_trajectory_controller</depend>
 
-  <test_depend>rostest</test_depend>
+  <build_depend>rostest</build_depend>
   <test_depend>rosunit</test_depend>
-  
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

@@ -224,6 +224,50 @@
     <dynamics friction="0.1"/>
   </joint>
 
+  <joint name="$(arg robot_name)/led_joint" type="fixed"> 
+  <origin xyz="0.044 0.019 0.0345" rpy="0 0 0"/> 
+  <parent link="$(arg robot_name)/gripper_link"/>
+  <child link="$(arg robot_name)/led_link"/> </joint>
+  
+<link name="$(arg robot_name)/led_link">
+   <visual>
+      <origin rpy="0 0 0" xyz="0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="package://dr_phil_description/meshes/spray_components/8_5mm_nozzle.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+   <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://dr_phil_description/meshes/spray_components/8_5mm_nozzle.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="0.002" />
+      <inertia ixx="0.00" iyy="0.00" izz="0.000" ixy="0.0000000000" ixz="0.0000000000" iyz="0" />
+    </inertial>
+  </link>
+  
+  <gazebo reference="$(arg robot_name)/gripper_link">
+  <light name ='led' type = 'spot'>
+    <pose>0.06645 0 0.043 0 ${-pi/2} 0</pose><!--you can place light position here ,and it is useless to give position in link-->
+    <attenuation>
+            <range>0</range>
+          </attenuation>
+          <diffuse>1 1 1 0</diffuse>
+          <specular>1 1 1 0</specular>
+          <spot>
+            <inner_angle>${pi/6}</inner_angle>
+            <outer_angle>${pi/6}</outer_angle>
+            <falloff>1</falloff>
+          </spot>
+          <cast_shadows>1</cast_shadows>
+  </light>
+  </gazebo>
+  
   <transmission name="trans_gripper">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="gripper">

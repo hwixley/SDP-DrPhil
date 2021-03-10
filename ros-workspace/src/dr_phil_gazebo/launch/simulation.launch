@@ -6,6 +6,12 @@
   <arg name="y_pos" default="-0.5"/>
   <arg name="z_pos" default="0.0"/>
   <arg name="world" default="decoratedHouse-wDoors"/>
+  <arg name="launch_rviz" default="false"/>
+  <arg name="headless" default="false"/>
+  <arg name="gui" default="$(eval not arg('headless'))"/>
+
+  <!-- if this is false collisions with actors wont be registered !!! -->
+  <arg name="use_gpu_ray" default="true" />
 
   <env name="GAZEBO_MODEL_PATH" value="$(find dr_phil_gazebo)/models" />
 
@@ -14,8 +20,11 @@
     <arg name="world_name" value="$(find dr_phil_gazebo)/worlds/$(arg world).world"/>
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
-    <arg name="gui" value="true"/>
-    <arg name="headless" value="false"/>
+
+    <!-- if running headless disable gui -->
+    <arg name="gui" value="$(arg gui)"/> 
+    <arg name="headless" value="$(arg headless)"/>
+
     <arg name="debug" value="false"/>
   </include>
 
@@ -23,7 +32,9 @@
   <!-- spawn up dr-phil, save robot_description -->
 
   <!-- sets robot_description parameter for rviz and robot state publisher-->
-  <include file="$(find dr_phil_description)/launch/includes/description.launch.xml"/>
+  <include file="$(find dr_phil_description)/launch/includes/description.launch.xml">
+    <arg name="use_gpu_ray" value="$(arg use_gpu_ray)" />
+  </include>
 
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
     <param name="publish_frequency" type="double" value="50.0" />
@@ -33,7 +44,8 @@
   <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model dr-phil -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
   <node name="px100_control_merger" pkg="dr_phil_gazebo" type="px100_joint_controller_merger.py" respawn="true" />
   <node name="battery_level" pkg="dr_phil_gazebo" type="battery_level.py" respawn="true" />
-  
+  <node name="spray_controller" pkg="dr_phil_gazebo" type="spray_controller" respawn="true" />
+
 
   <!-- spawn arm controllers -->
 
@@ -44,5 +56,8 @@
   <include file="$(find dr_phil_hardware)/launch/hardware.launch"/>
 
   <!-- start rviz -->
-  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find dr_phil_gazebo)/rviz/dr-phil_gazebo.model.rviz" /> 
+  <group if="$(eval arg('launch_rviz') ==true)">
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find dr_phil_gazebo)/rviz/dr-phil_gazebo.model.rviz" /> 
+  </group>
+  
 </launch>
