@@ -69,7 +69,7 @@
   <depend>costmap_converter</depend>
 
   <!-- python deps -->
-  <exec_depend>python-shapely</exec_depend>
+<!--   <exec_depend>python-shapely</exec_depend> temporary fix -->
 
   <test_depend>rostest</test_depend>
   <test_depend>rosunit</test_depend>
