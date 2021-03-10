@@ -3,11 +3,11 @@ import math
 import numpy as np
 import copy
 
-#from visualization_msgs.msg import Marker
-#from visualization_msgs.msg import MarkerArray
-#from geometry_msgs.msg import Point
-#import resource_retriever as Retriever
-#import rospy
+from visualization_msgs.msg import Marker
+from visualization_msgs.msg import MarkerArray
+from geometry_msgs.msg import Point
+import resource_retriever as Retriever
+import rospy
 
 
 # CONSTANTS
