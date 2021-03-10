@@ -245,7 +245,7 @@ def calc_vectors(vector):
         rotation_matrix = np.array(((c, -s), (s, c)))
 
         spray_vector = np.matmul(rotation_matrix, points - center_matrix) + center_matrix
-        vectors[i + 1, :] = [spray_vector[1, 0], 0, spray_vector[0, 0]]
+        vectors[i + 1, :] = [0, spray_vector[0, 0], spray_vector[1, 0]]
 
     return vectors
 
@@ -261,10 +261,14 @@ def get_coords_and_vectors(handle_center, vector):
     row = 0
     for a in range(xz_coords.shape[1]):
         for s in range(len(y_coords)):
+            vector = DISTANCE_FROM_HANDLE * (vectors[a, :] / np.sum(vectors[a, :]))  # Makes vector of magnitude DFH
+
             coords_and_vectors[row, 0] = xz_coords[1, a]
             coords_and_vectors[row, 1] = xz_coords[0, a]
             coords_and_vectors[row, 2] = y_coords[s]
-            coords_and_vectors[row, 3:6] = vectors[a, :]
+
+            vector += coords_and_vectors[row, 0:3]  # Calculates the destination point of the vector
+            coords_and_vectors[row, 3:6] = vector  # vectors[a, :] <-- old assignment
             row += 1
 
     coords_and_vectors[:, 0:3] = coords_and_vectors[:, 0:3]*0.001  # Convert to metres
