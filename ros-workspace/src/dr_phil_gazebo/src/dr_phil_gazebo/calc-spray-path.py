@@ -252,6 +252,7 @@ def calc_vectors(vector):
 
 # Compiles xyz coordinates and their vectors into a matrix
 def get_coords_and_vectors(handle_center, vector):
+    vector = Coord(vector.y, vector.z, vector.x)
     yx_coords = calc_yx_spray_centroids(handle_center, vector)
     z_coords = calc_z_spray_centroids(handle_center.y)
     vectors = calc_vectors(vector)
@@ -296,6 +297,6 @@ def main(handle_center, vector):
 
 if __name__ == '__main__':
     center = Coord(0.0, 0.0, 0.0)
-    direction = Coord(1.0, 0.0, 0.0)
+    direction = Coord(0.0, 1.0, 0.0)
 
     main(center, direction)
