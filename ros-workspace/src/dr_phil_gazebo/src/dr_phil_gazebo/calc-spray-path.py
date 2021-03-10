@@ -194,37 +194,37 @@ def transform_points(points, handle_center, vector):
 
 
 # Calculates y coordinates by starting at the center and going up and down the handle until the handle has been covered
-def calc_y_spray_centroids(center_y):
-    top = (center_y + HANDLE_DIMENSIONS[1] / 2) + SPRAY_CONFIDENCE
-    bottom = (center_y - HANDLE_DIMENSIONS[1] / 2) - SPRAY_CONFIDENCE
+def calc_z_spray_centroids(center_z):
+    top = (center_z + HANDLE_DIMENSIONS[1] / 2) + SPRAY_CONFIDENCE
+    bottom = (center_z - HANDLE_DIMENSIONS[1] / 2) - SPRAY_CONFIDENCE
     num_sprays = 2 * int(math.ceil(HANDLE_DIMENSIONS[1] / (2 * CIRCLE_EDGE)))
 
     spray_centroids = np.zeros(num_sprays)
     index = 0
 
-    current_y = center_y - CIRCLE_EDGE
-    while current_y < top:
-        current_y += CIRCLE_EDGE*2
-        spray_centroids[index] = current_y
+    current_z = center_z - CIRCLE_EDGE
+    while current_z < top:
+        current_z += CIRCLE_EDGE*2
+        spray_centroids[index] = current_z
         index += 1
 
-    current_y = center_y + CIRCLE_EDGE
-    while current_y > bottom:
-        current_y -= CIRCLE_EDGE*2
-        spray_centroids[index] = current_y
+    current_z = center_z + CIRCLE_EDGE
+    while current_z > bottom:
+        current_z -= CIRCLE_EDGE*2
+        spray_centroids[index] = current_z
         index += 1
 
     return spray_centroids
 
 
 # Calculates the xz locations around the handle for spraying
-def calc_xz_spray_centroids(handle_center, vector):
-    xz_coords = np.empty((2, 3))
-    xz_coords[:, 0] = [handle_center.z, handle_center.x - DISTANCE_FROM_HANDLE]
-    xz_coords[:, 1] = [handle_center.z - DISTANCE_FROM_HANDLE, handle_center.x]
-    xz_coords[:, 2] = [handle_center.z + DISTANCE_FROM_HANDLE, handle_center.x]
+def calc_yx_spray_centroids(handle_center, vector):
+    yx_coords = np.empty((2, 3))
+    yx_coords[:, 0] = [handle_center.z, handle_center.x - DISTANCE_FROM_HANDLE]
+    yx_coords[:, 1] = [handle_center.z - DISTANCE_FROM_HANDLE, handle_center.x]
+    yx_coords[:, 2] = [handle_center.z + DISTANCE_FROM_HANDLE, handle_center.x]
 
-    new_points = transform_points(xz_coords, handle_center, vector)
+    new_points = transform_points(yx_coords, handle_center, vector)
 
     return new_points
 
@@ -252,19 +252,19 @@ def calc_vectors(vector):
 
 # Compiles xyz coordinates and their vectors into a matrix
 def get_coords_and_vectors(handle_center, vector):
-    xz_coords = calc_xz_spray_centroids(handle_center, vector)
-    y_coords = calc_y_spray_centroids(handle_center.y)
+    yx_coords = calc_yx_spray_centroids(handle_center, vector)
+    z_coords = calc_z_spray_centroids(handle_center.y)
     vectors = calc_vectors(vector)
 
-    coords_and_vectors = np.empty(((len(y_coords) * xz_coords.shape[1]), 6))
+    coords_and_vectors = np.empty(((len(z_coords) * yx_coords.shape[1]), 6))
 
     row = 0
-    for a in range(xz_coords.shape[1]):
-        for s in range(len(y_coords)):
+    for a in range(yx_coords.shape[1]):
+        for s in range(len(z_coords)):
             vector = DISTANCE_FROM_HANDLE * (vectors[a, :] / np.sum(abs(vectors[a, :])))  # Makes vector of magnitude DFH
-            coords_and_vectors[row, 0] = xz_coords[1, a]
-            coords_and_vectors[row, 1] = xz_coords[0, a]
-            coords_and_vectors[row, 2] = y_coords[s]
+            coords_and_vectors[row, 0] = yx_coords[0, a]
+            coords_and_vectors[row, 1] = yx_coords[1, a]
+            coords_and_vectors[row, 2] = z_coords[s]
 
             vector += coords_and_vectors[row, 0:3]  # Calculates the destination point of the vector
             coords_and_vectors[row, 3:6] = vector  # vectors[a, :] <-- old assignment
