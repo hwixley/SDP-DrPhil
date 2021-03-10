@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import math
 import numpy as np
 import copy
@@ -266,9 +266,9 @@ def get_coords_and_vectors(handle_center, vector):
     row = 0
     for a in range(xz_coords.shape[1]):
         for s in range(len(y_coords)):
-            coords_and_vectors[row, 0] = xz_coords[0, a]
+            coords_and_vectors[row, 0] = xz_coords[1, a]
+            coords_and_vectors[row, 1] = xz_coords[0, a]
             coords_and_vectors[row, 2] = y_coords[s]
-            coords_and_vectors[row, 1] = xz_coords[1, a]
             coords_and_vectors[row, 3:6] = vectors[a, :]
             row += 1
 
