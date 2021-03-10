@@ -92,7 +92,8 @@ class Lidar:
 
     def get_normal_to_plane(self, l_ray1 : Ray, l_ray2 : Ray):
         """ returns the normal to the plane formed by the 2 lidar rays 
-            endpoints with the normal to the ground
+            endpoints with the normal to the ground. origin of the normal
+            is in the middle of the 2 lidar rays endpoints
             Args:
                 l_ray1: lidar ray
                 l_ray2: lidar ray
@@ -113,7 +114,7 @@ class Lidar:
         
         # normal_dir might need to be * -1 
         scalar_proj_of_normal_on_ray = np.dot(normal.get_vec(), l_ray2.get_vec()) / l_ray2.length
-   
+
         if scalar_proj_of_normal_on_ray > 0:
             normal_dir *= -1
 

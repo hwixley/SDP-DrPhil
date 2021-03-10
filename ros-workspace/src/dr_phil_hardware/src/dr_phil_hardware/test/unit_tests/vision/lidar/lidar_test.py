@@ -113,45 +113,22 @@ class LidarTest(unittest.TestCase):
         for angle in [0, 45, 90, 135, 180, 225, 270, 315]:
             ray = self.lidar.get_unit_vec_from_dir(np.deg2rad(angle))
             self.assertTrue(self.lidar.get_angle_from_unit_vec(ray) == angle)
-    """
+
     def test_get_normal_to_plane(self):
         origin = np.array([0, 0, 0])
         dir1 = np.array([1, 0, 0])
         dir2 = np.array([0, 1, 0])
         length = 1
-        normal_to_plane = np.array([[1., 1., 1.]])
-        normal_to_plane *= -1 # make it point towards the origin
-        normal_to_plane /= np.linalg.norm(normal_to_plane) # normalize
-
         l_ray1 = Ray(origin, dir1, length)
         l_ray2 = Ray(origin, dir2, length)
+
+        normal_to_plane = np.array([-1., -1., 0.])
+        normal_to_plane /= np.linalg.norm(normal_to_plane) # normalize
 
         computed_normal_ray = self.lidar.get_normal_to_plane(l_ray1, l_ray2)
         #print("\ncomputed_normal_ray: {}\n".format(computed_normal_ray))
-        computed_normal = computed_normal_ray.get_vec()
-        #print("\ncomputed_normal: {}\n".format(computed_normal))
-        computed_normal /= np.linalg.norm(computed_normal) # normalize
-        #print("correct_normal: {}\ncomputed_normal:{}\n".format(normal_to_plane, computed_normal))
-        
-        for i in [0, 1, 2]:
-            diff = np.abs(normal_to_plane[i] - computed_normal[i])
-            self.assertTrue(diff[0] <= 0.01)
-    """
-    def test_get_normal_to_plane(self):
-        origin = np.array([0, 0, 0])
-        dir1 = np.array([1, 0, 0])
-        dir2 = np.array([0, 1, 0])
-        length = 1
-        l_ray1 = Ray(origin, dir1, length)
-        l_ray2 = Ray(origin, dir2, length)
-
-        normal_to_plane = np.array([-1., -1., -1.])
-        normal_to_plane /= np.linalg.norm(normal_to_plane) # normalize
-
-        computed_normal_ray = self.lidar.get_normal_to_plane(l_ray1, l_ray2)
-        print("\ncomputed_normal_ray: {}\n".format(computed_normal_ray))
-        print("\ncorrect_normal_ray: {}\n".format(normal_to_plane))
-        self.fail()
+        #print("\ncorrect_normal_ray: {}\n".format(normal_to_plane))
+        self.assertTrue(np.array_equal(computed_normal_ray.dir, normal_to_plane))
 
 
 if __name__ == "__main__":
