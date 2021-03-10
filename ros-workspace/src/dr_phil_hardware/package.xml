@@ -68,6 +68,9 @@
   <depend>teb_local_planner</depend>
   <depend>costmap_converter</depend>
 
+  <!-- python deps -->
+  <exec_depend>python-shapely</exec_depend>
+
   <test_depend>rostest</test_depend>
   <test_depend>rosunit</test_depend>
   
