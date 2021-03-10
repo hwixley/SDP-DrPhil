@@ -17,16 +17,15 @@ def intersect(ray1 : Ray, ray2 : Ray):
     """ returns true if 2D rays intersect, false otherwise """
 
     segment1 = LineString([list(ray1.origin),list(ray1.get_point())])
-    #print(segment1)
     segment2 = LineString([list(ray2.origin),list(ray2.get_point())])
     return segment1.intersects(segment2)
 
 def subtract(ray1, ray2):
     """ returns ray1 - ray2
-    the 2 rays have the same origin """
+    the 2 rays have the same origin, and have finite length"""
     
     origin = ray2.get_point()
-    dir = np.subtract(ray1.get_vec() + ray1.origin, ray2.get_vec() + ray2.origin)
+    dir = ray1.get_point() - origin
     length = np.linalg.norm(dir)
 
     return Ray(origin, dir, length)
@@ -43,13 +42,11 @@ def interpolated_ray(ray1: Ray,ray2: Ray,r, newL):
     # need to have same origin
     assert(np.allclose(ray1.origin,ray2.origin))
 
-    tip1 = ray1.get_vec()
-    tip2 = ray2.get_vec()
+    tip1 = ray1.get_point()
+    tip2 = ray2.get_point()
 
     # get interpolation direction
     dir = tip2 - tip1
-    dir /= np.linalg.norm(dir) # normalize
-
     
     new_tip = tip1 + (dir * r)
     new_dir = new_tip - ray1.origin
@@ -60,13 +57,12 @@ def interpolated_ray(ray1: Ray,ray2: Ray,r, newL):
 def angle_between(v1, v2):
     """ Returns the angle in radians between vectors 'v1' and 'v2'::
 
-            >>> angle_between((1, 0, 0), (0, 1, 0))
+            >>> angle_between([[1], [0], [0]], [[0], [1], [0]])
             1.5707963267948966
-            >>> angle_between((1, 0, 0), (1, 0, 0))
+            >>> angle_between([[1], [0], [0]], [[1], [0], [0]])
             0.0
-            >>> angle_between((1, 0, 0), (-1, 0, 0))
+            >>> angle_between([[1], [0], [0]], [[-1], [0], [0]])
             3.141592653589793
     """
-    v1_u = np.linalg.norm(v1)
-    v2_u = np.linalg.norm(v2)
-    return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
+    angle = float(np.arccos((v1.T @ v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))))
+    return angle if angle < math.pi else (math.pi * 2) - angle
