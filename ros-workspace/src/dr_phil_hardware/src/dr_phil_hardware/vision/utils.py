@@ -16,18 +16,18 @@ def invert_homog_mat(hm):
 def intersect(ray1 : Ray, ray2 : Ray):
     """ returns true if 2D rays intersect, false otherwise """
 
-    segment1 = LineString([list(ray1.origin),list(ray1.origin + ray1.get_vec())])
+    segment1 = LineString([list(ray1.origin),list(ray1.get_point())])
     #print(segment1)
-    segment2 = LineString([list(ray2.origin),list(ray2.origin + ray2.get_vec())])
+    segment2 = LineString([list(ray2.origin),list(ray2.get_point())])
     return segment1.intersects(segment2)
 
 def subtract(ray1, ray2):
     """ returns ray1 - ray2
     the 2 rays have the same origin """
     
-    origin = ray2.origin + ray2.get_vec()
+    origin = ray2.get_point()
     dir = np.subtract(ray1.get_vec() + ray1.origin, ray2.get_vec() + ray2.origin)
-    length = np.linalg.norm(origin + dir)
+    length = np.linalg.norm(dir)
 
     return Ray(origin, dir, length)
     

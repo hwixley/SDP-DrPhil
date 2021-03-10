@@ -3,6 +3,8 @@
 import unittest
 import sys
 import numpy as np
+from dr_phil_hardware.vision.ray import Ray
+import math
 
 PKG='dr_phil_hardware'
 import roslib; roslib.load_manifest(PKG)
@@ -107,6 +109,17 @@ class VisionUtilsTest(unittest.TestCase):
 
         self.assertTrue(np.allclose(output,inverse),"The inverse of input:\n {},\n was:\n {}".format(input,output))
 
+    def test_subtract(self):
+        from dr_phil_hardware.vision.utils import subtract
+
+        ray1 = Ray(np.array([0, 0, 0]), np.array([1, 0, 0]), length=1)
+        ray2 = Ray(np.array([0, 0, 0]), np.array([0, 0, 1]), length=1)
+
+        subtr = subtract(ray1, ray2)
+        self.assertTrue(np.array_equal(subtr.origin, ray2.get_point()))
+        self.assertTrue(subtr.length == math.sqrt(2))
+
+    
 if __name__ == "__main__":
     import rosunit
     rosunit.unitrun(PKG,'vision_utils_test',VisionUtilsTest)
