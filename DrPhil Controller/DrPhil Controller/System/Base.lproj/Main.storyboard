@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="60" translatesAutoresizingMaskIntoConstraints="NO" id="NhX-Py-FA6">
-                                <rect key="frame" x="7" y="111" width="400" height="674.5"/>
+                                <rect key="frame" x="7" y="176" width="400" height="544.5"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="fqn-nA-wvK">
                                         <rect key="frame" x="0.0" y="0.0" width="400" height="414.5"/>
@@ -48,11 +48,11 @@
                                             <color key="titleColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
                                         <connections>
-                                            <segue destination="Fxf-AG-u3o" kind="presentation" modalPresentationStyle="fullScreen" id="xLx-iH-Zas"/>
+                                            <segue destination="1th-EP-W8U" kind="presentation" modalPresentationStyle="fullScreen" id="NWf-JM-G9e"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AkQ-d5-t1b">
-                                        <rect key="frame" x="0.0" y="604.5" width="400" height="70"/>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AkQ-d5-t1b">
+                                        <rect key="frame" x="0.0" y="544.5" width="400" height="70"/>
                                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="70" id="Iu3-LG-qQC"/>
@@ -85,7 +85,7 @@
         <!--Log in-->
         <scene sceneID="qfw-0i-33n">
             <objects>
-                <viewController interfaceStyle="dark" id="DI9-45-x68" sceneMemberID="viewController">
+                <viewController interfaceStyle="dark" id="DI9-45-x68" customClass="LoginViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="93L-iJ-tZf">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -122,12 +122,12 @@
                                                             <constraint firstAttribute="height" constant="55" id="QIZ-HL-WLo"/>
                                                         </constraints>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                        <textInputTraits key="textInputTraits"/>
+                                                        <textInputTraits key="textInputTraits" keyboardType="emailAddress" keyboardAppearance="alert"/>
                                                     </textField>
                                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="XHg-Bx-RKS">
                                                         <rect key="frame" x="0.0" y="75" width="292.5" height="55"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                        <textInputTraits key="textInputTraits"/>
+                                                        <textInputTraits key="textInputTraits" keyboardAppearance="alert" secureTextEntry="YES"/>
                                                     </textField>
                                                 </subviews>
                                                 <constraints>
@@ -158,15 +158,60 @@
                     <navigationItem key="navigationItem" title="Log in" largeTitleDisplayMode="always" id="gLe-e0-kYd">
                         <barButtonItem key="leftBarButtonItem" title="&lt; Back" id="gin-Mt-293">
                             <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <connections>
+                                <segue destination="BYZ-38-t0r" kind="presentation" modalPresentationStyle="fullScreen" id="eIn-O2-O5H"/>
+                            </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Log in" id="BaG-eF-Zfu">
                             <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <connections>
+                                <action selector="clickLogin:" destination="DI9-45-x68" id="DdV-Cy-5Hp"/>
+                            </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="idTextfield" destination="Z6o-ZW-Tne" id="Rvf-oc-gdJ"/>
+                        <outlet property="passTextfield" destination="XHg-Bx-RKS" id="fFg-10-Ce4"/>
+                        <segue destination="Fxf-AG-u3o" kind="presentation" identifier="login" modalPresentationStyle="fullScreen" id="jjf-Qm-49C"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Dpy-sR-ybt" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="850.72463768115949" y="874.55357142857144"/>
+        </scene>
+        <!--Register my robot-->
+        <scene sceneID="HPU-8B-zQE">
+            <objects>
+                <viewController interfaceStyle="dark" id="dau-b3-YOf" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="A9S-UZ-lOU">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="OXF-4y-BP2">
+                                <rect key="frame" x="152" y="348" width="220" height="200"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mN3-WD-aZL">
+                                        <rect key="frame" x="0.0" y="0.0" width="220" height="200"/>
+                                        <subviews>
+                                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="dFT-I6-KBZ">
+                                                <rect key="frame" x="0.0" y="0.0" width="110" height="200"/>
+                                            </stackView>
+                                            <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="SvN-oq-C9Z">
+                                                <rect key="frame" x="110" y="0.0" width="110" height="200"/>
+                                            </stackView>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="tertiarySystemGroupedBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <viewLayoutGuide key="safeArea" id="PfV-UP-ox7"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Register my robot" id="k38-hs-6o5"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9R6-9Q-jUz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2873.913043478261" y="164.73214285714286"/>
         </scene>
         <!--Day Stats-->
         <scene sceneID="QKG-lG-GB3">
@@ -1243,9 +1288,28 @@
             </objects>
             <point key="canvasLocation" x="-59.420289855072468" y="874.55357142857144"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="zJa-qX-tFc">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" interfaceStyle="dark" id="FWu-dp-buG" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="KLE-TB-z9J">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="dau-b3-YOf" kind="relationship" relationship="rootViewController" id="I5z-k3-Ba4"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="a1e-CP-6fK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1963.7681159420292" y="164.73214285714286"/>
+        </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="xLx-iH-Zas"/>
+        <segue reference="jjf-Qm-49C"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="ControlTab" width="25" height="25"/>
