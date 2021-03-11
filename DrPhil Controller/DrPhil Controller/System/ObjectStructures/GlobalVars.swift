@@ -9,12 +9,58 @@
 import Foundation
 import UIKit
 
-struct UserInfo {
-    static var schedule : CleanSchedule? = nil
-    static var dayStats : DailyStats? = nil
-    static var resources : ResourceMetrics? = nil
-    static var status : String? = nil
-    static var map : UIImage? = nil
+struct MyUser {
+    static var robot: Robot? = nil
+    static var statusInfo: StatusInfo? = nil
+    static var taskStack: TaskStack? = nil
+}
+
+struct Robot {
+    var UID: String
+    var robotID: String
+    var schedule: CleanSchedule? = nil
+}
+
+struct StatusInfo {
+    var status : Int
+    var dayStats : DailyStats? = nil
+    var resources : ResourceMetrics? = nil
+    var map : UIImage? = nil
+    
+    func getStatus() -> String {
+        if status == 0 {
+            return "idle at charging station"
+        } else if status == 1 {
+            return "cleaning"
+        } else if status == 2 {
+            return "returning to charging station"
+        } else if status == 3 {
+            return "Dr Phil is stuck"
+        } else if status == 4 {
+            return "emergency halt procedure"
+        }
+        return ""
+    }
+}
+
+struct TaskStack {
+    var tasks: [Int]? = nil
+}
+
+struct Task {
+    var task: Int
+    var executionTime: String
+    var date: String
+    var taskID: Int
+    
+    func getTask() -> String {
+        if task == 0 {
+            return "cleaning"
+        } else if task == 1 {
+            return "returning to charging station"
+        }
+        return ""
+    }
 }
 
 func isWeekday() -> Bool {

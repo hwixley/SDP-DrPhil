@@ -67,7 +67,9 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
     //MARK: Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "updateScheduleSegue" {
-            UserInfo.schedule = self.schedule
+            //Update schedule in firebase
+            
+            MyUser.robot!.schedule = self.schedule
         }
     }
     
@@ -188,20 +190,20 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
     
     //MARK: Private Methods
     func setupUI() {
-        if UserInfo.schedule != nil {
-            if UserInfo.schedule!.weekdays != nil {
+        if MyUser.robot!.schedule != nil {
+            if MyUser.robot!.schedule!.weekdays != nil {
                 weekdaysSwitch.isOn = true
                 weekdaysStack.isHidden = false
-                weekdaysStartTextField.text = UserInfo.schedule!.weekdays!.start
-                weekdaysEndTextField.text = UserInfo.schedule!.weekdays!.end
-                numRoundsWDTextField.text = String(UserInfo.schedule!.weekdays!.numRounds)
+                weekdaysStartTextField.text = MyUser.robot!.schedule!.weekdays!.start
+                weekdaysEndTextField.text = MyUser.robot!.schedule!.weekdays!.end
+                numRoundsWDTextField.text = String(MyUser.robot!.schedule!.weekdays!.numRounds)
             }
-            if UserInfo.schedule!.weekends != nil {
+            if MyUser.robot!.schedule!.weekends != nil {
                 weekendsSwitch.isOn = true
                 weekendsStack.isHidden = false
-                weekendsStartTextField.text = UserInfo.schedule!.weekends!.start
-                weekendsEndTextField.text = UserInfo.schedule!.weekends!.end
-                numRoundsWETextField.text = String(UserInfo.schedule!.weekends!.numRounds)
+                weekendsStartTextField.text = MyUser.robot!.schedule!.weekends!.start
+                weekendsEndTextField.text = MyUser.robot!.schedule!.weekends!.end
+                numRoundsWETextField.text = String(MyUser.robot!.schedule!.weekends!.numRounds)
             }
         }
     }

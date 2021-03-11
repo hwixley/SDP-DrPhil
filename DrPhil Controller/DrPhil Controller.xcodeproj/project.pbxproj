@@ -23,6 +23,8 @@
 		C03A669F25F95F3600FC15CE /* GlobalVars.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03A669C25F95F3600FC15CE /* GlobalVars.swift */; };
 		C03A66A025F95F3600FC15CE /* DailyStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = C03A669D25F95F3600FC15CE /* DailyStats.swift */; };
 		C03E95B325F787BE00542494 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C03E95B225F787BE00542494 /* Default-568h@2x.png */; };
+		C041253125FA52B000BF0872 /* MyFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C041253025FA52B000BF0872 /* MyFunctions.swift */; };
+		C041253325FA66E500BF0872 /* RegistrationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C041253225FA66E500BF0872 /* RegistrationViewController.swift */; };
 		C06B434525BF5C090017D14B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434425BF5C090017D14B /* AppDelegate.swift */; };
 		C06B434725BF5C090017D14B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434625BF5C090017D14B /* SceneDelegate.swift */; };
 		C06B434925BF5C090017D14B /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434825BF5C090017D14B /* LoginViewController.swift */; };
@@ -72,6 +74,8 @@
 		C03A669C25F95F3600FC15CE /* GlobalVars.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalVars.swift; sourceTree = "<group>"; };
 		C03A669D25F95F3600FC15CE /* DailyStats.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DailyStats.swift; sourceTree = "<group>"; };
 		C03E95B225F787BE00542494 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		C041253025FA52B000BF0872 /* MyFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFunctions.swift; sourceTree = "<group>"; };
+		C041253225FA66E500BF0872 /* RegistrationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationViewController.swift; sourceTree = "<group>"; };
 		C06B434125BF5C090017D14B /* DrPhil.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DrPhil.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C06B434425BF5C090017D14B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C06B434625BF5C090017D14B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -120,6 +124,7 @@
 		C03A668D25F95F1C00FC15CE /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				C041253225FA66E500BF0872 /* RegistrationViewController.swift */,
 				C06B434825BF5C090017D14B /* LoginViewController.swift */,
 				C03A668E25F95F1C00FC15CE /* StatsViewController.swift */,
 				C03A668F25F95F1C00FC15CE /* ControlViewController.swift */,
@@ -137,6 +142,7 @@
 				C03A669B25F95F3600FC15CE /* CleanSchedule.swift */,
 				C03A669C25F95F3600FC15CE /* GlobalVars.swift */,
 				C03A669D25F95F3600FC15CE /* DailyStats.swift */,
+				C041253025FA52B000BF0872 /* MyFunctions.swift */,
 			);
 			path = ObjectStructures;
 			sourceTree = "<group>";
@@ -490,10 +496,12 @@
 				C06B434525BF5C090017D14B /* AppDelegate.swift in Sources */,
 				C03A669425F95F1C00FC15CE /* StatsViewController.swift in Sources */,
 				C03A669525F95F1C00FC15CE /* ControlViewController.swift in Sources */,
+				C041253325FA66E500BF0872 /* RegistrationViewController.swift in Sources */,
 				C03A669725F95F1C00FC15CE /* ctrlReturnViewController.swift in Sources */,
 				C03A669625F95F1C00FC15CE /* HomeViewController.swift in Sources */,
 				C03A669825F95F1C00FC15CE /* ctrlScheduleCleaningViewController.swift in Sources */,
 				C06B434725BF5C090017D14B /* SceneDelegate.swift in Sources */,
+				C041253125FA52B000BF0872 /* MyFunctions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

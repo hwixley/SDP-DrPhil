@@ -25,8 +25,23 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
 
     @IBAction func clickLogin(_ sender: UIBarButtonItem) {
-        if idTextfield.text != "" && passTextfield.text != "" {
-            Auth.auth().signIn(withEmail: idTextfield.text + "@dr.phil", password: passTextfield.text) { (authResult, err)}
+        if idTextfield.text != nil && passTextfield.text != nil && idTextfield.text != "" && passTextfield.text != "" {
+            
+            FirebaseAuth.Auth.auth().signIn(withEmail: idTextfield.text! + "@dr.phil", password: passTextfield.text!) { (authResult, err) in
+                
+                if err != nil {
+                    self.navigationItem.prompt = "Incorrect ID or password"
+                } else if authResult != nil {
+                    let db = Firestore.firestore()
+                    let robotDoc = db.collection("robots").document(authResult!.user.uid)
+                    
+                    robotDoc.getDocument { (document, err) in
+                        if document != nil && document!.exists {
+                            
+                        }
+                    }
+                }
+            }
             
             self.performSegue(withIdentifier: "login", sender: self)
         } else {

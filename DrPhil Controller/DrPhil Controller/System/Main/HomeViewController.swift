@@ -35,31 +35,33 @@ class HomeViewController: UIViewController {
         shiftStack.isHidden = false
         roundsTextLabel.text = "Interval between cleaning rounds (minutes):"
         
-        statusLabel.text = UserInfo.status ?? "NA"
-        
-        if UserInfo.resources != nil {
-            batteryLabel.text = String(UserInfo.resources!.battery) + "%"
-            disinfectantLabel.text = String(UserInfo.resources!.disinfectant) + "%"
-        }
-        
-        if UserInfo.map != nil {
-            mapImageView.image = UserInfo.map!
-        } else {
-            mapStack.isHidden = true
-        }
-        
-        if UserInfo.schedule != nil {
-            if isWeekday() {
-                if UserInfo.schedule!.weekdays != nil {
-                    shiftLabel.text = UserInfo.schedule!.weekdays!.start + " - " + UserInfo.schedule!.weekdays!.end
-                    roundsLabel.text = String(UserInfo.schedule!.weekdays!.numRounds)
-                    return
-                }
+        if MyUser.statusInfo != nil {
+            statusLabel.text = MyUser.statusInfo!.getStatus()
+            
+            if MyUser.statusInfo!.resources != nil {
+                batteryLabel.text = String(MyUser.statusInfo!.resources!.battery) + "%"
+                disinfectantLabel.text = String(MyUser.statusInfo!.resources!.disinfectant) + "%"
+            }
+            
+            if MyUser.statusInfo!.map != nil {
+                mapImageView.image = MyUser.statusInfo!.map!
             } else {
-                if UserInfo.schedule!.weekends != nil {
-                    shiftLabel.text = UserInfo.schedule!.weekends!.start + " - " + UserInfo.schedule!.weekends!.end
-                    roundsLabel.text = String(UserInfo.schedule!.weekends!.numRounds)
-                    return
+                mapStack.isHidden = true
+            }
+            
+            if MyUser.robot!.schedule != nil {
+                if isWeekday() {
+                    if MyUser.robot!.schedule!.weekdays != nil {
+                        shiftLabel.text = MyUser.robot!.schedule!.weekdays!.start + " - " +  MyUser.robot!.schedule!.weekdays!.end
+                        roundsLabel.text = String(MyUser.robot!.schedule!.weekdays!.numRounds)
+                        return
+                    }
+                } else {
+                    if MyUser.robot!.schedule!.weekends != nil {
+                        shiftLabel.text = MyUser.robot!.schedule!.weekends!.start + " - " + MyUser.robot!.schedule!.weekends!.end
+                        roundsLabel.text = String(MyUser.robot!.schedule!.weekends!.numRounds)
+                        return
+                    }
                 }
             }
         }

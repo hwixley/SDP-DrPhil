@@ -28,12 +28,14 @@ class StatsViewController: UIViewController {
 
     //MARK: Private methods
     func setupUI() {
-        if UserInfo.dayStats != nil {
-            roundLabel.text = String(UserInfo.dayStats!.round) + "/" + String(UserInfo.dayStats!.maxRound)
-            roomLabel.text = String(UserInfo.dayStats!.room) + "/" + String(UserInfo.dayStats!.maxRooms)
-            handlesLabel.text = String(UserInfo.dayStats!.numHandles)
-            batteryUsageLabel.text = String(UserInfo.dayStats!.batteryUsage) + "W"
-            disinfectantUsageLabel.text = String(UserInfo.dayStats!.disinfectantUsage) + "ml"
+        if MyUser.statusInfo != nil {
+            if MyUser.statusInfo!.dayStats != nil {
+                roundLabel.text = String(MyUser.statusInfo!.dayStats!.round) + "/" + String(MyUser.statusInfo!.dayStats!.maxRound)
+                roomLabel.text = String(MyUser.statusInfo!.dayStats!.room) + "/" + String(MyUser.statusInfo!.dayStats!.maxRooms)
+                handlesLabel.text = String(MyUser.statusInfo!.dayStats!.numHandles)
+                batteryUsageLabel.text = String(MyUser.statusInfo!.dayStats!.batteryUsage) + "W"
+                disinfectantUsageLabel.text = String(MyUser.statusInfo!.dayStats!.disinfectantUsage) + "ml"
+            }
         }
     }
 }
