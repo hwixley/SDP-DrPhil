@@ -7,7 +7,7 @@ from sensor_msgs.msg import Image as ImageMSG
 from cv_bridge import CvBridge, CvBridgeError
 import rospy
 #Library to process the image and try to find the bounding box of a handle
-from models import yolov3, DEFAULT_WEIGHTS, DEFAULT_CONFIGURATION, DEFAULT_OBJ_NAMES, visualise_results, load_network_and_classes
+# from models import yolov3, DEFAULT_WEIGHTS, DEFAULT_CONFIGURATION, DEFAULT_OBJ_NAMES, visualise_results, load_network_and_classes
 
 #Library to calculate points around handle To Move Arm to (to cover all handle)
 from calc_spray_path import main as calculate_spray_end_points
@@ -149,12 +149,12 @@ class SprayPathVisualiser:
         except CvBridgeError as e:
             print(e)
 
-        #Pass the image and the appropriate arguments to get results
-        results = yolov3(self.rgb_image,weights=self.weights,cfg=self.cfg, network=self.net, output_layers=self.out, class_names=self.classes)
+        # #Pass the image and the appropriate arguments to get results
+        # results = yolov3(self.rgb_image,weights=self.weights,cfg=self.cfg, network=self.net, output_layers=self.out, class_names=self.classes)
         
         
-        #See the YOLO results by calling the visualise results function
-        visualise_results(self.rgb_image, results, self.starting_time, self.frame_id)
+        # #See the YOLO results by calling the visualise results function
+        # visualise_results(self.rgb_image, results, self.starting_time, self.frame_id)
         
 
 
@@ -169,7 +169,7 @@ def main(data):
 
 
 if __name__ == '__main__':
-    Center = Coord(0.0, 0.0, 0.0)
+    Center = Coord(2.0, 2.0, 2.0)
     Direction = Coord(1.0, 0.0, 0.0)
 
     data = calculate_spray_end_points(Center,Direction)
