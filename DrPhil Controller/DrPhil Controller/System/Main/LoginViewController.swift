@@ -39,10 +39,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     @IBAction func clickLogin(_ sender: UIBarButtonItem) {
         if idTextfield.text != nil && passTextfield.text != nil && idTextfield.text != "" && passTextfield.text != "" {
             
-            FirebaseAuth.Auth.auth().signIn(withEmail: idTextfield.text! + "@dr.phil", password: passTextfield.text!) { (authResult, err) in
+            FirebaseAuth.Auth.auth().signIn(withEmail: idTextfield.text!, password: passTextfield.text!) { (authResult, err) in
                 
                 if err != nil {
-                    self.navigationItem.prompt = "Incorrect ID or password"
+                    self.navigationItem.prompt = "Incorrect email or password"
+                    print(err!.localizedDescription)
                 } else if authResult != nil {
                     let db = Firestore.firestore()
                     let robotDoc = db.collection("robots").document(authResult!.user.uid)
