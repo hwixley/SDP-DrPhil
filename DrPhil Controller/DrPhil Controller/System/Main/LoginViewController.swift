@@ -15,13 +15,17 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     //MARK: UI Components
     @IBOutlet weak var idTextfield: UITextField!
     @IBOutlet weak var passTextfield: UITextField!
-    //Gestures
+    @IBOutlet var tapOutsideKB: UITapGestureRecognizer!
+    //MARK: Properties
+    var clickedTxtf : UITextField? = nil
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.idTextfield.delegate = self
         self.passTextfield.delegate = self
+        self.tapOutsideKB.isEnabled = false
     }
 
     @IBAction func clickLogin(_ sender: UIBarButtonItem) {
@@ -50,5 +54,26 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         
     }
     
+    @IBAction func tapOutsideKB(_ sender: UITapGestureRecognizer) {
+        if self.clickedTxtf != nil {
+            self.clickedTxtf!.resignFirstResponder()
+            self.tapOutsideKB.isEnabled = false
+        }
+    }
+    
+    
+    //MARK: Textfield
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        self.tapOutsideKB.isEnabled = true
+        self.clickedTxtf = textField
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        self.tapOutsideKB.isEnabled = false
+        return true
+    }
+    
 }
+
 

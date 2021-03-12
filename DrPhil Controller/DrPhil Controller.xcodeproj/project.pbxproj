@@ -25,9 +25,9 @@
 		C03E95B325F787BE00542494 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C03E95B225F787BE00542494 /* Default-568h@2x.png */; };
 		C041253125FA52B000BF0872 /* MyFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C041253025FA52B000BF0872 /* MyFunctions.swift */; };
 		C041253325FA66E500BF0872 /* RegistrationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C041253225FA66E500BF0872 /* RegistrationViewController.swift */; };
+		C041253525FB9E0100BF0872 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C041253425FB9E0100BF0872 /* LoginViewController.swift */; };
 		C06B434525BF5C090017D14B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434425BF5C090017D14B /* AppDelegate.swift */; };
 		C06B434725BF5C090017D14B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434625BF5C090017D14B /* SceneDelegate.swift */; };
-		C06B434925BF5C090017D14B /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434825BF5C090017D14B /* LoginViewController.swift */; };
 		C06B434C25BF5C090017D14B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C06B434A25BF5C090017D14B /* Main.storyboard */; };
 		C06B434E25BF5C0B0017D14B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C06B434D25BF5C0B0017D14B /* Assets.xcassets */; };
 		C06B435125BF5C0B0017D14B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C06B434F25BF5C0B0017D14B /* LaunchScreen.storyboard */; };
@@ -76,10 +76,10 @@
 		C03E95B225F787BE00542494 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		C041253025FA52B000BF0872 /* MyFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFunctions.swift; sourceTree = "<group>"; };
 		C041253225FA66E500BF0872 /* RegistrationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationViewController.swift; sourceTree = "<group>"; };
+		C041253425FB9E0100BF0872 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		C06B434125BF5C090017D14B /* DrPhil.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DrPhil.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C06B434425BF5C090017D14B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C06B434625BF5C090017D14B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		C06B434825BF5C090017D14B /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		C06B434B25BF5C090017D14B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C06B434D25BF5C0B0017D14B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C06B435025BF5C0B0017D14B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -124,8 +124,8 @@
 		C03A668D25F95F1C00FC15CE /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				C041253425FB9E0100BF0872 /* LoginViewController.swift */,
 				C041253225FA66E500BF0872 /* RegistrationViewController.swift */,
-				C06B434825BF5C090017D14B /* LoginViewController.swift */,
 				C03A668E25F95F1C00FC15CE /* StatsViewController.swift */,
 				C03A668F25F95F1C00FC15CE /* ControlViewController.swift */,
 				C03A669025F95F1C00FC15CE /* HomeViewController.swift */,
@@ -489,8 +489,8 @@
 			files = (
 				C03A669E25F95F3600FC15CE /* CleanSchedule.swift in Sources */,
 				C03A66A025F95F3600FC15CE /* DailyStats.swift in Sources */,
-				C06B434925BF5C090017D14B /* LoginViewController.swift in Sources */,
 				C03A669925F95F1C00FC15CE /* MenuViewController.swift in Sources */,
+				C041253525FB9E0100BF0872 /* LoginViewController.swift in Sources */,
 				C0B1AA3A25C5983B0072D124 /* ContentView.swift in Sources */,
 				C03A669F25F95F3600FC15CE /* GlobalVars.swift in Sources */,
 				C06B434525BF5C090017D14B /* AppDelegate.swift in Sources */,
