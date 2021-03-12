@@ -11,6 +11,12 @@ build
 ros-workspace/src/CMakeLists.txt
 # pyenv cache
 
+<<<<<<< HEAD
+#directories to ignore 
+SDP-env/
+
+=======
+>>>>>>> debafb855d9aea520c7b93eadb9832bd7b1306b4
 .python-version
 
 # Compiled source

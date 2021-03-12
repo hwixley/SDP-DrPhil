@@ -222,7 +222,7 @@ install(TARGETS dr_phil_hardware_bringup
 
 if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
-  add_rostest(test/example.test)
+  add_rostest(test/vision.test)
 endif()
 
 ## Add gtest based cpp test target and link libraries
