@@ -84,16 +84,16 @@ def calc_z_spray_centroids(center_z):
     spray_centroids = np.zeros(num_sprays)
     index = 0
 
-    current_z = center_z - CIRCLE_EDGE
+    current_z = center_z + CIRCLE_EDGE
     while current_z < top and index < num_sprays:
-        current_z += CIRCLE_EDGE * 2
         spray_centroids[index] = current_z
+        current_z += CIRCLE_EDGE * 2
         index += 1
 
-    current_z = center_z + CIRCLE_EDGE
+    current_z = center_z - CIRCLE_EDGE
     while current_z > bottom and index < num_sprays:
-        current_z -= CIRCLE_EDGE * 2
         spray_centroids[index] = current_z
+        current_z -= CIRCLE_EDGE * 2
         index += 1
 
     return spray_centroids
@@ -177,7 +177,7 @@ def main(handle_center, vector):
     else:
         vector = Coord(vector.x*-1, vector.y*-1, vector.z)
         data = get_coords_and_vectors(handle_center, vector, False)
-
+        print(data)
     return data
 
 
