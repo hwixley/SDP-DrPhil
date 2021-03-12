@@ -22,7 +22,7 @@ public:
   SubscribeAndPublish()
   {
     
-    pub_ = n_.advertise<sensor_msgs::PointCloud>("/pointCloud", 1);
+    pub_ = n_.advertise<sensor_msgs::PointCloud>("/pointCloud", 100);
     sub1_ = n_.subscribe("/spray_controller/command", 1, &SubscribeAndPublish::callback1, this);
     
     
@@ -32,7 +32,7 @@ public:
     while (n_.ok()){
 
         try{
-            listener.waitForTransform("odom", "px100/led_link1", ros::Time::now(), ros::Duration(2));
+            listener.waitForTransform("odom", "px100/led_link1", ros::Time::now(), ros::Duration(5));
             listener.lookupTransform("odom", "px100/led_link1", ros::Time(), transform);
         }
         catch (tf::TransformException ex){
