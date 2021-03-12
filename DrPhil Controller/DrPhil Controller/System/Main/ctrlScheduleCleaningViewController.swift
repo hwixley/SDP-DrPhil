@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate {
 
@@ -108,7 +109,8 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
                 endWDLabel.textColor = UIColor.systemPink
                 return
             } else {
-                schedule.weekdays = TimeFrame(start: weekdaysStartTextField.text!, end: weekdaysEndTextField.text!, numRounds:  Int(numRoundsWDTextField.text ?? "0")!)
+                schedule.weekdays = TimeFrame(start: weekdaysStartTextField.text!, end: weekdaysEndTextField.text!, numRounds:  Int(numRoundsWDTextField.text!)!)
+                
             }
         }
         roundsWDLabel.textColor = UIColor.white
@@ -127,6 +129,19 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
             }
         }
         
+        let db = Firestore.firestore()
+        var weekdays: [String]? = []
+        var weekends: [String]? = []
+        
+        if schedule.weekdays != nil {
+            weekdays = [schedule.weekdays!.start, schedule.weekdays!.end, String(schedule.weekdays!.numRounds)]
+        }
+        if schedule.weekends != nil {
+            weekends = [schedule.weekends!.start, schedule.weekends!.end, String(schedule.weekends!.numRounds)]
+        }
+        
+        db.collection("robots").document(MyUser.robot!.UID).updateData(["weekdays": weekdays!, "weekends": weekends!])
+        MyUser.robot!.schedule = schedule
         self.performSegue(withIdentifier: "updateScheduleSegue", sender: self)
     }
     

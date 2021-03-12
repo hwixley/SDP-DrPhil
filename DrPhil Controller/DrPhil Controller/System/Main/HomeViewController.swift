@@ -33,7 +33,24 @@ class HomeViewController: UIViewController {
     //MARK: Private methods
     func setupUI() {
         shiftStack.isHidden = false
-        roundsTextLabel.text = "Interval between cleaning rounds (minutes):"
+        mapStack.isHidden = true
+        roundsTextLabel.text = "Interval between cleaning rounds (mins):"
+        
+        if MyUser.robot!.schedule != nil {
+            if isWeekday() {
+                if MyUser.robot!.schedule!.weekdays != nil {
+                    shiftLabel.text = MyUser.robot!.schedule!.weekdays!.start + " - " +  MyUser.robot!.schedule!.weekdays!.end
+                    roundsLabel.text = String(MyUser.robot!.schedule!.weekdays!.numRounds)
+                    return
+                }
+            } else {
+                if MyUser.robot!.schedule!.weekends != nil {
+                    shiftLabel.text = MyUser.robot!.schedule!.weekends!.start + " - " + MyUser.robot!.schedule!.weekends!.end
+                    roundsLabel.text = String(MyUser.robot!.schedule!.weekends!.numRounds)
+                    return
+                }
+            }
+        }
         
         if MyUser.statusInfo != nil {
             statusLabel.text = MyUser.statusInfo!.getStatus()
@@ -47,22 +64,6 @@ class HomeViewController: UIViewController {
                 mapImageView.image = MyUser.statusInfo!.map!
             } else {
                 mapStack.isHidden = true
-            }
-            
-            if MyUser.robot!.schedule != nil {
-                if isWeekday() {
-                    if MyUser.robot!.schedule!.weekdays != nil {
-                        shiftLabel.text = MyUser.robot!.schedule!.weekdays!.start + " - " +  MyUser.robot!.schedule!.weekdays!.end
-                        roundsLabel.text = String(MyUser.robot!.schedule!.weekdays!.numRounds)
-                        return
-                    }
-                } else {
-                    if MyUser.robot!.schedule!.weekends != nil {
-                        shiftLabel.text = MyUser.robot!.schedule!.weekends!.start + " - " + MyUser.robot!.schedule!.weekends!.end
-                        roundsLabel.text = String(MyUser.robot!.schedule!.weekends!.numRounds)
-                        return
-                    }
-                }
             }
         }
         mapStack.isHidden = true
