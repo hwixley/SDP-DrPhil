@@ -1,5 +1,14 @@
 <launch>
+    <!-- mock action available for testing -->
     <node pkg="dr_phil_hardware" name="mock_action_server" type="mock_action_server.py"/>
 
-    <test test-name="action_client_connect_on_init_test" pkg="dr_phil_hardware" type="action_client_connect_on_init_test.py" />
+    <!-- fake joint states + controllers +  move it-->
+    <node pkg="dr_phil_hardware" name="fake_joint_state_pub" type="fake_joint_state_pub.py"/>
+    <include file="$(find dr_phil_hardware)/launch/arm_stack/moveit.launch"/>
+    <include file="$(find dr_phil_hardware)/launch/dr_phil_hardware_bringup.launch"/>
+
+    <!-- <test test-name="test_create_moveit_trajectory_plan" pkg="dr_phil_hardware" type="test_create_moveit_trajectory_plan.py" /> -->
+    <test test-name="test_execute_moveit_plan" pkg="dr_phil_hardware" type="test_execute_moveit_plan.py"  time-limit="120.0" />
+    <!-- <test test-name="action_client_connect_on_init_test" pkg="dr_phil_hardware" type="action_client_connect_on_init_test.py" /> -->
+
 </launch>

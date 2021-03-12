@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
+from dr_phil_hardware.behaviour.leafs.ros import CreateMoveitTrajectoryPlan
 from py_trees.visitors import SnapshotVisitor
 import rospy
 import py_trees
 import py_trees_ros
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import LaserScan
-import dr_phil_hardware.behaviour
-from dr_phil_hardware.behaviour.trees.trees import create_idle,create_face_closest_obstacle,create_explore_frontier_and_save_map
+from dr_phil_hardware.behaviour.leafs.general import SetBlackboardVariableCustom
+from dr_phil_hardware.behaviour.trees.trees import create_idle,create_explore_frontier_and_save_map,create_trace_arm_path,create_raise_ee_to_first_target_pose_z
 import functools 
 from visualization_msgs.msg import MarkerArray
 import os
 from py_trees import console 
 import json 
 from rospy.exceptions import ROSException
+from geometry_msgs.msg import Pose
 import sys
 
 class Controller:
@@ -105,9 +107,24 @@ class Controller:
                                                             topic_type=LaserScan,
                                                             blackboard_variables={'scan':None})
         
+        seqTarget2bb = py_trees.Sequence()
+
+
+        target2bb= py_trees_ros.subscribers.ToBlackboard(name="tpose2bb",
+                                                        topic_name="/target_pose",
+                                                        topic_type=Pose,
+                                                        blackboard_variables={'target_pose':None})
+
+
+        seqTarget2bb.add_children([target2bb])
+        target2bb = seqTarget2bb
 
         # priorities  branch for main tasks, the rest of the tree is to go here
         priorities = py_trees.composites.Selector("priorities")
+
+
+        raise_ee = create_raise_ee_to_first_target_pose_z()
+        raise_ee = py_trees.decorators.FailureIsRunning(raise_ee)
 
         map_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"map")
 
@@ -119,10 +136,11 @@ class Controller:
         idle = create_idle()
 
         root.add_child(topics2bb)
-        topics2bb.add_children([camera2bb,scan2bb])
+        topics2bb.add_children([camera2bb,scan2bb,target2bb])
+
 
         root.add_child(priorities)
-        priorities.add_children([mapperOneShot])
+        priorities.add_children([raise_ee])
         
         return py_trees_ros.trees.BehaviourTree(root=root)
 

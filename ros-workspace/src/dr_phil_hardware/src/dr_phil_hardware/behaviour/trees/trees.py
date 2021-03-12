@@ -1,30 +1,18 @@
-
 #!/usr/bin/env python3
 
-
-from time import time
-
-from numpy.core.fromnumeric import var
-from dr_phil_hardware.arm_interface.command_arm import MoveGroup
+from dr_phil_hardware.arm_interface.command_arm import ArmCommander, MoveGroup
 import py_trees
-from py_trees.composites import Parallel
-from py_trees.decorators import FailureIsRunning
-from py_trees.meta import oneshot
-import py_trees_ros
-
-from dr_phil_hardware.behaviour.leafs.ros import PublishTopic,RunRos,MessageChanged,JointTargetSetAndForget
-from dr_phil_hardware.behaviour.leafs.general import ClosestObstacle
-
+from dr_phil_hardware.behaviour.leafs.ros import PublishTopic,RunRos,MessageChanged,ActionClientConnectOnInit,CreateMoveitTrajectoryPlan,ExecuteMoveItPlan
+from dr_phil_hardware.behaviour.leafs.general import ClosestObstacle,SetBlackboardVariableCustom
 from dr_phil_hardware.behaviour.decorators import HoldStateForDuration
-
 import operator
-from geometry_msgs.msg import Twist
-from visualization_msgs.msg import MarkerArray
-from trajectory_msgs.msg import JointTrajectoryPoint
+from geometry_msgs.msg import Twist, PoseArray, Pose
 import os
-import numpy as np
 from std_msgs.msg import Float64MultiArray
-from actionlib_msgs.msg import GoalStatusArray
+from dr_phil_hardware.msg import TraceArmPathAction,TraceArmPathGoal 
+import rospy 
+from move_base_to_manip.msg import desired_poseAction,desired_poseGoal
+from moveit_msgs.msg import MoveGroupAction,MoveGroupGoal,PositionConstraint,Constraints
 
 def create_exploration_completed_check(duration=60):
     """ creates subtree which returns SUCCESS if no data has been received from the exploration nodes for the given duration.
@@ -46,6 +34,31 @@ def create_exploration_completed_check(duration=60):
 
 
     
+def create_trace_arm_path(wait_times : list,poses: PoseArray,name="traceArmPath"):
+
+    g =MoveGroupGoal()
+    
+    cs = Constraints()
+    cs.name="constraints"
+
+    j = PositionConstraint()
+    
+    j.header.frame_id="base_link"
+    j.link_name="ee_arm_link"
+    j.weight = 1
+    
+    cs.position_constraints.append(j)
+
+    g.request.goal_constraints = [cs]
+    g.request.group_name="arm"
+   
+    client = ActionClientConnectOnInit(name="armPathClient",
+                                        action_spec=MoveGroupAction,
+                                        action_goal=g,
+                                        action_namespace="/move_group",
+                                        override_feedback_message_on_running="executing path",
+                                        connection_timeout=2)
+    return client
 
 def create_set_positions_arm(parameters,name="positionArm"):
     
@@ -231,6 +244,40 @@ def create_face_closest_obstacle(min_distance = 0.5,face_angle=0):
 
     
     return root
+
+
+
+def create_raise_ee_to_first_target_pose_z(target_pose_src="target_pose"):
+    """ takes first target in moveit/target_poses and raises gripper to match height """
+
+
+    sequence = py_trees.composites.Sequence()
+
+    def process_pose():
+        print(ArmCommander().get_current_pose(MoveGroup.ARM))
+        p = ArmCommander().get_current_pose(MoveGroup.ARM).pose
+        target_pose : pose = py_trees.Blackboard().get(target_pose_src)
+        if target_pose:
+            p.position.z = target_pose.position.z
+            return [p]
+        else:
+            return None
+
+    move_target = SetBlackboardVariableCustom(
+            variable_name=CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE,
+            variable_value=process_pose,
+            name="moveTarget")
+
+    create_plan = CreateMoveitTrajectoryPlan("planRaiseEE",
+        MoveGroup.ARM,1,
+        pose_frame="base_link",
+        pose_target_include_only_idxs=[0])
+
+    execute_plan = ExecuteMoveItPlan("raiseEE",MoveGroup.ARM)
+
+    sequence.add_children([move_target,create_plan,execute_plan])
+
+    return sequence
 
 import sys
 import inspect 

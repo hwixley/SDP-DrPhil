@@ -6,7 +6,7 @@ import rospy
 import py_trees
 from dr_phil_hardware.behaviour.leafs.ros import ActionClientConnectOnInit
 from actionlib_tutorials.msg import FibonacciAction, FibonacciGoal
-from dr_phil_hardware.test.behaviour.behaviour_test_utils import one_tick_success_leaf
+from dr_phil_hardware.test.behaviour.behaviour_test_utils import one_tick_success_leaf_fibonacci
 
 PKG='dr_phil_hardware'
 import roslib; roslib.load_manifest(PKG)
@@ -24,7 +24,7 @@ class ActionClientConnectOnInitTest(unittest.TestCase):
         
     def test_action_client_no_fail(self):
 
-        root = one_tick_success_leaf("/mock_action_server")
+        root = one_tick_success_leaf_fibonacci("/mock_action_server")
         # tick a bit more than timeout
         while (rospy.get_time() - self.time_start) < 2:
             root.tick_once()
@@ -34,7 +34,7 @@ class ActionClientConnectOnInitTest(unittest.TestCase):
 
 
     def test_no_action_client_fail(self):
-        root = one_tick_success_leaf("/gibberish")
+        root = one_tick_success_leaf_fibonacci("/gibberish")
 
         # tick a bit more than timeout
         while (rospy.get_time() - self.time_start) < 2:
@@ -45,7 +45,7 @@ class ActionClientConnectOnInitTest(unittest.TestCase):
 
     def test_running_before_timeout(self):
 
-        root = one_tick_success_leaf("/gibberish")
+        root = one_tick_success_leaf_fibonacci("/gibberish")
 
 
         # tick a bit more than timeout
@@ -58,7 +58,7 @@ class ActionClientConnectOnInitTest(unittest.TestCase):
 
     def test_completion_success(self):
 
-        root = one_tick_success_leaf("/mock_action_server")
+        root = one_tick_success_leaf_fibonacci("/mock_action_server")
 
         # tick a bit more to let it finish
         while (rospy.get_time() - self.time_start) < 2:
@@ -69,7 +69,7 @@ class ActionClientConnectOnInitTest(unittest.TestCase):
     
     def test_preemption_invalid(self):
 
-        root = one_tick_success_leaf("/mock_action_server")
+        root = one_tick_success_leaf_fibonacci("/mock_action_server")
 
         # tick once but not enough to let finish
         while (rospy.get_time() - self.time_start) < 0.5:

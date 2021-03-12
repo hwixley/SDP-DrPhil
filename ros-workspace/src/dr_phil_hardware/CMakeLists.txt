@@ -11,10 +11,14 @@ find_package(catkin REQUIRED COMPONENTS
     rospy
     roscpp
     actionlib
+    actionlib_msgs
+    message_generation
     control_msgs
     std_msgs
     trajectory_msgs
+    geometry_msgs
     moveit_msgs
+    moveit_ros_planning_interface
 )
 
 ## System dependencies are found with CMake's conventions
@@ -43,16 +47,7 @@ catkin_python_setup()
 ##   * add "message_generation" and every package in MSG_DEP_SET to
 ##     find_package(catkin REQUIRED COMPONENTS ...)
 ##   * add "message_runtime" and every package in MSG_DEP_SET to
-catkin_package(
-  INCLUDE_DIRS include 
-  CATKIN_DEPENDS 
-    roscpp
-    actionlib
-    control_msgs
-    std_msgs
-    trajectory_msgs
-    moveit_msgs
-    )
+
 ##   * uncomment the add_*_files sections below as needed
 ##     and list every .msg/.srv/.action file to be processed
 ##   * uncomment the generate_messages entry below
@@ -73,18 +68,31 @@ catkin_package(
 # )
 
 ## Generate actions in the 'action' folder
-# add_action_files(
-#   FILES
-#   Action1.action
-#   Action2.action
-# )
+ add_action_files(
+   FILES
+   TraceArmPath.action
+ )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+ generate_messages(
+   DEPENDENCIES
+   std_msgs  # Or other packages containing msgs
+   actionlib_msgs
+   geometry_msgs
+ )
 
+catkin_package(
+  INCLUDE_DIRS include 
+  CATKIN_DEPENDS 
+    roscpp
+    actionlib
+    control_msgs
+    actionlib_msgs
+    std_msgs
+    geometry_msgs
+    trajectory_msgs
+    moveit_msgs
+    )
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
 ################################################
@@ -117,7 +125,7 @@ catkin_package(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES dr_phil_hardware
-#  CATKIN_DEPENDS other_catkin_pkg
+   CATKIN_DEPENDS actionlib_msgs message_runtime
 #  DEPENDS system_lib
 )
 
@@ -130,6 +138,7 @@ catkin_package(
 include_directories(
  include
  ${catkin_INCLUDE_DIRS}
+ SYSTEM ${EIGEN3_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -140,6 +149,7 @@ include_directories(
 add_executable(dr_phil_hardware_bringup src/dr_phil_hardware_bringup.cpp)
 add_dependencies(dr_phil_hardware_bringup ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(dr_phil_hardware_bringup ${catkin_LIBRARIES})
+
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries

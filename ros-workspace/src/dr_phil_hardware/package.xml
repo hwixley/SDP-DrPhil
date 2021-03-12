@@ -68,6 +68,7 @@
   <depend>teb_local_planner</depend>
   <depend>costmap_converter</depend>
   <depend>moveit</depend>
+  <depend>move_base_to_manip</depend>
 
 
   <depend>roscpp</depend>
