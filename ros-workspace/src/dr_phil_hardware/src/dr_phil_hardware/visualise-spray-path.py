@@ -55,32 +55,12 @@ class SprayPathVisualiser:
         self.normal = direction.data
 
 
-    def visualise(self):
-        Center = Coord(self.handle3D[0], self.handle3D[1], self.handle3D[2])
-        Direction = Coord(self.normal[0], self.normal[1], self.normal[1])
-
-        spray_data = calculate_spray_end_points(Center,Direction)
-        spray_origin = []
-        spray_endpoints = []
-        if spray_data is not None:
-            for data in spray_data:
-                point = Point()
-                point.x = (data[0])  #in meters
-                point.y = (data[1])  #in meters
-                point.z = (data[2])  #in meters
-                end_point = Point()
-                end_point.x = data[3] #in meters
-                end_point.y = data[4] #in meters
-                end_point.z = data[5] #in meters
-                spray_origin.append(point)
-                spray_endpoints.append(end_point)
-            
-
-        #spray_origin, spray_endpoints = self.create_spray_path_points(self.handle3D, self.normal)
+    def visualise(self):        
+        spray_origin, spray_endpoints = self.create_spray_path_points()
 
 
 
-        #Publish pose results
+        #TODO: Publish pose results!!! 
         #self.spray_origin_pub.publish(self.spray_origin_poses)
         #self.spray_endpoints_pub.publish(self.spray_endpoints_poses)
 
@@ -96,6 +76,8 @@ class SprayPathVisualiser:
         self.door_pub.publish(door_marker)
 
 
+
+
         
 
 
@@ -103,56 +85,57 @@ class SprayPathVisualiser:
     
 
     
-    def create_spray_path_points(self,handle_3d_vector, normal,camera_ray=None):
-        # x,y,z = handle_3d_vector[0,0], handle_3d_vector[1,0], handle_3d_vector[2,0]
-        # Center = Coord(x, y, z)
-        # Direction = Coord(normal.dir[0],normal.dir[1],normal.dir[2] )
+    def create_spray_path_points(self,camera_ray=None):
+        Center = Coord(self.handle3D[0], self.handle3D[1], self.handle3D[2])
+        Direction = Coord(self.normal[0], self.normal[1], self.normal[1])
 
         spray_data = calculate_spray_end_points(Center,Direction)
-        #Convert them to poseArray
-        print(spray_data)
         origin_points = []
         spray_direction = []
 
-        # x_unit= np.array([[0],[0],[0]])
+        #TODO: Calculate orientation handle
+        x_unit= np.array([[1],[0],[0]])
         # thetaHandle = angle_between_pi(camera_ray.get_vec(),normal.get_vec())
-        # orientationHandle = tf.transformations.quaternion_from_matrix(tf.transformations.rotation_matrix(thetaHandle,normal.get_vec()))
+        #thetaHandle = angle_between_pi(np.array([self.normal[0],self.normal[1],self.normal[2]]), x_unit)
+        #orientationHandle = tf.transformations.quaternion_from_matrix(tf.transformations.rotation_matrix(thetaHandle,np.array([[self.normal[0],self.normal[1],self.normal[2]])))
+        orientationHandle = [0,0,1,0]
+        #Convert them to poseArray
         self.spray_origin_poses = PoseArray()
         self.spray_endpoints_poses = PoseArray()
         poses = []
         end_poses = []
+        if spray_data is not None:
+            for data in spray_data:
+                #Target points for arm to reach to
+                point_pose = Pose()
+                point = Point()
+                point.x = (data[0])  #in meters
+                point.y = (data[1])  #in meters
+                point.z = (data[2])  #in meters
+                point_pose.position = point
+                point_pose.orientation.x = orientationHandle[0]
+                point_pose.orientation.y = orientationHandle[1]
+                point_pose.orientation.z = orientationHandle[2]
+                point_pose.orientation.w = orientationHandle[3]
 
-        for data in spray_data:
-            #Target points for arm to reach to
-            point_pose = Pose()
-            point = Point()
-            point.x = (data[0])  #in meters
-            point.y = (data[1])  #in meters
-            point.z = (data[2])  #in meters
-            point_pose.position = point
-            point_pose.orientation.x = orientationHandle[0]
-            point_pose.orientation.y = orientationHandle[1]
-            point_pose.orientation.z = orientationHandle[2]
-            point_pose.orientation.w = orientationHandle[3]
-
-            #Endpoint - Spray direction 
-            end_point_pose = Pose()
-            end_point = Point()
-            end_point.x = data[3] #in meters
-            end_point.y = data[4] #in meters
-            end_point.z = data[5] #in meters
-            end_point_pose.position = end_point
-            end_point_pose.orientation.x = orientationHandle[0]
-            end_point_pose.orientation.y = orientationHandle[1]
-            end_point_pose.orientation.z = orientationHandle[2]
-            end_point_pose.orientation.w = orientationHandle[3]
+                #Endpoint - Spray direction 
+                end_point_pose = Pose()
+                end_point = Point()
+                end_point.x = data[3] #in meters
+                end_point.y = data[4] #in meters
+                end_point.z = data[5] #in meters
+                end_point_pose.position = end_point
+                end_point_pose.orientation.x = orientationHandle[0]
+                end_point_pose.orientation.y = orientationHandle[1]
+                end_point_pose.orientation.z = orientationHandle[2]
+                end_point_pose.orientation.w = orientationHandle[3]
 
 
-            #Append results
-            origin_points.append(point)
-            poses.append(point_pose)
-            spray_direction.append(end_point)
-            end_poses.append(end_point_pose)
+                #Append results
+                origin_points.append(point)
+                poses.append(point_pose)
+                spray_direction.append(end_point)
+                end_poses.append(end_point_pose)
 
         self.spray_origin_poses.header.frame_id = self.robot_frame
         self.spray_origin_poses.header.stamp = rospy.Time.now()
@@ -164,7 +147,7 @@ class SprayPathVisualiser:
 
 
 
-        
+        #TODO: Return appropraite values - currently just returns the points and not the poses with orientation
         return origin_points,spray_direction
 
 
@@ -191,7 +174,7 @@ class SprayPathVisualiser:
      
     def display_door_and_handle(self, id):
         door_marker = Marker()
-        door_marker.header.frame_id = self.robot_frame
+        door_marker.header.frame_id = "odom"
         door_marker.header.stamp = rospy.Time.now()
         door_marker.ns = "door positions"
         door_marker.id = 2
@@ -213,6 +196,7 @@ class SprayPathVisualiser:
         door_marker.mesh_use_embedded_materials = True
         return door_marker
 
+
     def visualise_spray_direction(self,points, end_points):
         arrows = MarkerArray()
         for i in range(0,len(points)):
@@ -226,10 +210,10 @@ class SprayPathVisualiser:
             point_camera.type = 0 # arrow
             point_camera.action = 0 # add/modify
             point_camera.points = arrow
-            point_camera.pose.orientation.w = 1 # self.spray_origin_poses.poses[i].orientation.w
-            #point_camera.pose.orientation.x = self.spray_origin_poses.poses[i].orientation.x
-            #point_camera.pose.orientation.y = self.spray_origin_poses.poses[i].orientation.y
-            #point_camera.pose.orientation.z = self.spray_origin_poses.poses[i].orientation.z
+            point_camera.pose.orientation.w = self.spray_origin_poses.poses[i].orientation.w
+            point_camera.pose.orientation.x = self.spray_origin_poses.poses[i].orientation.x
+            point_camera.pose.orientation.y = self.spray_origin_poses.poses[i].orientation.y
+            point_camera.pose.orientation.z = self.spray_origin_poses.poses[i].orientation.z
             point_camera.color.a = 0.5
             point_camera.color.g = 1 
             point_camera.scale.x = 0.01
