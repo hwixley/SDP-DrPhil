@@ -141,7 +141,7 @@ def visualise_features_p2_only(img, point2):
 #Testing
 if __name__=="__main__":
    #Test images to be used
-    handle_img= cv2.imread("pull-door-1.png",1)
+    handle_img= cv2.imread("images/pull-door-1.png",1)
     top_left = (0,0)
     height=handle_img.shape[0]
     width = handle_img.shape[1]

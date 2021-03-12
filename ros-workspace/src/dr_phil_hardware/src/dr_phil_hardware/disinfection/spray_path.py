@@ -1,7 +1,19 @@
 #!/usr/bin/env python
 import math
 import numpy as np
+import rospy 
+import tf
+from geometry_msgs.msg import PointStamped,Point,PoseArray,Pose
 
+
+from dr_phil_hardware.vision.localisation import *
+
+
+
+"""
+Note: Current implementation is in regards to Pull door handles only. Further extensibillity would need different ways to tackle different handles
+or the possibility of implementing a dynamic solution
+"""
 # CONSTANTS
 DISTANCE_FROM_HANDLE = 100  # (mm)
 HANDLE_DIMENSIONS = [19, 130, 37]  # width, height, depth (mm)
@@ -13,9 +25,9 @@ SPRAY_CONFIDENCE = 0#10  # (mm)
     
 class Coord:
     def __init__(self, x, y, z):
-        self.x = x
-        self.y = y
-        self.z = z
+        self.x = x * 1000 #converted to mm
+        self.y = y * 1000
+        self.z = z * 1000 
 
 class LineGraph:
     def __init__(self, vector):
@@ -84,16 +96,16 @@ def calc_z_spray_centroids(center_z):
     spray_centroids = np.zeros(num_sprays)
     index = 0
 
-    current_z = center_z - CIRCLE_EDGE
+    current_z = center_z + CIRCLE_EDGE
     while current_z < top and index < num_sprays:
-        current_z += CIRCLE_EDGE * 2
         spray_centroids[index] = current_z
+        current_z += CIRCLE_EDGE * 2
         index += 1
 
-    current_z = center_z + CIRCLE_EDGE
+    current_z = center_z - CIRCLE_EDGE
     while current_z > bottom and index < num_sprays:
-        current_z -= CIRCLE_EDGE * 2
         spray_centroids[index] = current_z
+        current_z -= CIRCLE_EDGE * 2
         index += 1
 
     return spray_centroids
@@ -166,10 +178,91 @@ def get_coords_and_vectors(handle_center, vector, output_is_vector):
 
     return coords_and_vectors
 
+"""
+Currently returns values of type PoseArray()
 
-def main(handle_center, vector):
+Given a handle in center and the normal to a vertical surface pointing away from handle, get the positions of the points
+that an arm needs to reach, forming an inverted T shape to try to cover all handles. 
+Orientation in quaternions denotes the direction of the spray from a position to point at the handle.
+
+Returns two variables of type PoseArray() from geometry_msgs.msg in ROS, with 
+"""
+def get_position_and_orientation_of_spray_points(handle3D,normal_vector, robot_frame):
+    Center = Coord(handle3D[0], handle3D[1], handle3D[2])
+    Direction = Coord(normal_vector[0], normal_vector[1], normal_vector[2])
+
+    #Calculate points and appropriate "end points"/ directions
+    spray_data = calculate_spray_path(Center,Direction)
+    origin_points = []
+    spray_direction = []
+
+    #We want to convert the direction vectors we have to represent orientation. 
+    #This will be done by taking the transformation from spray points to the direction pointed by end points in the vector AB
+    #To further illustrate, origin_points are considered OA which are the points around the handles, spray direction as AB to represent vector 
+    #pointing to center of handle (**only similar in one axis, doesnt actually point to straight into the center**), where OB is the center of handle.
+    poses = []
+    end_poses = []
+    if spray_data is not None:
+        for data in spray_data:
+            #Calculate the orientation ; data[0:3] represents the points beside the handles and data[3:6] representing the "end" points or points on the same vertical line as pull-door handle
+            thetaHandle = angle_between_pi(np.array([data[0],data[1],data[2] ]), np.array([data[3],data[4],data[5] ]))
+            orientationHandle = tf.transformations.quaternion_from_matrix(tf.transformations.rotation_matrix(thetaHandle,np.array([ data[0],data[1] ,data[2] ])))
+            #Target points for arm to reach to
+            point_pose = Pose()
+            point = Point()
+            point.x = (data[0])  #in meters
+            point.y = (data[1])  #in meters
+            point.z = (data[2])  #in meters
+            point_pose.position = point
+            point_pose.orientation.x = orientationHandle[0]
+            point_pose.orientation.y = orientationHandle[1]
+            point_pose.orientation.z = orientationHandle[2]
+            point_pose.orientation.w = orientationHandle[3]
+
+            #Endpoint - Spray direction 
+            end_point_pose = Pose()
+            end_point = Point()
+            end_point.x = data[3] #in meters
+            end_point.y = data[4] #in meters
+            end_point.z = data[5] #in meters
+            end_point_pose.position = end_point
+            end_point_pose.orientation.x = orientationHandle[0]
+            end_point_pose.orientation.y = orientationHandle[1]
+            end_point_pose.orientation.z = orientationHandle[2]
+            end_point_pose.orientation.w = orientationHandle[3]
+
+
+            #Append pose results in a list to 
+            origin_points.append(point)
+            poses.append(point_pose)
+            spray_direction.append(end_point)
+            end_poses.append(end_point_pose)
+        #Store the results in PoseArray
+        #data[0:3]
+        spray_origin_poses = PoseArray()
+        spray_origin_poses.header.frame_id = robot_frame
+        spray_origin_poses.header.stamp = rospy.Time.now()
+        spray_origin_poses.poses = poses
+        #data[3:6]
+        spray_endpoints_poses = PoseArray()
+        spray_endpoints_poses.header.frame_id = robot_frame
+        spray_endpoints_poses.header.stamp = rospy.Time.now()
+        spray_endpoints_poses.poses = end_poses
+
+        return spray_origin_poses, spray_endpoints_poses
+
+        
+
+        
+    
+    return None, None
+
+
+
+
+def calculate_spray_path(handle_center, vector):
     data = None
-
+    
     print("Calculating spray coordinates...")
     if vector.x == 0 and vector.z == 0 and vector.y == 0:
         print("ERROR: cannot have unit vector direction (0,0,0)")
@@ -181,9 +274,9 @@ def main(handle_center, vector):
     return data
 
 
-
+#Testing
 if __name__ == '__main__':
     center = Coord(0.0, 0.0, 0.0)
     direction = Coord(1.0, 0.0, 0.0)
 
-    main(center, direction)
+    calculate_spray_path(center, direction)
