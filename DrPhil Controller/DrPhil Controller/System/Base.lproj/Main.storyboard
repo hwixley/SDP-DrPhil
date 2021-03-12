@@ -650,6 +650,9 @@
                                         <state key="normal" title="   Log out">
                                             <color key="titleColor" systemColor="systemPinkColor" red="1" green="0.1764705882" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
+                                        <connections>
+                                            <action selector="clickLogout:" destination="xJm-fR-pyu" eventType="touchUpInside" id="fBb-2m-lSt"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                             </stackView>
@@ -663,6 +666,9 @@
                         <viewLayoutGuide key="safeArea" id="uuc-JQ-a5p"/>
                     </view>
                     <navigationItem key="navigationItem" title="Menu" id="eYQ-Nc-MDg"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="presentation" identifier="logout" modalPresentationStyle="fullScreen" id="qA8-mn-2ay"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0ri-3Y-HQk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -1565,7 +1571,7 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="cqr-3T-RNw"/>
-        <segue reference="eIn-O2-O5H"/>
+        <segue reference="qA8-mn-2ay"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="ControlTab" width="25" height="25"/>

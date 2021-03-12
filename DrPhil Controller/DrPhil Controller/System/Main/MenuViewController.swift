@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class MenuViewController: UIViewController {
 
@@ -17,6 +18,26 @@ class MenuViewController: UIViewController {
     }
     
     //MARK: Actions
+    @IBAction func clickLogout(_ sender: UIButton) {
+        let ac = UIAlertController(title: "Log Out", message: "Are you sure you want to log out?", preferredStyle: UIAlertController.Style.alert)
+        ac.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
+        
+        ac.addAction(UIAlertAction(title: "Log Out", style: UIAlertAction.Style.default, handler: { (action) in
+            do {
+                try Auth.auth().signOut()
+            } catch {
+                self.navigationItem.prompt = "Log out error: please try again"
+                return
+            }
+            self.tabBarController?.navigationController?.setNavigationBarHidden(true, animated: true)
+            self.performSegue(withIdentifier: "logout", sender: self)
+        }))
+        
+        if #available(iOS 13.0, *) {
+            ac.view.tintColor = UIColor.systemPink
+        }
+    }
+    
     @IBAction func unwindToMenuSegue(_ segue: UIStoryboardSegue) {
     }
 }
