@@ -94,11 +94,10 @@ class SprayPathVisualiser:
         spray_direction = []
 
         #TODO: Calculate orientation handle
-        x_unit= np.array([[1],[0],[0]])
-        # thetaHandle = angle_between_pi(camera_ray.get_vec(),normal.get_vec())
-        #thetaHandle = angle_between_pi(np.array([self.normal[0],self.normal[1],self.normal[2]]), x_unit)
-        #orientationHandle = tf.transformations.quaternion_from_matrix(tf.transformations.rotation_matrix(thetaHandle,np.array([[self.normal[0],self.normal[1],self.normal[2]])))
-        orientationHandle = [0,0,1,0]
+        x_unit= np.array([[0],[0],[1]])
+        #thetaHandle = angle_between_pi(camera_ray.get_vec(),normal.get_vec())
+     
+        #orientationHandle = [0,0,0,1]
         #Convert them to poseArray
         self.spray_origin_poses = PoseArray()
         self.spray_endpoints_poses = PoseArray()
@@ -106,6 +105,9 @@ class SprayPathVisualiser:
         end_poses = []
         if spray_data is not None:
             for data in spray_data:
+
+                thetaHandle = angle_between_pi(np.array([data[3],data[4],data[5] ]), np.array([data[0],data[1],data[2] ]))
+                orientationHandle = tf.transformations.quaternion_from_matrix(tf.transformations.rotation_matrix(thetaHandle,np.array([ data[0],data[1],data[2] ] )))
                 #Target points for arm to reach to
                 point_pose = Pose()
                 point = Point()
@@ -136,6 +138,9 @@ class SprayPathVisualiser:
                 poses.append(point_pose)
                 spray_direction.append(end_point)
                 end_poses.append(end_point_pose)
+        else:
+            #TODO: Include proper error handling
+            print("No values to spray")
 
         self.spray_origin_poses.header.frame_id = self.robot_frame
         self.spray_origin_poses.header.stamp = rospy.Time.now()
