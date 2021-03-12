@@ -87,7 +87,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="3Pe-cr-eZJ">
-                                <rect key="frame" x="8" y="108" width="398" height="205"/>
+                                <rect key="frame" x="8" y="108" width="398" height="198"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Lw2-3O-LN4">
                                         <rect key="frame" x="0.0" y="0.0" width="398" height="120"/>
@@ -133,8 +133,8 @@
                                         </subviews>
                                     </stackView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N0t-rB-yJ4">
-                                        <rect key="frame" x="0.0" y="160" width="398" height="45"/>
-                                        <fontDescription key="fontDescription" name="DINAlternate-Bold" family="DIN Alternate" pointSize="28"/>
+                                        <rect key="frame" x="0.0" y="160" width="398" height="38"/>
+                                        <fontDescription key="fontDescription" name="DINAlternate-Bold" family="DIN Alternate" pointSize="22"/>
                                         <state key="normal" title="I forgot my password">
                                             <color key="titleColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
@@ -227,12 +227,13 @@
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="50" id="E0y-wt-5QC"/>
                                                                 </constraints>
-                                                                <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                                                 <textInputTraits key="textInputTraits" keyboardAppearance="alert"/>
                                                             </textField>
                                                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Nah-os-EBk">
                                                                 <rect key="frame" x="0.0" y="60" width="281" height="50"/>
+                                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                                                 <textInputTraits key="textInputTraits" keyboardAppearance="alert" secureTextEntry="YES"/>
                                                             </textField>
@@ -1570,8 +1571,8 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="cqr-3T-RNw"/>
-        <segue reference="qA8-mn-2ay"/>
+        <segue reference="hHM-Uv-rg7"/>
+        <segue reference="q8k-8q-zkt"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="ControlTab" width="25" height="25"/>

@@ -29,6 +29,10 @@ class HomeViewController: UIViewController {
         self.setupUI()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        self.setupUI()
+    }
+    
     
     //MARK: Private methods
     func setupUI() {
@@ -36,34 +40,36 @@ class HomeViewController: UIViewController {
         mapStack.isHidden = true
         roundsTextLabel.text = "Interval between cleaning rounds (mins):"
         
-        if MyUser.robot!.schedule != nil {
-            if isWeekday() {
-                if MyUser.robot!.schedule!.weekdays != nil {
-                    shiftLabel.text = MyUser.robot!.schedule!.weekdays!.start + " - " +  MyUser.robot!.schedule!.weekdays!.end
-                    roundsLabel.text = String(MyUser.robot!.schedule!.weekdays!.numRounds)
-                    return
-                }
-            } else {
-                if MyUser.robot!.schedule!.weekends != nil {
-                    shiftLabel.text = MyUser.robot!.schedule!.weekends!.start + " - " + MyUser.robot!.schedule!.weekends!.end
-                    roundsLabel.text = String(MyUser.robot!.schedule!.weekends!.numRounds)
-                    return
+        if MyUser.robot != nil {
+            if MyUser.robot!.schedule != nil {
+                if isWeekday() {
+                    if MyUser.robot!.schedule!.weekdays != nil {
+                        shiftLabel.text = MyUser.robot!.schedule!.weekdays!.start + " - " +  MyUser.robot!.schedule!.weekdays!.end
+                        roundsLabel.text = String(MyUser.robot!.schedule!.weekdays!.numRounds)
+                        return
+                    }
+                } else {
+                    if MyUser.robot!.schedule!.weekends != nil {
+                        shiftLabel.text = MyUser.robot!.schedule!.weekends!.start + " - " + MyUser.robot!.schedule!.weekends!.end
+                        roundsLabel.text = String(MyUser.robot!.schedule!.weekends!.numRounds)
+                        return
+                    }
                 }
             }
-        }
-        
-        if MyUser.statusInfo != nil {
-            statusLabel.text = MyUser.statusInfo!.getStatus()
             
-            if MyUser.statusInfo!.resources != nil {
-                batteryLabel.text = String(MyUser.statusInfo!.resources!.battery) + "%"
-                disinfectantLabel.text = String(MyUser.statusInfo!.resources!.disinfectant) + "%"
-            }
-            
-            if MyUser.statusInfo!.map != nil {
-                mapImageView.image = MyUser.statusInfo!.map!
-            } else {
-                mapStack.isHidden = true
+            if MyUser.statusInfo != nil {
+                statusLabel.text = MyUser.statusInfo!.getStatus()
+                
+                if MyUser.statusInfo!.resources != nil {
+                    batteryLabel.text = String(MyUser.statusInfo!.resources!.battery) + "%"
+                    disinfectantLabel.text = String(MyUser.statusInfo!.resources!.disinfectant) + "%"
+                }
+                
+                if MyUser.statusInfo!.map != nil {
+                    mapImageView.image = MyUser.statusInfo!.map!
+                } else {
+                    mapStack.isHidden = true
+                }
             }
         }
         mapStack.isHidden = true

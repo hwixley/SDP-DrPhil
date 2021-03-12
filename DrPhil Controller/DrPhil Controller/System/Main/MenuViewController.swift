@@ -36,6 +36,8 @@ class MenuViewController: UIViewController {
         if #available(iOS 13.0, *) {
             ac.view.tintColor = UIColor.systemPink
         }
+        
+        self.present(ac, animated: true, completion: nil)
     }
     
     @IBAction func unwindToMenuSegue(_ segue: UIStoryboardSegue) {

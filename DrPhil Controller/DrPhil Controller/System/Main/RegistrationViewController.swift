@@ -47,6 +47,8 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
         if true {
             verifyStack.isHidden = true
             createStack.isHidden = false
+            clickedTxtf!.resignFirstResponder()
+            tapOutsideKB.isEnabled = false
         }
     }
     
