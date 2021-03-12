@@ -175,8 +175,8 @@ def main(handle_center, vector):
         print("ERROR: cannot have unit vector direction (0,0,0)")
         exit(1)
     else:
+        vector = Coord(vector.x*-1, vector.y*-1, vector.z)
         data = get_coords_and_vectors(handle_center, vector, False)
-    
     
     return data
 
