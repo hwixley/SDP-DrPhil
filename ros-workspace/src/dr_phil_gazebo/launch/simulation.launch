@@ -11,7 +11,7 @@
   <arg name="gui" default="$(eval not arg('headless'))"/>
 
   <!-- if this is false collisions with actors wont be registered !!! -->
-  <arg name="use_gpu_ray" default="true" />
+  <arg name="use_gpu_ray" default="false" />
 
   <env name="GAZEBO_MODEL_PATH" value="$(find dr_phil_gazebo)/models" />
 
