@@ -46,7 +46,6 @@
   <node name="battery_level" pkg="dr_phil_gazebo" type="battery_level.py" respawn="true" />
   <node name="spray_controller" pkg="dr_phil_gazebo" type="spray_controller" respawn="true" />
 
-
   <!-- spawn arm controllers -->
 
   <include file="$(find dr_phil_gazebo)/launch/arm/arm.launch"/>

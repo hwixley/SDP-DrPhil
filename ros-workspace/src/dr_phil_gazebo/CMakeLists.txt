@@ -7,7 +7,7 @@ project(dr_phil_gazebo)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp)
+find_package(catkin REQUIRED COMPONENTS roscpp pcl_conversions pcl_ros )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -118,7 +118,10 @@ include_directories(${GAZEBO_INCLUDE_DIRS})
 link_directories(${GAZEBO_LIBRARY_DIRS})
 add_executable(spray_controller src/dr_phil_gazebo/spray_controller.cc)
 target_link_libraries(spray_controller ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES})
-
+add_executable(coverage_pc_generator src/dr_phil_gazebo/coverage_pc_generator.cpp)
+target_link_libraries(coverage_pc_generator ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES})
+add_executable(save_point_cloud src/dr_phil_gazebo/save_point_cloud.cpp)
+target_link_libraries(save_point_cloud ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES})
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
