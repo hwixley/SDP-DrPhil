@@ -32,21 +32,21 @@ class testExecuteMoveitPlan(unittest.TestCase):
         py_trees.Blackboard().set(ExecuteMoveItPlan.PLAN_SOURCE,None)
 
     def test_no_plan_fails(self):
-        i = self.get_test_instance_tree(0.01)
+        i = self.get_test_instance_tree(0.02)
 
         tick_untill_not_running(i,tick_limit=1)
 
         self.assertIs(i.status,py_trees.Status.FAILURE,"No plan did not fail")
  
     def test_empty_plan_succeeds(self):
-        i = self.get_test_instance_tree(0.01)
+        i = self.get_test_instance_tree(0.02)
         py_trees.Blackboard().set(ExecuteMoveItPlan.PLAN_SOURCE,RobotTrajectory())
         tick_untill_not_running(i,tick_limit=20)
 
         self.assertIs(i.status,py_trees.Status.SUCCESS,"empty plan did not succeed")
 
     def test_valid_plan_succeeds(self):
-        i = self.get_test_instance_tree(0.01)
+        i = self.get_test_instance_tree(0.02)
 
         ac = ArmCommander()
         # plan to start pose
@@ -60,7 +60,7 @@ class testExecuteMoveitPlan(unittest.TestCase):
         self.assertIs(i.status,py_trees.Status.SUCCESS,"valid plan did not succeed")
 
     def test_valid_plan_executes_in_time(self):
-        i = self.get_test_instance_tree(0.01)
+        i = self.get_test_instance_tree(0.02)
 
         ac = ArmCommander()
         # plan to start pose

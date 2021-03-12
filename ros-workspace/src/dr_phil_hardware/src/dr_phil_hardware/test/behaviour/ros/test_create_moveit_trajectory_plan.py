@@ -9,7 +9,7 @@ from dr_phil_hardware.behaviour.leafs.ros import CreateMoveitTrajectoryPlan
 from dr_phil_hardware.test.behaviour.behaviour_test_utils import tick_untill_not_running
 
 import rospy
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Pose,PoseArray
 from moveit_msgs.msg import RobotTrajectory
 
 PKG='dr_phil_hardware'
@@ -36,8 +36,9 @@ class testCreateMoveitTrajectoryPlan(unittest.TestCase):
         
         p2 = Pose()
         p2.position.x = 1
-
-        py_trees.Blackboard().set(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE,[p2])
+        pa = PoseArray()
+        pa.poses.append(p2)
+        py_trees.Blackboard().set(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE,pa)
 
         tick_untill_not_running(i,ticks)
 
@@ -49,8 +50,10 @@ class testCreateMoveitTrajectoryPlan(unittest.TestCase):
         
         p2 = Pose()
         p2.position.x = 1
+        pa = PoseArray()
+        pa.poses.append(p2)
 
-        py_trees.Blackboard().set(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE,[p2])
+        py_trees.Blackboard().set(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE,pa)
 
         tick_untill_not_running(i,ticks)
 
@@ -73,8 +76,9 @@ class testCreateMoveitTrajectoryPlan(unittest.TestCase):
         p2.position.x = float("inf")
         p2.position.y = float("inf")
         p2.position.z = float("inf")
-
-        py_trees.Blackboard().set(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE,[p2])
+        pa = PoseArray()
+        pa.poses.append(p2)
+        py_trees.Blackboard().set(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE,pa)
 
         tick_untill_not_running(i,ticks)
         
