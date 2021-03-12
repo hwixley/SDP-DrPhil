@@ -19,6 +19,14 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     //MARK: Properties
     var clickedTxtf : UITextField? = nil
     
+    var logged = false {
+        didSet {
+            if self.logged {
+                self.performSegue(withIdentifier: "login", sender: self)
+            }
+        }
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,13 +49,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     
                     robotDoc.getDocument { (document, err) in
                         if document != nil && document!.exists {
-                            
+                            MyUser.robot = initRobot(docData: document!.data())
+                            self.logged = true
                         }
                     }
                 }
             }
-            
-            self.performSegue(withIdentifier: "login", sender: self)
         } else {
             self.navigationItem.prompt = "You must enter an ID and password"
         }

@@ -194,7 +194,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="OXF-4y-BP2">
-                                <rect key="frame" x="8" y="96" width="398" height="741.5"/>
+                                <rect key="frame" x="8" y="96" width="398" height="766.5"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="60" translatesAutoresizingMaskIntoConstraints="NO" id="d4K-p3-bHT">
                                         <rect key="frame" x="0.0" y="0.0" width="398" height="212"/>
@@ -255,17 +255,48 @@
                                             </button>
                                         </subviews>
                                     </stackView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="60" translatesAutoresizingMaskIntoConstraints="NO" id="5oP-fX-7sH">
-                                        <rect key="frame" x="0.0" y="232" width="398" height="509.5"/>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="5oP-fX-7sH">
+                                        <rect key="frame" x="0.0" y="232" width="398" height="534.5"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Success! Your credentials were verified, you can now create a password for your account" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="K9P-cD-iYQ">
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Success! Your credentials were verified, you can now create an email and password for your robot" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="K9P-cD-iYQ">
                                                 <rect key="frame" x="0.0" y="0.0" width="398" height="112"/>
                                                 <fontDescription key="fontDescription" name="DINAlternate-Bold" family="DIN Alternate" pointSize="24"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
+                                            <stackView opaque="NO" contentMode="scaleToFill" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="EI4-sj-gfY">
+                                                <rect key="frame" x="0.0" y="142" width="398" height="55"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Email" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kkc-kf-ZUY">
+                                                        <rect key="frame" x="0.0" y="0.0" width="54" height="55"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="23"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="●" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vKK-xS-vVj">
+                                                        <rect key="frame" x="58" y="0.0" width="20" height="55"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="20" id="dpM-My-0x9"/>
+                                                        </constraints>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="17t-cK-N90">
+                                                        <rect key="frame" x="82" y="0.0" width="316" height="55"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="55" id="WxE-bD-lZ7"/>
+                                                        </constraints>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                                        <textInputTraits key="textInputTraits" keyboardType="emailAddress" keyboardAppearance="alert"/>
+                                                        <connections>
+                                                            <action selector="editEmail:" destination="dau-b3-YOf" eventType="editingChanged" id="h0Q-rh-1N4"/>
+                                                        </connections>
+                                                    </textField>
+                                                </subviews>
+                                            </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="f9D-v4-wT9">
-                                                <rect key="frame" x="0.0" y="172" width="398" height="235.5"/>
+                                                <rect key="frame" x="0.0" y="227" width="398" height="235.5"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mN3-WD-aZL">
                                                         <rect key="frame" x="0.0" y="0.0" width="398" height="120"/>
@@ -324,7 +355,7 @@
                                                                 <subviews>
                                                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="nRK-ZA-nuq">
                                                                         <rect key="frame" x="0.0" y="0.0" width="268" height="55"/>
-                                                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                                        <fontDescription key="fontDescription" type="system" pointSize="21"/>
                                                                         <textInputTraits key="textInputTraits" keyboardAppearance="alert" secureTextEntry="YES"/>
                                                                         <connections>
                                                                             <action selector="editPass1:" destination="dau-b3-YOf" eventType="editingDidEnd" id="Bnv-ib-aaI"/>
@@ -333,7 +364,7 @@
                                                                     </textField>
                                                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Tsx-C4-pcD">
                                                                         <rect key="frame" x="0.0" y="65" width="268" height="55"/>
-                                                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                                                         <textInputTraits key="textInputTraits" keyboardAppearance="alert" secureTextEntry="YES"/>
                                                                         <connections>
                                                                             <action selector="editPass2:" destination="dau-b3-YOf" eventType="editingDidEnd" id="LfF-sI-drk"/>
@@ -357,7 +388,7 @@
                                                 </subviews>
                                             </stackView>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LBK-oF-pGf">
-                                                <rect key="frame" x="0.0" y="467.5" width="398" height="42"/>
+                                                <rect key="frame" x="0.0" y="492.5" width="398" height="42"/>
                                                 <fontDescription key="fontDescription" name="DINAlternate-Bold" family="DIN Alternate" pointSize="25"/>
                                                 <state key="normal" title="Create account">
                                                     <color key="titleColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -393,6 +424,8 @@
                     </navigationItem>
                     <connections>
                         <outlet property="createStack" destination="5oP-fX-7sH" id="kWw-XR-c0j"/>
+                        <outlet property="emailOrb" destination="vKK-xS-vVj" id="kcR-oE-S10"/>
+                        <outlet property="emailTextfield" destination="17t-cK-N90" id="uQl-qq-DzI"/>
                         <outlet property="idTextfield" destination="R93-WA-GUc" id="e9U-Tg-4sy"/>
                         <outlet property="keyTextfield" destination="Nah-os-EBk" id="cF4-bx-f4P"/>
                         <outlet property="orb1" destination="Hww-ID-vs4" id="z9e-8X-qkk"/>
@@ -401,6 +434,7 @@
                         <outlet property="passTextfield2" destination="Tsx-C4-pcD" id="HFP-je-f9y"/>
                         <outlet property="tapOutsideKB" destination="3fe-Rg-5Hp" id="cAt-AM-3G5"/>
                         <outlet property="verifyStack" destination="d4K-p3-bHT" id="8Yr-o0-qJG"/>
+                        <segue destination="Fxf-AG-u3o" kind="presentation" identifier="registrationSuccess" modalPresentationStyle="fullScreen" id="hHM-Uv-rg7"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9R6-9Q-jUz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1508,7 +1542,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="jjf-Qm-49C"/>
+        <segue reference="hHM-Uv-rg7"/>
         <segue reference="q8k-8q-zkt"/>
     </inferredMetricsTieBreakers>
     <resources>

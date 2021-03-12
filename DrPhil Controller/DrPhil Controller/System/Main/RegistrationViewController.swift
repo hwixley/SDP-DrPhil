@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import FirebaseAuth
+import Firebase
 
 class RegistrationViewController: UIViewController, UITextFieldDelegate {
     
@@ -15,6 +17,8 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var createStack: UIStackView!
     @IBOutlet weak var idTextfield: UITextField!
     @IBOutlet weak var keyTextfield: UITextField!
+    @IBOutlet weak var emailTextfield: UITextField!
+    @IBOutlet weak var emailOrb: UILabel!
     @IBOutlet weak var passTextfield1: UITextField!
     @IBOutlet weak var passTextfield2: UITextField!
     @IBOutlet weak var orb1: UILabel!
@@ -31,6 +35,7 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
         createStack.isHidden = true
         idTextfield.delegate = self
         keyTextfield.delegate = self
+        emailTextfield.delegate = self
         passTextfield1.delegate = self
         passTextfield2.delegate = self
         self.tapOutsideKB.isEnabled = false
@@ -46,6 +51,22 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func clickCreate(_ sender: Any) {
+        if orb1.textColor == UIColor.green && orb2.textColor == UIColor.green && emailOrb.textColor == UIColor.green {
+            Auth.auth().createUser(withEmail: emailTextfield.text!, password: passTextfield1.text!) { (authResult, err) in
+                
+                if err != nil {
+                    self.navigationItem.prompt = "ERROR: This robot already has an account"
+                    print(err!.localizedDescription)
+                } else {
+                    let db = Firestore.firestore()
+                    
+                    db.collection("robots").document(authResult!.user.uid).setData(["uid": authResult!.user.uid, "rid": self.idTextfield.text!,"weekends": [], "weekdays": []])
+                    self.performSegue(withIdentifier: "registrationSuccess", sender: self)
+                }
+            }
+        } else {
+            self.navigationItem.prompt = "Please enter a valid email and password"
+        }
     }
     
     @IBAction func tapOutsideKB(_ sender: UITapGestureRecognizer) {
@@ -65,11 +86,19 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
         passOrbs(type: false)
     }
     
+    @IBAction func editEmail(_ sender: UITextField) {
+        emailOrbs()
+    }
     
     //MARK: Private Methods
     func isValidPassword(_ pass: String) -> Bool {
         let passRegex = "^(.{0,8}|[^0-9]*|[^A-Z]*|[^a-z]*)$"
         return !NSPredicate(format: "SELF MATCHES %@", passRegex).evaluate(with: pass)
+    }
+    
+    func isValidEmail(_ email: String) -> Bool {
+        let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: email)
     }
     
     func passOrbs(type: Bool) {
@@ -102,6 +131,14 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
         } else if passTextfield2.text! == passTextfield1.text! {
             orbLabel.textColor = UIColor.green
             orb2Label.textColor = UIColor.green
+        }
+    }
+    
+    func emailOrbs() {
+        if isValidEmail(emailTextfield.text!) {
+            emailOrb.textColor = UIColor.green
+        } else {
+            emailOrb.textColor = UIColor.systemPink
         }
     }
     
