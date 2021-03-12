@@ -101,15 +101,14 @@ class Lidar:
                 l_ray2: lidar ray
         """
         
-        global avg_norm
+        global norm
         subtr = utils.subtract(l_ray1, l_ray2)
         halved_subtr_origin = subtr.origin + 0.5*subtr.length*subtr.dir 
 
         normal_dir = np.cross(subtr.get_vec(), np.array([[0], [0], [1]]),axisa=0,axisb=0,axisc=0)
         norm.append(normal_dir)
-        if (len(n)>15):
+        if (len(norm)>15):
             norm.pop(0)
-            print("popped")
         normal_dir = np.mean(norm, axis=0)
 	 
         # normal_dir might need to be * -1 
