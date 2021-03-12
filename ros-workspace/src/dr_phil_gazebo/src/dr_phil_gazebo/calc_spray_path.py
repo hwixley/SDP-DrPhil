@@ -8,7 +8,7 @@ HANDLE_DIMENSIONS = [19, 130, 37]  # width, height, depth (mm)
 SPRAY_ANGLE = 30  # (degrees)
 SPRAY_RADIUS = DISTANCE_FROM_HANDLE * math.tan(math.radians(SPRAY_ANGLE))  # (mm)
 CIRCLE_EDGE = math.sqrt(2 * SPRAY_RADIUS * SPRAY_RADIUS) / 2  # (mm)
-SPRAY_CONFIDENCE = 10  # (mm)
+SPRAY_CONFIDENCE = 0#10  # (mm)
         
     
 class Coord:
@@ -79,19 +79,19 @@ def transform_points(points, handle_center, vector):
 def calc_z_spray_centroids(center_z):
     top = (center_z + HANDLE_DIMENSIONS[1]/2) + SPRAY_CONFIDENCE
     bottom = (center_z - HANDLE_DIMENSIONS[1]/2) - SPRAY_CONFIDENCE
-    num_sprays = 2*int(math.ceil(HANDLE_DIMENSIONS[1]/(2*CIRCLE_EDGE)))
+    num_sprays = int(math.ceil(HANDLE_DIMENSIONS[1]/(2*CIRCLE_EDGE)))
 
     spray_centroids = np.zeros(num_sprays)
     index = 0
 
     current_z = center_z - CIRCLE_EDGE
-    while current_z < top:
+    while current_z < top and index < num_sprays:
         current_z += CIRCLE_EDGE * 2
         spray_centroids[index] = current_z
         index += 1
 
     current_z = center_z + CIRCLE_EDGE
-    while current_z > bottom:
+    while current_z > bottom and index < num_sprays:
         current_z -= CIRCLE_EDGE * 2
         spray_centroids[index] = current_z
         index += 1
@@ -175,9 +175,9 @@ def main(handle_center, vector):
         print("ERROR: cannot have unit vector direction (0,0,0)")
         exit(1)
     else:
+        vector = Coord(vector.x*-1, vector.y*-1, vector.z)
         data = get_coords_and_vectors(handle_center, vector, False)
-    
-    
+
     return data
 
 
