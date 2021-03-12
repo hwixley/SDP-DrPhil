@@ -214,9 +214,9 @@ class TestYOLO:
         end_point.z = data[5] #in meters
         end_point_pose.position = end_point
         end_point_pose.orientation.x = orientationHandle[0]
-        end_point_pose.orientation.x = orientationHandle[1]
-        end_point_pose.orientation.x = orientationHandle[2]
-        end_point_pose.orientation.x = orientationHandle[3]
+        end_point_pose.orientation.y = orientationHandle[1]
+        end_point_pose.orientation.z = orientationHandle[2]
+        end_point_pose.orientation.w = orientationHandle[3]
 
 
         #Append results
