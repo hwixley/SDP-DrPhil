@@ -11,12 +11,18 @@ import signal
 from threading  import Thread
 import sys
 import time 
+import actionlib
+from dr_phil_hardware.arm_interface.command_arm import ArmCommander
+import threading
+from moveit_msgs.msg import RobotTrajectory
+from geometry_msgs.msg import PoseArray 
 
 try:
     from queue import Queue,LifoQueue, Empty
 except ImportError:
     from Queue import Queue,LifoQueue, Empty  # python 2.x
 
+from dr_phil_hardware.arm_interface.command_arm import ArmCommander,MoveGroup
 
 log_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)),"..","..","logs")
 
@@ -253,7 +259,6 @@ class RunRos(py_trees.behaviour.Behaviour):
             self.process = None 
             self.blackboard.set(self.alive_key,None)
             return 2
-
             
 class PublishTopic(py_trees.behaviour.Behaviour):
     """ a behaviour which publishes a certain message and returning RUNNING on success. Can be set to return success on publish"""
@@ -298,7 +303,24 @@ class PublishTopic(py_trees.behaviour.Behaviour):
         else:
             return py_trees.common.Status.RUNNING       
 
+class JointTargetSetAndForget(py_trees.behaviour.Behaviour):
+    """ behaviour which sets move groups target and leaves it running with SUCCESS """
 
+    def __init__(self,name,move_group,joint_target):
+        
+        super().__init__(name=name)
+        self.target = joint_target 
+        self.move_group = move_group
+
+
+    def initialise(self):
+        pass
+
+    def update(self):
+        commander = ArmCommander()
+        commander.set_joint_target_async(self.move_group,self.target)
+        return py_trees.Status.SUCCESS
+        
 class MessageChanged(py_trees_ros.subscribers.Handler):
     
     """ Listens to topic and returns running before receiving 2 messages, which are then compared for changes
@@ -382,5 +404,300 @@ class MessageChanged(py_trees_ros.subscribers.Handler):
                 self.feedback_message = "messages the same"
                 return py_trees.Status.FAILURE
 
+class ActionClientConnectOnInit(py_trees_ros.actions.ActionClient):
+    """ A version of the action client behaviour which initializes the 
+        connection to the server in init """
+
+    def __init__(self, name, action_spec, action_goal, action_namespace, override_feedback_message_on_running, connection_timeout=1):
+        """ 
+            A generic action client interface. This simply sends a pre-configured
+            goal to the action client.
+
+            Cases where you might want to subclass and extend this behaviour:
+
+            * Update the goal data in :meth:`~py_trees_ros.actions.ActionClient.initialise()`
+
+            * e.g. use blackboard data to determine the new characteristics of your goal
+            * Trigger true pre-emption by sending a new goal in :meth:`~py_trees_ros.actions.ActionClient.update()`
+
+            Args:
+                name (:obj:`str`): name of the behaviour
+                action_spec (:obj:`any`): spec type for the action (e.g. move_base_msgs.msg.MoveBaseAction)
+                action_goal (:obj:`any`): preconfigured action goal (e.g. move_base_msgs.msg.MoveBaseGoal()) or callable returning goal
+                action_namespace (:obj:`str`): where you can find the action topics
+                override_feedback_message_on_running (:obj:`str`): override the feedback message from the server
+                connection_timeout (:obj:`float`) : the time to wait for a connection on initialisation, after which the behaviour will fail
+
+            Feedback messages are often accompanied with detailed messages that continuously change - since these
+            are not significant and we don't want to log every change due to these messages, you can provide an override
+            here that simply signifies the action is running.
+
+        """
+        self.action_maybe_callable = action_goal
+        self.action_goal = None
+        super().__init__(name=name, action_spec=action_spec, action_goal=None, action_namespace=action_namespace, override_feedback_message_on_running=override_feedback_message_on_running)
+        
+        self.connection_timeout = connection_timeout
+    def setup(self, timeout):
+        # we override the default setup behaviour which happens 
+        # when the tree is initialized
+        return True 
+
+    def initialise(self):
+
+        super().initialise()
+
+        # take goal from blackboard possibly
+        self.action_goal = self.action_maybe_callable() if callable(self.action_maybe_callable) else self.action_maybe_callable
+        
+        self.action_client = None
+        self.connected = False
+        self.time_start = rospy.get_time()
+
+    def update(self):
+       # we change slightly the behaviour on when action client is missing
+       # and also setup the action client here in a non blocking way
+        time_left = self.connection_timeout - (rospy.get_time() -  self.time_start)
+        if not self.connected and time_left > 0:
+            if not self.action_client:
+                self.action_client = actionlib.SimpleActionClient(
+                    self.action_namespace,
+                    self.action_spec
+                )
+            if self.action_client.wait_for_server(
+                rospy.Duration(min(time_left,1))): # wait for at most a second each time
+                self.connected = True 
+            else: return py_trees.Status.RUNNING             
+
+        # the super() implementation will expect self.action_client to be non null iff connected
+        if not self.connected:
+            self.action_client = None 
+            self.logger.error("{0}.could not connect to the action server at '{1}'".format(self.__class__.__name__, self.action_namespace))
+
+        super_state = super().update()
+
+        # we just don't return invalid as super does, flip it to failure
+        if super_state == py_trees.Status.INVALID:
+            return py_trees.Status.FAILURE
+        else:
+            return super_state
 
 
+
+
+class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
+    """ creates a plan for the given move group to follow the trajectory given on the blackboard under "moveit/pose_targets" as (:obj:`PoseArray`) message, fails if fraction is below given threshold.
+        saves plan on blackboard at "moveit/plan" 
+    """
+    WAYPOINT_SOURCE=  "moveit/pose_targets"
+    PLAN_TARGET="moveit/plan"
+
+    def __init__(self, name,move_group : MoveGroup,fraction_threshold = 1,pose_frame="base_footprint",pose_target_include_only_idxs=None):
+        """
+            Args:
+                fraction_threshold: the fraction of the trajectory needing to be achieved for the plan to be considered successfull,
+                    if set to 0, any plan will be valid
+                pose_target_include_only_idxs: if set, will include only those indexes from pose targets specified
+
+        """
+        super().__init__(name)
+        self.fraction_threshold = fraction_threshold
+        self.blackboard = py_trees.Blackboard()
+        self.move_group = move_group
+        self.pose_frame = pose_frame
+        self.include_idxs = pose_target_include_only_idxs
+
+        # resetable
+        self.fraction = None
+        self.trajectory = None
+        self.thread = None
+        self.planning_complete = False
+
+    def initialise(self):
+        self.fraction = None
+        self.trajectory = None
+        self.planning_complete = False
+        self.thread = None
+
+        super().initialise()
+
+
+
+    def update(self):
+        # if planning hasn't started
+        if not self.thread:
+            # get waypoints 
+            waypoints : PoseArray = self.blackboard.get(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE)
+            
+            if not waypoints:
+                    self.feedback_message = "No waypoints at {}".format(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE)
+                    return py_trees.Status.FAILURE
+            elif len(waypoints.poses) <= 0:
+                    self.feedback_message = "Empty waypoints list"
+                    return py_trees.Status.FAILURE
+            elif isinstance(waypoints,PoseArray):
+
+                if self.include_idxs:
+                    waypoints_new_poses = [waypoints.poses[x] for x in self.include_idxs if len(waypoints.poses) -1 >= x]
+                    waypoints.poses = waypoints_new_poses
+            
+                # start planning
+                self.thread = threading.Thread(target= self.__blocking_plan,args = (waypoints,))
+                self.thread.start()
+                return py_trees.Status.RUNNING
+            else:
+                self.feedback_message = "Waypoints is not of the right type"
+                return py_trees.Status.FAILURE
+
+        # running planning
+        elif self.thread.is_alive():
+
+            self.feedback_message = "Planning.."
+            return py_trees.Status.RUNNING
+
+        # planning finished
+        else:
+            # check it's valid
+            if self.fraction < self.fraction_threshold:
+                self.feedback_message = "Fraction too low"
+                return py_trees.Status.FAILURE
+            else:
+                self.feedback_message = "Found valid plan"
+                # success
+                self.blackboard.set(CreateMoveitTrajectoryPlan.PLAN_TARGET,self.trajectory)
+                return py_trees.Status.SUCCESS
+
+
+    def terminate(self, new_status):
+        # "drop" the planning thread if running
+        self.thread = None
+
+        super().terminate(new_status)
+
+    def __blocking_plan(self,waypoints : PoseArray):
+        """ starts planning, and blocks thread """
+        #TODO: check for race conditions on terminate, and anotehr startup swiftly after
+        assert(isinstance(waypoints,PoseArray))
+        ac = ArmCommander()
+        ac.clear_state(self.move_group)
+        ac.set_pose_planning_frame(self.move_group,self.pose_frame)
+
+        (self.trajectory,self.fraction) = ac.plan_smooth_path(self.move_group,[x for x in waypoints.poses])
+        sys.exit()
+
+class ExecuteMoveItPlan(py_trees.Behaviour):
+    """ Executes plan at moveit/plan on the blackboard, returns true once succeeded, fails if some point is not reached
+    """
+    PLAN_SOURCE=CreateMoveitTrajectoryPlan.PLAN_TARGET
+
+    def __init__(self, name,move_group : MoveGroup, distance_waypoint_threshold = 0.02,time_threshold_mult=0.1):
+        """[summary]
+
+        Args:
+            name (:obj:`str`): the name of the behaviour
+            move_group (:obj:`MoveGroup`): the move group to use
+            distance_waypoint_threshold (:obj:`float`, optional): the distance the end effector can deviate from the path at any waypoint at the required time. Defaults to 0.01.
+            time_threshold_mult: the leeway added to distance_waypoint_threshold for every second in polling delay
+        """
+        
+        super().__init__(name)
+        self.started : bool = False 
+        self.curr_point_idx : int = None
+        self.plan = None 
+
+        self.move_group = move_group
+        self.distance_waypoint_threshold = distance_waypoint_threshold
+        self.time_threshold_mult = time_threshold_mult
+
+    def initialise(self):
+
+        self.started = False 
+        self.curr_point_idx = 0
+        self.plan : RobotTrajectory = py_trees.Blackboard().get(ExecuteMoveItPlan.PLAN_SOURCE)
+
+    def update(self):
+        if self.started:
+
+            curr_point = self.plan.joint_trajectory.points[self.curr_point_idx]
+            target_time = self.plan.joint_trajectory.header.stamp + curr_point.time_from_start
+            time_late = rospy.Time.now() - target_time
+
+            # keep going through points only if we are either on time, or late, 
+            # always work from the most "recent point" since last tick
+            # i.e. curr_point_idx is always the point which is not in the past
+            while time_late.to_sec() >= 0:
+                self.curr_point_idx += 1
+
+                # if went through last point, succeed
+                if self.curr_point_idx + 1 > len(self.plan.joint_trajectory.points):
+                    self.feedback_message = "Executed plan"
+                    return py_trees.Status.SUCCESS
+
+                curr_point = self.plan.joint_trajectory.points[self.curr_point_idx]
+                target_time = self.plan.joint_trajectory.header.stamp + curr_point.time_from_start
+                time_late = rospy.Time.now() - target_time
+            
+            # we work out if the last pose aligns with the expected pose
+            # we figure out the maximum error reasonable relative to our poll rate
+            # using jacobian matrix we figure out the time the joint could have moved while we 
+            # "weren't looking"
+            # samples: X---X---X---X---X
+            #    traj: X-X---X---X---X--
+            # TODO: make this work, or use action server directly
+            # last_point = self.plan.joint_trajectory.points[self.curr_point_idx - 1] if self.curr_point_idx >= 1 else None
+            
+            # if last_point:
+            #     current_pos_ee = ArmCommander().get_current_pose(self.move_group).pose.position
+            #     current_pos_ee = np.array([current_pos_ee.x,current_pos_ee.y,current_pos_ee.z])
+
+            #     # assume linear velocity at the ee
+            #     J = ArmCommander().get_jacobian(self.move_group,list(last_point.positions))
+            #     last_velocity_ee = (J @ np.array(last_point.velocities)[:,np.newaxis])[0:3,:]
+                
+            #     # figure out "perfect state" at last point
+            #     last_state = ArmCommander().get_current_robot_state()
+            #     last_state.joint_state.name = ArmCommander().get_joints(self.move_group)
+            #     last_state.joint_state.position = last_point.positions
+            #     last_state.joint_state.velocity = last_point.velocities
+            #     last_state.joint_state.effort = last_point.effort
+
+            #     # figure out required ee pos last point
+            #     (poses,_,_) = ArmCommander().compute_fk(
+            #         [ArmCommander().get_end_effector_link(self.move_group)],
+            #         ArmCommander().get_planning_frame(self.move_group),
+            #         last_state)
+                
+            #     last_ee_pos = np.array([poses[0].pose.position.x,
+            #         poses[0].pose.position.y,
+            #         poses[0].pose.position.z])
+
+            #     secs_since_last_ee = (rospy.Time.now() - (last_point.time_from_start + self.plan.joint_trajectory.header.stamp)).to_sec()
+
+            #     # error at interpolated point from perfect target pose
+            #     error = np.linalg.norm((last_ee_pos + (last_velocity_ee * secs_since_last_ee)) - current_pos_ee)
+            #   
+
+            #     if  error > self.distance_waypoint_threshold + self.time_threshold_mult * secs_since_last_ee:
+            #         self.feedback_message = "Error exceeded threshold, failing trajectory"
+            #         return py_trees.Status.FAILURE
+
+
+            return py_trees.Status.RUNNING
+        else:
+            if self.plan is None:
+                self.feedback_message = "Plan at {} is None".format(ExecuteMoveItPlan.PLAN_SOURCE)
+                return py_trees.Status.FAILURE
+            elif len(self.plan.joint_trajectory.points) == 0:
+                self.feedback_message = "Empty plan, succeed"
+                return py_trees.Status.SUCCESS
+
+            self.started=True
+            ac = ArmCommander()
+            # start off the plan
+            self.feedback_message = "Executing plan..."
+            ac.execute_plan(self.move_group,self.plan,blocking=False)
+            return py_trees.Status.RUNNING
+
+    def terminate(self, new_status):
+        # TODO: halt arm commander
+        return super().terminate(new_status)

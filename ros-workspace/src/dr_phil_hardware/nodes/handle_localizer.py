@@ -4,15 +4,16 @@ from dr_phil_hardware.vision.camera import Camera
 from dr_phil_hardware.vision.lidar import Lidar
 from dr_phil_hardware.vision.ray import Ray
 from dr_phil_hardware.vision.localisation import localize_pixel
-from dr_phil_hardware.vision.utils import invert_homog_mat
-
+from dr_phil_hardware.vision.utils import invert_homog_mat,angle_between_pi
+import math
 import numpy as np
 from sensor_msgs.msg import CameraInfo, LaserScan
 import tf
-from geometry_msgs.msg import PointStamped,Point
+from geometry_msgs.msg import PointStamped,Point,Pose,PoseStamped,PoseArray
 from visualization_msgs.msg import Marker,MarkerArray
 from tf2_msgs.msg import TFMessage
-
+import tf.transformations as t
+import copy
 class HandleLocalizer:
 
     """ Node which listens to 2d points signifying features on the camera, and localizes them and then visualises them by publising
@@ -30,6 +31,8 @@ class HandleLocalizer:
         self.feature_sub = rospy.Subscriber(feature_topic,PointStamped,callback=self.feature_callback)
 
         self.feature_pub = rospy.Publisher("/handle_feature/camera_points",MarkerArray,queue_size=10)
+        self.target_pub = rospy.Publisher("spray_path/target_points",PoseArray,queue_size=10)
+        self.handle_pub = rospy.Publisher("spray_path/handle_pose",Pose,queue_size=10)
 
         self.scan_sub = rospy.Subscriber("/scan_filtered",LaserScan,callback=self.scan_callback)
 
@@ -189,11 +192,41 @@ class HandleLocalizer:
             point3dmrkr = self.create_point_from_vec(point3d,2) 
             normal3dmrkr = self.create_arrow_from_ray(normal,3)
             markers.markers = [camera_mrkr,camera_lidar_mrkr,point3dmrkr,normal3dmrkr]
+            
+            thetaGripper = math.pi + -angle_between_pi(normal.get_vec(),np.array([[1],[0],[0]]))
+            thetaHandle = thetaGripper - math.pi 
+            orientationHandle = t.quaternion_from_matrix(t.rotation_matrix(thetaHandle,np.array([0,0,1])))
+            orientationGripper = t.quaternion_from_matrix(t.rotation_matrix(thetaGripper,np.array([0,0,1])))
+            
+            pose = Pose()
+            pose.position.x = point3d[0,0]
+            pose.position.y = point3d[1,0]
+            pose.position.z = point3d[2,0]
+            pose.orientation.x = orientationGripper[0]
+            pose.orientation.y = orientationGripper[1]
+            pose.orientation.z = orientationGripper[2] 
+            pose.orientation.w = orientationGripper[3] 
+
+            array = PoseArray()
+            array.header.frame_id = "base_link"
+            array.header.stamp = rospy.Time.now()
+            array.poses.append(pose)
+
+            
+            handle_pose = copy.deepcopy(pose)
+            handle_pose.orientation.x = orientationHandle[0]
+            handle_pose.orientation.y = orientationHandle[1]
+            handle_pose.orientation.z = orientationHandle[2]
+            handle_pose.orientation.w = orientationHandle[3]
+
+            self.handle_pub.publish(handle_pose)
+            self.target_pub.publish(array)
         else:
             markers.markers = [camera_mrkr,camera_lidar_mrkr]
 
         self.feature_pub.publish(markers)
-
+        
+        
     def spin(self):
         if self.camera and self.point and self.scan:
             self.visualise()

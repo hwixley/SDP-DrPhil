@@ -1,0 +1,5 @@
+<launch>
+  <!-- those nodes cannot be run in simulation or they will otherwise interfere with gazebo -->
+  
+  <node pkg="dr_phil_hardware" type="dr_phil_hardware_bringup" name="dr_phil_hardware_bringup" output="screen"/>
+</launch>
