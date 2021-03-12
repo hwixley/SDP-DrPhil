@@ -174,19 +174,20 @@ class TestYOLO:
       # get rid of subscriber
       self.camera_info_sub.unregister()
 
-  def create_spray_path_points(self,handle_3d_vector, ray):
+  def create_spray_path_points(self,handle_3d_vector, normal,camera_ray):
     x,y,z = handle_3d_vector[0,0], handle_3d_vector[1,0], handle_3d_vector[2,0]
     Center = Coord(x*1000, y*1000, z*1000)
-    Direction = Coord(ray.dir[0]*1000,ray.dir[1]*1000,ray.dir[2]*1000)
+    Direction = Coord(normal.dir[0]*1000,normal.dir[1]*1000,normal.dir[2]*1000)
 
     spray_data = calculate_spray_end_points(Center,Direction)
     #Convert them to poseArray
     print(spray_data)
     origin_points = []
     spray_direction = []
-    x_unit= np.array([[0],[0],[1]])
-    thetaHandle = angle_between_pi(ray.get_vec(),x_unit)
-    orientationHandle = tf.transformations.quaternion_from_matrix(tf.transformations.rotation_matrix(thetaHandle,x_unit))
+
+    x_unit= np.array([[0],[0],[0]])
+    thetaHandle = angle_between_pi(camera_ray.get_vec(),normal.get_vec())
+    orientationHandle = tf.transformations.quaternion_from_matrix(tf.transformations.rotation_matrix(thetaHandle,normal.get_vec()))
     self.spray_origin_poses = PoseArray()
     self.spray_endpoints_poses = PoseArray()
     poses = []
@@ -260,7 +261,7 @@ class TestYOLO:
      
   def display_door_and_handle(self):
       door_marker = Marker()
-      door_marker.header.frame_id = "odom"
+      door_marker.header.frame_id = "base_link"
       door_marker.header.stamp = rospy.Time.now()
       door_marker.ns = "door positions"
       door_marker.id = 0
@@ -410,7 +411,7 @@ class TestYOLO:
     (point3d,normal) = localize_pixel(point_np,self.camera,self.lidar,self.scan)
 
     if point3d is not None:
-      spray_origin, spray_endpoints = self.create_spray_path_points(point3d, normal)
+      spray_origin, spray_endpoints = self.create_spray_path_points(point3d, normal, camera_ray_robot)
 
 
 
