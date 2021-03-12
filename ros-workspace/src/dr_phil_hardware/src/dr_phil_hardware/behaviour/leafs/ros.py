@@ -15,6 +15,7 @@ import actionlib
 from dr_phil_hardware.arm_interface.command_arm import ArmCommander
 import threading
 from moveit_msgs.msg import RobotTrajectory
+from geometry_msgs.msg import PoseArray 
 
 try:
     from queue import Queue,LifoQueue, Empty
@@ -422,7 +423,7 @@ class ActionClientConnectOnInit(py_trees_ros.actions.ActionClient):
             Args:
                 name (:obj:`str`): name of the behaviour
                 action_spec (:obj:`any`): spec type for the action (e.g. move_base_msgs.msg.MoveBaseAction)
-                action_goal (:obj:`any`): preconfigured action goal (e.g. move_base_msgs.msg.MoveBaseGoal())
+                action_goal (:obj:`any`): preconfigured action goal (e.g. move_base_msgs.msg.MoveBaseGoal()) or callable returning goal
                 action_namespace (:obj:`str`): where you can find the action topics
                 override_feedback_message_on_running (:obj:`str`): override the feedback message from the server
                 connection_timeout (:obj:`float`) : the time to wait for a connection on initialisation, after which the behaviour will fail
@@ -432,10 +433,11 @@ class ActionClientConnectOnInit(py_trees_ros.actions.ActionClient):
             here that simply signifies the action is running.
 
         """
-        super().__init__(name=name, action_spec=action_spec, action_goal=action_goal, action_namespace=action_namespace, override_feedback_message_on_running=override_feedback_message_on_running)
-
+        self.action_maybe_callable = action_goal
+        self.action_goal = None
+        super().__init__(name=name, action_spec=action_spec, action_goal=None, action_namespace=action_namespace, override_feedback_message_on_running=override_feedback_message_on_running)
+        
         self.connection_timeout = connection_timeout
-
     def setup(self, timeout):
         # we override the default setup behaviour which happens 
         # when the tree is initialized
@@ -445,6 +447,9 @@ class ActionClientConnectOnInit(py_trees_ros.actions.ActionClient):
 
         super().initialise()
 
+        # take goal from blackboard possibly
+        self.action_goal = self.action_maybe_callable() if callable(self.action_maybe_callable) else self.action_maybe_callable
+        
         self.action_client = None
         self.connected = False
         self.time_start = rospy.get_time()
@@ -481,7 +486,7 @@ class ActionClientConnectOnInit(py_trees_ros.actions.ActionClient):
 
 
 class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
-    """ creates a plan for the given move group to follow the trajectory given on the blackboard under "moveit/pose_targets" as a list of (:obj:`Pose`) messages, fails if fraction is below given threshold.
+    """ creates a plan for the given move group to follow the trajectory given on the blackboard under "moveit/pose_targets" as (:obj:`PoseArray`) message, fails if fraction is below given threshold.
         saves plan on blackboard at "moveit/plan" 
     """
     WAYPOINT_SOURCE=  "moveit/pose_targets"
@@ -522,26 +527,26 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
         # if planning hasn't started
         if not self.thread:
             # get waypoints 
-            waypoints = self.blackboard.get(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE)
-
+            waypoints : PoseArray = self.blackboard.get(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE)
+            
             if not waypoints:
                     self.feedback_message = "No waypoints at {}".format(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE)
                     return py_trees.Status.FAILURE
-            elif len(waypoints) <= 0:
+            elif len(waypoints.poses) <= 0:
                     self.feedback_message = "Empty waypoints list"
                     return py_trees.Status.FAILURE
-            elif isinstance(waypoints,list):
+            elif isinstance(waypoints,PoseArray):
 
                 if self.include_idxs:
-                    waypoints_new = [waypoints[x] for x in self.include_idxs if len(waypoints) -1 >= x]
-                    waypoints = waypoints_new
+                    waypoints_new_poses = [waypoints.poses[x] for x in self.include_idxs if len(waypoints.poses) -1 >= x]
+                    waypoints.poses = waypoints_new_poses
             
                 # start planning
                 self.thread = threading.Thread(target= self.__blocking_plan,args = (waypoints,))
                 self.thread.start()
                 return py_trees.Status.RUNNING
             else:
-                self.feedback_message = "Waypoints is not a list"
+                self.feedback_message = "Waypoints is not of the right type"
                 return py_trees.Status.FAILURE
 
         # running planning
@@ -569,15 +574,15 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
 
         super().terminate(new_status)
 
-    def __blocking_plan(self,waypoints):
+    def __blocking_plan(self,waypoints : PoseArray):
         """ starts planning, and blocks thread """
         #TODO: check for race conditions on terminate, and anotehr startup swiftly after
-        assert(isinstance(waypoints,list))
+        assert(isinstance(waypoints,PoseArray))
         ac = ArmCommander()
         ac.clear_state(self.move_group)
         ac.set_pose_planning_frame(self.move_group,self.pose_frame)
 
-        (self.trajectory,self.fraction) = ac.plan_smooth_path(self.move_group,waypoints)
+        (self.trajectory,self.fraction) = ac.plan_smooth_path(self.move_group,[x for x in waypoints.poses])
         sys.exit()
 
 class ExecuteMoveItPlan(py_trees.Behaviour):

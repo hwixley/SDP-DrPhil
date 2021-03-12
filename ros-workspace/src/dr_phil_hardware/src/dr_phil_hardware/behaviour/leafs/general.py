@@ -1,6 +1,7 @@
 import py_trees
 import numpy as np
 import typing 
+import os.path
 
 def dummy_nearest_obstacle(scan):
     return(np.argmin(scan.ranges),0)
@@ -75,4 +76,27 @@ class SetBlackboardVariableCustom(py_trees.behaviour.Behaviour):
         else:
             return py_trees.Status.FAILURE
 
+
+class CheckFileExists(py_trees.behaviour.Behaviour):
+
+    def __init__(self, name, file_path):
+
+        self.file_path = file_path
+        super().__init__(name=name)
+
+    def update(self):
+        if os.path.isfile(self.file_path):
+            return py_trees.Status.SUCCESS
+        else: 
+            return py_trees.Status.FAILURE 
+
+class Lambda(py_trees.behaviour.Behaviour):
+    """ Wraps a simple lambda method in a behaviour """
+    def __init__(self, name, func : typing.Callable[[],py_trees.common.Status]):
+
+        self.func = func
+        super().__init__(name=name)
+
+    def update(self):
+        return self.func()
 

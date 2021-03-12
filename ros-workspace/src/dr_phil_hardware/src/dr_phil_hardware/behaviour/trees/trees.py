@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 
+from py_trees.blackboard import Blackboard
 from dr_phil_hardware.arm_interface.command_arm import ArmCommander, MoveGroup
 import py_trees
 from dr_phil_hardware.behaviour.leafs.ros import PublishTopic,RunRos,MessageChanged,ActionClientConnectOnInit,CreateMoveitTrajectoryPlan,ExecuteMoveItPlan
-from dr_phil_hardware.behaviour.leafs.general import ClosestObstacle,SetBlackboardVariableCustom
+from dr_phil_hardware.behaviour.leafs.general import ClosestObstacle, Lambda,SetBlackboardVariableCustom,CheckFileExists
 from dr_phil_hardware.behaviour.decorators import HoldStateForDuration
 import operator
-from geometry_msgs.msg import Twist, PoseArray, Pose
+from geometry_msgs.msg import Twist, PoseArray, Pose, PoseStamped
 import os
 from std_msgs.msg import Float64MultiArray
-from dr_phil_hardware.msg import TraceArmPathAction,TraceArmPathGoal 
 import rospy 
-from move_base_to_manip.msg import desired_poseAction,desired_poseGoal
-from moveit_msgs.msg import MoveGroupAction,MoveGroupGoal,PositionConstraint,Constraints
+from move_base_msgs.msg import MoveBaseAction,MoveBaseGoal
+import tf.transformations as t 
+import numpy as np
 
 def create_exploration_completed_check(duration=60):
     """ creates subtree which returns SUCCESS if no data has been received from the exploration nodes for the given duration.
@@ -33,32 +34,7 @@ def create_exploration_completed_check(duration=60):
     return f2rHold_state
 
 
-    
-def create_trace_arm_path(wait_times : list,poses: PoseArray,name="traceArmPath"):
 
-    g =MoveGroupGoal()
-    
-    cs = Constraints()
-    cs.name="constraints"
-
-    j = PositionConstraint()
-    
-    j.header.frame_id="base_link"
-    j.link_name="ee_arm_link"
-    j.weight = 1
-    
-    cs.position_constraints.append(j)
-
-    g.request.goal_constraints = [cs]
-    g.request.group_name="arm"
-   
-    client = ActionClientConnectOnInit(name="armPathClient",
-                                        action_spec=MoveGroupAction,
-                                        action_goal=g,
-                                        action_namespace="/move_group",
-                                        override_feedback_message_on_running="executing path",
-                                        connection_timeout=2)
-    return client
 
 def create_set_positions_arm(parameters,name="positionArm"):
     
@@ -118,13 +94,7 @@ def create_explore_frontier_and_save_map(map_path=None,timeout=120,no_data_timeo
 
     map_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"map")if map_path is None else map_path  
 
-    saveMap = RunRos(name="runSaveMap",
-        blackboard_alive_key="map/alive",
-        blackboard_kill_trigger_key="map/kill",
-        node_file="map_saver",
-        package="map_server",
-        args=["-f",map_path],
-        success_on_non_error_exit=True) 
+    saveMap = create_save_map(map_path)
 
     killExplorationNodes = py_trees.blackboard.SetBlackboardVariable(name="SetKillTrigger",
         variable_name=exploration_kill_key,
@@ -155,9 +125,88 @@ def create_explore_frontier_and_save_map(map_path=None,timeout=120,no_data_timeo
     return timeout
 
 
-def create_idle(): 
-    """ creates a subtree which causes the robot to idle on each tick, with status of RUNNING """
+
     
+def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,map_path=None,distance_from_door=0.1,name="disinfectDoors"):
+    """[summary]
+
+    Args:
+        handle_pose_src (`str->Pose`): 
+        spray_path_src (`str->PoseArray`):
+        map_path ([type], optional): [description]. path to file without extension.
+        name (str, optional): [description]. Defaults to "disinfectDoors".
+    """
+
+    assert(not ".yaml" in map_path  or not ".pgm" in map_path)
+
+    # ------ start nodes ----------
+    parallel = py_trees.composites.Parallel()
+
+    load_map = create_load_map(map_path=map_path + ".yaml")
+
+    start_disinfection_nodes = RunRos(name="runDisinfectionNodes",
+        blackboard_alive_key="/disinfect/alive",
+        blackboard_kill_trigger_key="/disinfect/kill",
+        launch_file="disinfect_task.launch",
+        package="dr_phil_hardware"
+    )
+
+    # ------ do some movement ---------
+
+    sequence = py_trees.composites.Sequence()
+
+    wait_for_targets = Lambda("waitForHandlePose",
+        lambda : py_trees.Status.SUCCESS if 
+            py_trees.Blackboard().get(handle_pose_src) is not None 
+                else py_trees.Status.RUNNING)
+
+    wait_for_spray = Lambda("waitForSprayPoses",
+        lambda : py_trees.Status.SUCCESS if 
+            py_trees.Blackboard().get(handle_pose_src) is not None 
+                else py_trees.Status.RUNNING)
+
+    move_to_door = create_move_in_front_of_door(handle_pose_src,spray_path_src,distance_from_door=distance_from_door,name="moveToDoor")
+
+    sequence.add_children([wait_for_targets,wait_for_spray,move_to_door])
+
+    parallel.add_children([load_map,start_disinfection_nodes,sequence])
+
+    return parallel
+
+
+def create_load_map(map_path=None):
+    """ Args: 
+            map_path: the path to the map with .yaml extension """
+
+    map_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"map")if map_path is None else map_path  
+
+    loadMap = RunRos(name="loadMap",
+        blackboard_alive_key="map/alive",
+        blackboard_kill_trigger_key="map/kill",
+        node_file="map_server",
+        package="map_server",
+        args=[map_path]) 
+
+    return loadMap
+
+def create_save_map(map_path=None):
+    """ Args: 
+            map_path: the path to the map without extension """
+
+    map_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"map")if map_path is None else map_path  
+    
+    saveMap = RunRos(name="runSaveMap",
+        blackboard_alive_key="map/alive",
+        blackboard_kill_trigger_key="map/kill",
+        node_file="map_saver",
+        package="map_server",
+        args=["-f",map_path],
+        success_on_non_error_exit=True) 
+
+
+    return saveMap
+
+def create_idle(): 
     idle = py_trees.behaviours.Running(name="Idle")
 
     return idle
@@ -247,37 +296,104 @@ def create_face_closest_obstacle(min_distance = 0.5,face_angle=0):
 
 
 
-def create_raise_ee_to_first_target_pose_z(target_pose_src="target_pose"):
-    """ takes first target in moveit/target_poses and raises gripper to match height """
+
+
+def create_move_base_to_reach_pose(target_pose_src,name="reachTargetPos"):
+    """ reaches first target in the given pose array on the blackboard """
+
+
+    def get_pose():
+        return py_trees.Blackboard().get(target_pose_src)
+
+    move_base = ActionClientConnectOnInit(name,
+                            MoveBaseAction,
+                            get_pose,
+                            action_namespace="/move_base",
+                            override_feedback_message_on_running="moving to reach target")
+
+    return move_base
+
+def create_raise_ee_to_first_target_pose_z(target_pose_src="target_poses"):
+    """ takes first target in moveit/target_poses and raises gripper to match height (plans in base_link) """
 
 
     sequence = py_trees.composites.Sequence()
 
     def process_pose():
-        print(ArmCommander().get_current_pose(MoveGroup.ARM))
+        ArmCommander().set_goal_tolerance(MoveGroup.ARM,0.15)
         p = ArmCommander().get_current_pose(MoveGroup.ARM).pose
-        target_pose : pose = py_trees.Blackboard().get(target_pose_src)
-        if target_pose:
-            p.position.z = target_pose.position.z
-            return [p]
+        target_poses : PoseArray = py_trees.Blackboard().get(target_pose_src)
+        if target_poses:
+
+            p.position.z = target_poses.poses[0].position.z
+            pa = PoseArray()
+            pa.poses = [p]
+            pa.header = target_poses.header
+            return pa
         else:
             return None
 
     move_target = SetBlackboardVariableCustom(
             variable_name=CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE,
             variable_value=process_pose,
-            name="moveTarget")
+            name="moveTarget2BB")
 
     create_plan = CreateMoveitTrajectoryPlan("planRaiseEE",
-        MoveGroup.ARM,1,
+        MoveGroup.ARM,0.9,
         pose_frame="base_link",
-        pose_target_include_only_idxs=[0])
+        pose_target_include_only_idxs=[0],
+        )
 
     execute_plan = ExecuteMoveItPlan("raiseEE",MoveGroup.ARM)
 
     sequence.add_children([move_target,create_plan,execute_plan])
 
     return sequence
+
+def create_move_in_front_of_door(handle_pose_src,spray_path_src,distance_from_door=0.1,name="moveToDoor"):
+    """ positions the robot perpendicular to the door at specified distance from the normal in the direction of it 
+    
+        Args:
+            handle_pose_src (`str->Pose`): 
+            spray_path_src (`str->PoseArray`): 
+    """
+
+    def process_pose():
+        pose : Pose = py_trees.Blackboard().get(handle_pose_src)
+        if pose:
+            (a,b,c) = t.euler_from_quaternion([pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w])
+            mat = t.euler_matrix(a,b,c)
+            rospy.logerr(mat)
+            vec =  (mat[:,:-1] @ np.array([[1],[0],[0]])) * distance_from_door
+            
+            pose.position.x += vec[0]
+            pose.position.y += vec[1]
+            pose.position.z += vec[2]
+            pose.orientation.w *= -1
+            ps = PoseStamped()
+            ps.pose = pose
+            ps.header.frame_id = "base_link"
+            ps.header.stamp = rospy.Time.now()
+
+            g = MoveBaseGoal()
+            g.target_pose = ps
+            
+            return  g
+        else:
+            return None
+
+    wait = py_trees.timers.Timer(name="waitForNodes",duration=5)
+    bb2target = "{}/target".format(name)
+    move_target = SetBlackboardVariableCustom(
+        variable_name=bb2target,
+        variable_value=process_pose,
+        name="moveTarget2BB")
+
+    move_base = create_move_base_to_reach_pose(target_pose_src=bb2target)
+
+    raise_ee = create_raise_ee_to_first_target_pose_z(spray_path_src)
+
+    return py_trees.composites.Sequence(name=name,children=[wait,move_target,move_base,raise_ee])
 
 import sys
 import inspect 
