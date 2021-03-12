@@ -13,7 +13,7 @@ from geometry_msgs.msg import PointStamped,Point,PoseArray,Pose
 from visualization_msgs.msg import Marker,MarkerArray
 from tf2_msgs.msg import TFMessage
 
-from ML.models import yolov3, DEFAULT_WEIGHTS, DEFAULT_CONFIGURATION, DEFAULT_OBJ_NAMES, visualise_results, load_network_and_classes
+from dr_phil_hardware.ML.models import yolov3, DEFAULT_WEIGHTS, DEFAULT_CONFIGURATION, DEFAULT_OBJ_NAMES, visualise_results, load_network_and_classes
 
 
 from dr_phil_hardware.vision.localisation import *
@@ -28,8 +28,8 @@ from dr_phil_hardware.vision.utils import invert_homog_mat
 
 
 #Library to calculate points around handle To Move Arm to (to cover all handle)
-from calc_spray_path import main as calculate_spray_end_points
-from calc_spray_path import Coord
+from dr_phil_hardware.calc_spray_path import main as calculate_spray_end_points
+from dr_phil_hardware.calc_spray_path import Coord
 
 
 #from dr_phil_hardware.vision.vision_handle_axis_algorithm import define_handle_features_heursitic
