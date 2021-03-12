@@ -13,9 +13,9 @@ SPRAY_CONFIDENCE = 0#10  # (mm)
     
 class Coord:
     def __init__(self, x, y, z):
-        self.x = x
-        self.y = y
-        self.z = z
+        self.x = x * 1000 #converted to mm
+        self.y = y * 1000
+        self.z = z * 1000 
 
 class LineGraph:
     def __init__(self, vector):
@@ -169,7 +169,7 @@ def get_coords_and_vectors(handle_center, vector, output_is_vector):
 
 def main(handle_center, vector):
     data = None
-
+    
     print("Calculating spray coordinates...")
     if vector.x == 0 and vector.z == 0 and vector.y == 0:
         print("ERROR: cannot have unit vector direction (0,0,0)")

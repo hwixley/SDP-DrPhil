@@ -53,20 +53,20 @@ class TestYOLO:
      
   
 
-        self.robot_frame = "camera_rgb_frame"
+        self.robot_frame = "base_link"
         self.lidar_frame = "base_scan"
         
         self.camera_info_sub = rospy.Subscriber("/camera_info",CameraInfo,callback=self.camera_info_callback)
         
-        #self.feature_sub = rospy.Subscriber(feature_topic,PointStamped,callback=self.feature_callback)
-
         self.feature_pub = rospy.Publisher("/handle_feature/camera_points",MarkerArray,queue_size=10)
 
         self.scan_sub = rospy.Subscriber("/scan_filtered",LaserScan,callback=self.scan_callback)
 
-        self.spray_origin_pub = rospy.Publisher("/spray_path/target_points",PoseArray,queue_size=10)
-        self.spray_endpoints_pub = rospy.Publisher("/spray_path/direction_points",PoseArray,queue_size=10)
 
+
+
+        #Initialise image subscriber and call callback function
+        self.image_sub = rospy.Subscriber("image", ImageMSG, self.yolo_callback)
 
 
         self.camera = None
@@ -75,14 +75,12 @@ class TestYOLO:
         self.scan = None 
 
 
-
-        #Initialise image subscriber and call callback function
-        self.image_sub = rospy.Subscriber("image", ImageMSG, self.yolo_callback)
-
-        
+        #Initialise image publisher to send the calculated 3D world coordinates of handles from a camera image as well as normal to a vertical surface
+        self.handle3D_pub = rospy.Publisher("/handle_feature/handle3D",Float64MultiArray,queue_size=10)
+        self.normal_pub = rospy.Publisher("/handle_feature/normal",Float64MultiArray,queue_size=10)
 
 
-        
+
               
    
 
@@ -174,143 +172,8 @@ class TestYOLO:
       # get rid of subscriber
       self.camera_info_sub.unregister()
 
-  def create_spray_path_points(self,handle_3d_vector, normal,camera_ray):
-    x,y,z = handle_3d_vector[0,0], handle_3d_vector[1,0], handle_3d_vector[2,0]
-    Center = Coord(x*1000, y*1000, z*1000)
-    Direction = Coord(normal.dir[0]*1000,normal.dir[1]*1000,normal.dir[2]*1000)
-
-    spray_data = calculate_spray_end_points(Center,Direction)
-    #Convert them to poseArray
-    print(spray_data)
-    origin_points = []
-    spray_direction = []
-
-    x_unit= np.array([[0],[0],[0]])
-    thetaHandle = angle_between_pi(camera_ray.get_vec(),normal.get_vec())
-    orientationHandle = tf.transformations.quaternion_from_matrix(tf.transformations.rotation_matrix(thetaHandle,normal.get_vec()))
-    self.spray_origin_poses = PoseArray()
-    self.spray_endpoints_poses = PoseArray()
-    poses = []
-    end_poses = []
-
-    for data in spray_data:
-        #Target points for arm to reach to
-        point_pose = Pose()
-        point = Point()
-        point.x = (data[0])  #in meters
-        point.y = (data[1])  #in meters
-        point.z = (data[2])  #in meters
-        point_pose.position = point
-        point_pose.orientation.x = orientationHandle[0]
-        point_pose.orientation.y = orientationHandle[1]
-        point_pose.orientation.z = orientationHandle[2]
-        point_pose.orientation.w = orientationHandle[3]
-
-        #Endpoint - Spray direction 
-        end_point_pose = Pose()
-        end_point = Point()
-        end_point.x = data[3] #in meters
-        end_point.y = data[4] #in meters
-        end_point.z = data[5] #in meters
-        end_point_pose.position = end_point
-        end_point_pose.orientation.x = orientationHandle[0]
-        end_point_pose.orientation.y = orientationHandle[1]
-        end_point_pose.orientation.z = orientationHandle[2]
-        end_point_pose.orientation.w = orientationHandle[3]
 
 
-        #Append results
-        origin_points.append(point)
-        poses.append(point_pose)
-        spray_direction.append(end_point)
-        end_poses.append(end_point_pose)
-
-    self.spray_origin_poses.header.frame_id = self.robot_frame
-    self.spray_origin_poses.header.stamp = rospy.Time.now()
-    self.spray_origin_poses.poses = poses
-    self.spray_endpoints_poses.header.frame_id = self.robot_frame
-    self.spray_endpoints_poses.header.stamp = rospy.Time.now()
-    self.spray_endpoints_poses.poses = poses
-
-
-
-
-    
-    return origin_points,spray_direction
-
-
-
-  def configurate_rviz_marker(self,points):
-        point_camera = Marker()
-        point_camera.header.frame_id = "camera_rgb_frame"
-        point_camera.header.stamp = rospy.Time.now()
-        point_camera.ns = "spray positions"
-        point_camera.id = 0
-        point_camera.type = 8 # sphere list
-        point_camera.action = 0 # add/modify
-        point_camera.points = points
-        point_camera.pose.orientation.w = 1
-        point_camera.color.a = 1
-        point_camera.color.b = 1
-        point_camera.scale.x = 0.01
-        point_camera.scale.y = 0.01
-        point_camera.scale.z = 0.01
-        point_camera.lifetime = rospy.Duration(10)
-        return point_camera
-        
-     
-  def display_door_and_handle(self):
-      door_marker = Marker()
-      door_marker.header.frame_id = "base_link"
-      door_marker.header.stamp = rospy.Time.now()
-      door_marker.ns = "door positions"
-      door_marker.id = 0
-      door_marker.action = 0 # add/modify
-      door_marker.type = 10 #mesh resource
-      door_marker.mesh_resource = "package://dr_phil_gazebo//models//door-model/Door.dae"
-      door_marker.pose.position.x = 3.183 
-      door_marker.pose.position.y = -4.09
-      #door_marker.pose.position.z = 3
-      door_marker.pose.orientation.w = 1
-      door_marker.color.a = 1
-      door_marker.color.b= 1
-      door_marker.color.r= 1
-      door_marker.color.g= 1
-      door_marker.scale.x = 0.001
-      door_marker.scale.y = 0.001
-      door_marker.scale.z = 0.001
-      door_marker.lifetime = rospy.Duration(10)
-      door_marker.mesh_use_embedded_materials = True
-      return door_marker
-
-  def visualise_spray_direction(self,points, end_points):
-      arrows = MarkerArray()
-      for i in range(0,len(points)):
-          point_camera = Marker()
-          arrow = [] 
-          arrow.append(points[i])
-          arrow.append(end_points[i])
-          point_camera.header.frame_id = "camera_rgb_frame"
-          point_camera.header.stamp = rospy.Time.now()
-          point_camera.id = 0
-          point_camera.type = 0 # arrow
-          point_camera.action = 0 # add/modify
-          point_camera.points = arrow
-          point_camera.pose.orientation.w = self.spray_origin_poses.poses[i].orientation.w
-          point_camera.pose.orientation.x = self.spray_origin_poses.poses[i].orientation.x
-          point_camera.pose.orientation.y = self.spray_origin_poses.poses[i].orientation.y
-          point_camera.pose.orientation.z = self.spray_origin_poses.poses[i].orientation.z
-          point_camera.color.a = 0.5
-          point_camera.color.g = 1 
-          point_camera.scale.x = 0.01
-          point_camera.scale.y = 0.01
-          point_camera.scale.z = 0.01
-          point_camera.ns = "Goal-%u"%i
-          point_camera.lifetime = rospy.Duration(10)
-          
-          arrows.markers.append(point_camera) 
-      return arrows
-    
 
   def create_point_from_vec(self,vec,id):
       pnt = Marker()
@@ -392,8 +255,10 @@ class TestYOLO:
       return door_marker
 
   def visualise(self):
-        
+
+    print(self.point)
     point_np = np.array([[self.point.x + (self.point.width/2)],[self.point.y + (self.point.height/2)]])
+    print(point_np)
 
     camera_ray = self.camera.get_ray_through_image(point_np)
 
@@ -409,19 +274,9 @@ class TestYOLO:
     camera_lidar_mrkr.header.frame_id = self.lidar_frame
 
     (point3d,normal) = localize_pixel(point_np,self.camera,self.lidar,self.scan)
+    print(point3d)
 
-    if point3d is not None:
-      spray_origin, spray_endpoints = self.create_spray_path_points(point3d, normal, camera_ray_robot)
-
-
-
-    #Publish pose results
-    self.spray_origin_pub.publish(self.spray_origin_poses)
-    self.spray_endpoints_pub.publish(self.spray_endpoints_poses)
-
-
-
-    
+  
 
     if point3d is not None:
         point3dmrkr = self.create_point_from_vec(point3d,2) 
@@ -434,32 +289,19 @@ class TestYOLO:
 
     print(point3d)
 
-    door_estimated_topic = 'door_visualisation'
-    self.door_pub = rospy.Publisher(door_estimated_topic, Marker, queue_size=10)
-    door_marker = self.display_door_and_handle(2)
-    self.door_pub.publish(door_marker)
-
-
-    spray_topic = 'spray_path_visualisation'
-    self.vis_pub = rospy.Publisher(spray_topic, Marker, queue_size=100)
-    rospy.sleep(2)
-    point_camera = self.configurate_rviz_marker(spray_origin)
-    self.vis_pub.publish(point_camera)
-  
-    
-    spray_direction_topic = 'spray_direction_visualisation'
-    self.vis_arrow_pub = rospy.Publisher(spray_direction_topic, MarkerArray, queue_size=100)
-    rospy.sleep(2)
-    path_direction = self.visualise_spray_direction(spray_origin,spray_endpoints)
-    self.vis_arrow_pub.publish(path_direction)
-
-    
-    print("all good")
-
+    if point3d is not None:
+        #Publish handle point results as an array of numbers 
+        handle3D_array = Float64MultiArray()
+        handle3D_array.data = point3d
+        self.handle3D_pub.publish(handle3D_array)
+    #Publish normal vector results as array of numbers
+    if normal is not None:
+        normal_array = Float64MultiArray()
+        normal_array.data = normal.dir
+        self.normal_pub.publish(normal_array)
 
 
     
-
       
 
   def spin(self):
