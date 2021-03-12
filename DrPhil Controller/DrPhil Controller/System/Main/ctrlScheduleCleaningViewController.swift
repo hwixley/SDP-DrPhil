@@ -46,6 +46,10 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        wdStartPicker.minuteInterval = 15
+        wdEndPicker.minuteInterval = 15
+        weStartPicker.minuteInterval = 15
+        weEndPicker.minuteInterval = 15
         numRoundsWDTextField.delegate = self
         numRoundsWETextField.delegate = self
         weekdaysStartTextField.delegate = self

@@ -32,6 +32,7 @@ class ctrlReturnViewController: UIViewController, UITextFieldDelegate {
         segmentControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .selected)
         segmentControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
         self.setupDPbounds()
+        dp.minuteInterval = 15
     }
     
     //MARK: Actions
