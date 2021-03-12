@@ -1,0 +1,3 @@
+<launch>
+ <node pkg="dr_phil_hardware" name="handle_localizer" type="handle_localizer.py"/>
+</launch>

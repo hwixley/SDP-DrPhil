@@ -1,0 +1,9 @@
+#goal
+geometry_msgs/PoseArray ee_poses 
+float64[] wait_times 
+---
+#result
+bool success 
+---
+#feedback
+int64 index 

@@ -59,6 +59,7 @@
   <depend>joint_state_publisher</depend>
   <depend>effort_controllers</depend>
   <depend>joint_trajectory_controller</depend>
+  <depend>moveit</depend>
 
   <build_depend>rostest</build_depend>
   <test_depend>rosunit</test_depend>

@@ -18,7 +18,7 @@ class px100JointControllerMerger():
         self.elbow_pub = rospy.Publisher("/elbow_controller/command",Float64,queue_size=10)
         self.wrist_pub = rospy.Publisher("/wrist_angle_controller/command",Float64,queue_size=10)
         self.fingerL_pub = rospy.Publisher("/left_finger_controller/command",Float64,queue_size=10)
-        self.fingerR_pub = rospy.Publisher("/right_finger_controller/command",Float64,queue_size=10)
+        # self.fingerR_pub = rospy.Publisher("/right_finger_controller/command",Float64,queue_size=10)
         
 
         self.state = [0,0,0,0,0,0]
@@ -73,7 +73,7 @@ class px100JointControllerMerger():
         
         self.fingerL_pub.publish(l_finger_pos)
         # right finger's range of motion is exactly opposite to that of l
-        self.fingerR_pub.publish(-l_finger_pos)
+        # self.fingerR_pub.publish(-l_finger_pos)
 
 
 
