@@ -2,13 +2,13 @@
 import math
 import numpy as np
 
-#from visualization_msgs.msg import Marker
-#from visualization_msgs.msg import MarkerArray
-#from geometry_msgs.msg import Point
-#import resource_retriever as Retriever
-#import rospy
+from visualization_msgs.msg import Marker
+from visualization_msgs.msg import MarkerArray
+from geometry_msgs.msg import Point
+import resource_retriever as Retriever
+import rospy
 
-#from dr_phil_hardware.vision.localisation import *
+from dr_phil_hardware.vision.localisation import *
 #from dr_phil_hardware.vision.vision_handle_axis_algorithm import define_handle_features_heursitic
  
 
@@ -256,7 +256,7 @@ def get_coords_and_vectors(handle_center, vector, output_is_vector):
     coords_and_vectors = np.empty(((len(z_coords) * xy_coords.shape[1]), 6))
 
     if output_is_vector:
-        vectors = calc_vectors(handle_center, vector)
+        vectors = calc_vectors(vector)
         row = 0
         for a in range(xy_coords.shape[1]):
             for s in range(len(z_coords)):
@@ -280,7 +280,7 @@ def get_coords_and_vectors(handle_center, vector, output_is_vector):
 
                 row += 1
 
-    coords_and_vectors[:, 0:3] = coords_and_vectors[:, 0:3] * 0.001  # Convert to metres
+    coords_and_vectors[:, 0:6] = coords_and_vectors[:, 0:6] * 0.001  # Convert to metres
 
     return coords_and_vectors
 
