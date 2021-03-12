@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="NhX-Py-FA6">
-                                <rect key="frame" x="0.0" y="64" width="414" height="790"/>
+                                <rect key="frame" x="0.0" y="64" width="414" height="778"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome to the Dr Phil Controller!" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HXF-Fe-ujb">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="74.5"/>
@@ -26,10 +26,10 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="249" verticalHuggingPriority="249" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="UIF-39-FLc">
-                                        <rect key="frame" x="0.0" y="114.5" width="414" height="475.5"/>
+                                        <rect key="frame" x="0.0" y="114.5" width="414" height="463.5"/>
                                     </imageView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="APj-ps-72S">
-                                        <rect key="frame" x="0.0" y="630" width="414" height="160"/>
+                                        <rect key="frame" x="0.0" y="618" width="414" height="160"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XH2-Xb-Tqz">
                                                 <rect key="frame" x="0.0" y="0.0" width="414" height="70"/>
@@ -66,7 +66,7 @@
                         </subviews>
                         <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="NhX-Py-FA6" secondAttribute="bottom" constant="8" id="N1w-59-zCH"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="NhX-Py-FA6" secondAttribute="bottom" constant="20" id="N1w-59-zCH"/>
                             <constraint firstItem="NhX-Py-FA6" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="RRb-FN-L6W"/>
                             <constraint firstAttribute="trailing" secondItem="NhX-Py-FA6" secondAttribute="trailing" id="bLs-0r-0ZZ"/>
                             <constraint firstItem="NhX-Py-FA6" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="vh7-dw-fec"/>
