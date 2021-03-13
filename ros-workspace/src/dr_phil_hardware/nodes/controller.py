@@ -150,9 +150,8 @@ class Controller:
         disinfect_doors = create_disinfect_doors_in_map(handle_pose_src=Controller.HANDLE_POSE_SOURCE,
             spray_path_src=Controller.SPRAY_PATH_SOURCE,
             map_path=map_path,
-            distance_from_door=0.33)
-        
-        disinfect_guard.add_children([map_exists,disinfect_doors])
+            distance_from_door=0.45)
+        disinfect_guard.add_children([map_exists,py_trees.decorators.OneShot(disinfect_doors)])
 
 
 
