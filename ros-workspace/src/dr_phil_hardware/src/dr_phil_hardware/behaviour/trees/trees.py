@@ -3,7 +3,7 @@
 from py_trees.blackboard import Blackboard
 from dr_phil_hardware.arm_interface.command_arm import ArmCommander, MoveGroup
 import py_trees
-from dr_phil_hardware.behaviour.leafs.ros import CallService, DynamicReconfigure, PublishTopic,RunRos,MessageChanged,ActionClientConnectOnInit,CreateMoveitTrajectoryPlan,ExecuteMoveItPlan
+from dr_phil_hardware.behaviour.leafs.ros import CallService, CreateMoveItMove, DynamicReconfigure, PublishTopic,RunRos,MessageChanged,ActionClientConnectOnInit,CreateMoveitTrajectoryPlan,ExecuteMoveItPlan
 from dr_phil_hardware.behaviour.leafs.general import ClosestObstacle, Lambda,SetBlackboardVariableCustom,CheckFileExists
 from dr_phil_hardware.behaviour.decorators import HoldStateForDuration
 import operator
@@ -77,7 +77,7 @@ def create_explore_frontier_and_save_map(map_path=None,timeout=120,no_data_timeo
     """
     sequence = py_trees.composites.Sequence()
 
-    neutral_pos = [0,0,0,0,0,0] # [0,0,-1.57,1.57,-1.57,-1]
+    neutral_pos = [0,0,-1.5,1.5,-1.5,0]
     resetArmPosition = py_trees.decorators.OneShot(
         create_set_positions_arm(neutral_pos,name="clearArmPosition"))
 
@@ -166,6 +166,8 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,map_path=None,d
 
     wait = py_trees.timers.Timer(duration=2)
 
+    reset_arm = create_set_positions_arm([0,0,-1.5,1.5,-1.5,0],name="resetArm")
+
     localize = create_localize_robot()
 
 
@@ -195,7 +197,7 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,map_path=None,d
     
     execute_spray_sequence = create_execute_spray_trajectory(bb2bufferSpray)
 
-    sequence.add_children([wait,localize,await_targets,wait,snapshot_target,move_to_door,execute_spray_sequence])
+    sequence.add_children([wait,reset_arm,localize,await_targets,wait,snapshot_target,move_to_door,execute_spray_sequence])
 
     parallel.add_children([load_map,start_disinfection_nodes,sequence])
 
@@ -363,11 +365,33 @@ def create_execute_spray_trajectory(target_pose_src):
 
     check_not_completed = Lambda("check_not_completed",check)
 
-    create_plan = CreateMoveitTrajectoryPlan("planNextPoseTraj",
-        MoveGroup.ARM,0.5,
+    plan = py_trees.composites.Selector()
+
+    create_trajectory_plan = CreateMoveitTrajectoryPlan("planTrajectory",
+        MoveGroup.ARM,0.9,
         pose_frame="base_link",
         pose_target_include_only_idxs=[0],
         )
+
+    create_lenient_trajectory_plan = CreateMoveitTrajectoryPlan("planTrajectoryLenient",
+        MoveGroup.ARM,0.6,
+        pose_frame="base_link",
+        pose_target_include_only_idxs=[0],
+        )
+
+    create_p2p_plan = CreateMoveItMove("planP2PMove",
+        MoveGroup.ARM,
+        pose_frame="base_link",
+        goal_tolerance=0.01,
+        )
+
+    create_p2p_plan_lenient = CreateMoveItMove("planP2PMoveLenient",
+        MoveGroup.ARM,
+        pose_frame="base_link",
+        goal_tolerance=0.5,
+        )
+
+    plan.add_children([create_trajectory_plan,create_lenient_trajectory_plan,create_p2p_plan,create_p2p_plan_lenient])
 
     execute_plan = ExecuteMoveItPlan("eeToNextPoint",MoveGroup.ARM)
 
@@ -386,7 +410,7 @@ def create_execute_spray_trajectory(target_pose_src):
 
     remove_pose = Lambda("popPose",remove)
 
-    traj_sequence.add_children([check_not_completed,create_plan,execute_plan,remove_pose])
+    traj_sequence.add_children([check_not_completed,plan,execute_plan,remove_pose])
     traj_sequence = py_trees.decorators.Condition(traj_sequence,status=py_trees.Status.FAILURE)
 
     spray.add_children([move_target,traj_sequence])

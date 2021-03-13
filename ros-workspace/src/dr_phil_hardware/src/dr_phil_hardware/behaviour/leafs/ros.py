@@ -516,6 +516,9 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
         self.thread = None
         self.planning_complete = False
         self.waypoints = None 
+        self.waypoints_hash = None 
+        
+        self.ran = False 
 
     def initialise(self):
         self.fraction = None
@@ -524,34 +527,49 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
         self.thread = None
         self.waypoints = None
 
+
         super().initialise()
 
 
 
     def update(self):
+        if self.ran:
+            waypoints_new = self.blackboard.get(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE)
+            if len(waypoints_new.poses) == self.waypoints_hash:
+                return py_trees.Status.FAILURE
+        
+        
         # if planning hasn't started
         if not self.thread:
             # get waypoints 
             self.waypoints : PoseArray = copy.deepcopy(self.blackboard.get(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE))
-            
+            self.waypoints_hash = len(self.waypoints.poses)
+
             if not self.waypoints:
                     self.feedback_message = "No waypoints at {}".format(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE)
+                    self.ran = True
                     return py_trees.Status.FAILURE
             elif len(self.waypoints.poses) <= 0:
                     self.feedback_message = "Empty waypoints list"
+                    self.ran = True
                     return py_trees.Status.FAILURE
-            elif isinstance(self.waypoints,PoseArray):
+
+
+            if isinstance(self.waypoints,PoseArray):
 
                 if self.include_idxs:
                     waypoints_new_poses = [self.waypoints.poses[x] for x in self.include_idxs if len(self.waypoints.poses) -1 >= x]
                     self.waypoints.poses = waypoints_new_poses
-            
+
                 # start planning
-                self.thread = threading.Thread(target= self.__blocking_plan,args = (self.waypoints,))
+
+                self.thread = threading.Thread(target= self.blocking_plan,args = (self.waypoints,))
                 self.thread.start()
+
                 return py_trees.Status.RUNNING
             else:
                 self.feedback_message = "Waypoints is not of the right type"
+                self.ran=True
                 return py_trees.Status.FAILURE
 
         # running planning
@@ -565,10 +583,12 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
             # check it's valid
             if self.fraction < self.fraction_threshold:
                 self.feedback_message = "Fraction too low"
+                self.ran = True
                 return py_trees.Status.FAILURE
             else:
                 self.feedback_message = "Found valid plan"
                 # success
+                self.ran = True
                 self.blackboard.set(CreateMoveitTrajectoryPlan.PLAN_TARGET,self.trajectory)
                 return py_trees.Status.SUCCESS
 
@@ -579,7 +599,7 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
 
         super().terminate(new_status)
 
-    def __blocking_plan(self,waypoints : PoseArray):
+    def blocking_plan(self,waypoints : PoseArray):
         """ starts planning, and blocks thread """
         #TODO: check for race conditions on terminate, and anotehr startup swiftly after
         assert(isinstance(waypoints,PoseArray))
@@ -588,6 +608,31 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
         ac.set_pose_planning_frame(self.move_group,self.pose_frame)
 
         (self.trajectory,self.fraction) = ac.plan_smooth_path(self.move_group,[x for x in waypoints.poses])
+        sys.exit()
+
+class CreateMoveItMove(CreateMoveitTrajectoryPlan):
+    """ creates a plan for the given move group to move the current state tothe first joint given on the blackboard under "moveit/pose_targets" as (:obj:`PoseArray`) message, fails if goal is too bad according to tolerance values.
+        saves plan on blackboard at "moveit/plan" 
+    """
+
+    def __init__(self, name, move_group: MoveGroup, pose_frame,goal_tolerance=1e-2):
+
+        self.goal_tolerance = goal_tolerance
+        super().__init__(name, move_group, fraction_threshold=-1, pose_frame=pose_frame,pose_target_include_only_idxs=[0])
+
+    def blocking_plan(self, waypoints: PoseArray):
+        ac = ArmCommander()
+        ac.clear_state(self.move_group)
+        ac.set_pose_planning_frame(self.move_group,self.pose_frame)
+        ac.set_pose_target(self.move_group,waypoints.poses[0])
+        ac.set_curr_state_as_start_state(self.move_group)
+        ac.set_goal_tolerance(self.move_group,self.goal_tolerance)
+        (success,plan,planning_time,errorCode) = ac.plan()
+        if success:
+            self.trajectory = plan
+        else:
+            self.trajectory = None
+            self.fraction = 999 # impossible value
         sys.exit()
 
 class ExecuteMoveItPlan(py_trees.Behaviour):
