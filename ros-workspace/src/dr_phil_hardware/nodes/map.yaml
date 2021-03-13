@@ -1,4 +1,4 @@
-image: map.pgm
+image: /home/makspll/Git/SDP-DrPhil/ros-workspace/src/dr_phil_hardware/nodes/map.pgm
 resolution: 0.050000
 origin: [-10.000000, -10.000000, 0.000000]
 negate: 0
