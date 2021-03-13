@@ -5,7 +5,7 @@
   <arg name="x_pos" default="-2.0"/>
   <arg name="y_pos" default="-0.5"/>
   <arg name="z_pos" default="0.0"/>
-  <arg name="world" default="decoratedHouse-wDoors"/>
+  <arg name="world" default="smallRoom-wDoors"/>
   <arg name="launch_rviz" default="false"/>
   <arg name="headless" default="false"/>
   <arg name="gui" default="$(eval not arg('headless'))"/>

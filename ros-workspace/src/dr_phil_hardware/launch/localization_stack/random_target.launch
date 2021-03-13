@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="dr_phil_hardware" name="target_generator" type="target_generator"/>
+</launch>
