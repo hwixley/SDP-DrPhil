@@ -207,9 +207,9 @@ def get_position_and_orientation_of_spray_points(handle3D,normal_vector, robot_f
 
             spray_ray = Ray(data[0:3,None],data[3:6,None] - data[0:3,None],length=1)
 
-            thetaHandle =- angle_between_pi(spray_ray.get_vec(), np.array([[1],[0],[0]]))
+            thetaHandle =- angle_between_pi(spray_ray.get_vec(), np.array([[1],[0],[0]]),plane_normal=np.array([[0],[0],[1]]))
             # TODO: for some reason one of the sides on the T points pi/4 rads away from handle center
-            
+
             orientationHandle = t.quaternion_from_matrix(t.rotation_matrix(thetaHandle,np.array([0,0,1])))
             #Target points for arm to reach to
             point_pose = Pose()

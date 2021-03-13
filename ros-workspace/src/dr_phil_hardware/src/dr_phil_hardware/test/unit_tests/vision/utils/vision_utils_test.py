@@ -4,7 +4,7 @@ import unittest
 import sys
 import numpy as np
 from dr_phil_hardware.vision.ray import Ray
-from dr_phil_hardware.vision.utils import subtract,intersect,invert_homog_mat,interpolated_ray,angle_between
+from dr_phil_hardware.vision.utils import subtract,intersect,invert_homog_mat,interpolated_ray,angle_between,angle_between_pi
 from dr_phil_hardware.test.test_utils.test_utils import assertRayEquals
 
 import math
@@ -183,9 +183,35 @@ class VisionUtilsTest(unittest.TestCase):
         
     def test_angle_between_3_quadrant(self):
         self.assertAlmostEqual((math.pi*3)/4,angle_between(np.array([[1],[0],[0]]),np.array([[-0.5],[-0.5],[0]]) ))
+   
+    def test_angle_between_4_3_quadrant(self):
+        normal = np.array([[0],[0],[1]])
+        self.assertAlmostEqual(math.pi,angle_between_pi(np.array([[1],[0],[0]]),np.array([[-1],[0],[0]]) ,normal))
 
-    def test_angle_between_4_quadrant(self):
-        self.assertAlmostEqual(math.pi/4,angle_between(np.array([[1],[0],[0]]),np.array([[0.5],[-0.5],[0]]) ))
+    def test_angle_between_pi_4_quadrant(self):
+        normal = np.array([[0],[0],[1]])
+        self.assertAlmostEqual((math.pi * 7)/4,angle_between_pi(np.array([[1],[0],[0]]),np.array([[0.5],[-0.5],[0]]) ,normal))
+  
+    def test_angle_between_pi_1_2_quadrant(self):
+        normal = np.array([[0],[0],[1]])
+        self.assertAlmostEqual(math.pi/2,angle_between_pi(np.array([[1],[0],[0]]),np.array([[0],[1],[0]]) ,normal))
+
+    def test_angle_between_pi_1_quadrant(self):
+        normal = np.array([[0],[0],[1]])
+        self.assertAlmostEqual(0,angle_between_pi(np.array([[1],[0],[0]]),np.array([[1],[0],[0]]) ,normal))
+
+    def test_angle_between_pi_2_quadrant(self):
+        normal = np.array([[0],[0],[1]])
+        self.assertAlmostEqual((math.pi*3)/4,angle_between_pi(np.array([[1],[0],[0]]),np.array([[-0.5],[0.5],[0]]) ,normal))
+        
+    def test_angle_between_pi_3_quadrant(self):
+        normal = np.array([[0],[0],[1]])
+        self.assertAlmostEqual((math.pi*5)/4,angle_between_pi(np.array([[1],[0],[0]]),np.array([[-0.5],[-0.5],[0]]) ,normal))
+
+    def test_angle_between_pi_4_3_quadrant(self):
+        normal = np.array([[0],[0],[1]])
+        self.assertAlmostEqual(math.pi,angle_between_pi(np.array([[1],[0],[0]]),np.array([[-1],[0],[0]]) ,normal))
+
 
 if __name__ == "__main__":
     import rosunit

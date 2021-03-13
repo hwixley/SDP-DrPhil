@@ -3,17 +3,23 @@
 from py_trees.blackboard import Blackboard
 from dr_phil_hardware.arm_interface.command_arm import ArmCommander, MoveGroup
 import py_trees
-from dr_phil_hardware.behaviour.leafs.ros import PublishTopic,RunRos,MessageChanged,ActionClientConnectOnInit,CreateMoveitTrajectoryPlan,ExecuteMoveItPlan
+from dr_phil_hardware.behaviour.leafs.ros import CallService, DynamicReconfigure, PublishTopic,RunRos,MessageChanged,ActionClientConnectOnInit,CreateMoveitTrajectoryPlan,ExecuteMoveItPlan
 from dr_phil_hardware.behaviour.leafs.general import ClosestObstacle, Lambda,SetBlackboardVariableCustom,CheckFileExists
 from dr_phil_hardware.behaviour.decorators import HoldStateForDuration
 import operator
 from geometry_msgs.msg import Twist, PoseArray, Pose, PoseStamped
 import os
 from std_msgs.msg import Float64MultiArray
+from py_trees.common import Status
 import rospy 
 from move_base_msgs.msg import MoveBaseAction,MoveBaseGoal
+from std_srvs.srv import Empty,EmptyRequest
 import tf.transformations as t 
+from dr_phil_hardware.vision.utils import quat_from_yaw
 import numpy as np
+from dr_phil_hardware.srv import GenerateTarget,GenerateTargetRequest,GenerateTargetResponse
+import math 
+from move_base.cfg import MoveBaseConfig
 
 def create_exploration_completed_check(duration=60):
     """ creates subtree which returns SUCCESS if no data has been received from the exploration nodes for the given duration.
@@ -120,9 +126,9 @@ def create_explore_frontier_and_save_map(map_path=None,timeout=120,no_data_timeo
 
     sequence.add_children([resetArmPosition,parallel_process])
 
-    timeout = py_trees.decorators.Timeout(sequence,duration=timeout)
+    timeoutN = py_trees.decorators.Timeout(sequence,duration=timeout)
 
-    return timeout
+    return timeoutN
 
 
 
@@ -138,6 +144,9 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,map_path=None,d
     """
 
     assert(not ".yaml" in map_path  or not ".pgm" in map_path)
+
+    bb2bufferPose = "{}/handle_pose".format(name)
+    bb2bufferSpray = "{}/spray_poses".format(name)
 
     # ------ start nodes ----------
     parallel = py_trees.composites.Parallel()
@@ -155,19 +164,38 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,map_path=None,d
 
     sequence = py_trees.composites.Sequence()
 
-    wait_for_targets = Lambda("waitForHandlePose",
-        lambda : py_trees.Status.SUCCESS if 
-            py_trees.Blackboard().get(handle_pose_src) is not None 
-                else py_trees.Status.RUNNING)
+    wait = py_trees.timers.Timer(duration=2)
 
-    wait_for_spray = Lambda("waitForSprayPoses",
-        lambda : py_trees.Status.SUCCESS if 
-            py_trees.Blackboard().get(handle_pose_src) is not None 
-                else py_trees.Status.RUNNING)
+    localize = create_localize_robot()
 
-    move_to_door = create_move_in_front_of_door(handle_pose_src,spray_path_src,distance_from_door=distance_from_door,name="moveToDoor")
 
-    sequence.add_children([wait_for_targets,wait_for_spray,move_to_door])
+    def snapshot_targets(snapshot=False):
+        handle = py_trees.Blackboard().get(handle_pose_src)
+        spray_path = py_trees.Blackboard().get(spray_path_src)
+
+        if handle is not None and spray_path is not None:
+            # save
+            if snapshot:
+                py_trees.Blackboard().set(bb2bufferSpray,spray_path)
+                py_trees.Blackboard().set(bb2bufferPose,handle)
+            return py_trees.Status.SUCCESS
+        else:
+            return py_trees.Status.RUNNING
+
+    await_targets = Lambda("awaitTargets",snapshot_targets)
+
+    wait = py_trees.timers.Timer(name="hold",duration=2)
+    snapshot_target = Lambda("snapshotTargets",lambda:snapshot_targets(snapshot=True))
+
+
+
+    
+    move_to_door = create_move_in_front_of_door(bb2bufferPose,bb2bufferSpray,distance_from_door=distance_from_door,name="moveToDoor")
+
+    
+    execute_spray_sequence = create_execute_spray_trajectory(bb2bufferSpray)
+
+    sequence.add_children([wait,localize,await_targets,wait,snapshot_target,move_to_door,execute_spray_sequence])
 
     parallel.add_children([load_map,start_disinfection_nodes,sequence])
 
@@ -295,9 +323,6 @@ def create_face_closest_obstacle(min_distance = 0.5,face_angle=0):
     return root
 
 
-
-
-
 def create_move_base_to_reach_pose(target_pose_src,name="reachTargetPos"):
     """ reaches first target in the given pose array on the blackboard """
 
@@ -312,6 +337,61 @@ def create_move_base_to_reach_pose(target_pose_src,name="reachTargetPos"):
                             override_feedback_message_on_running="moving to reach target")
 
     return move_base
+
+
+
+def create_execute_spray_trajectory(target_pose_src):
+
+    spray = py_trees.Sequence()
+
+    def process_pose():
+        return py_trees.Blackboard().get(target_pose_src)
+        
+    move_target = SetBlackboardVariableCustom(
+            variable_name=CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE,
+            variable_value=process_pose,
+            name="moveTarget2BB")
+    
+    traj_sequence =  py_trees.composites.Sequence()
+
+    def check():
+        poses : PoseArray = py_trees.Blackboard().get(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE)
+        if len(poses.poses) != 0:
+            return py_trees.Status.SUCCESS
+        else: # not completed
+            return py_trees.Status.FAILURE 
+
+    check_not_completed = Lambda("check_not_completed",check)
+
+    create_plan = CreateMoveitTrajectoryPlan("planNextPoseTraj",
+        MoveGroup.ARM,0.5,
+        pose_frame="base_link",
+        pose_target_include_only_idxs=[0],
+        )
+
+    execute_plan = ExecuteMoveItPlan("eeToNextPoint",MoveGroup.ARM)
+
+    def remove():
+        poses : PoseArray = py_trees.Blackboard().get(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE) 
+        
+        try:
+            rospy.logerr("++++++")
+            rospy.logerr(poses)
+            poses.poses.pop(0)
+            rospy.logerr(poses)
+        except:
+            return py_trees.Status.FAILURE
+        py_trees.Blackboard().set(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE,poses)
+        return py_trees.Status.SUCCESS
+
+    remove_pose = Lambda("popPose",remove)
+
+    traj_sequence.add_children([check_not_completed,create_plan,execute_plan,remove_pose])
+    traj_sequence = py_trees.decorators.Condition(traj_sequence,status=py_trees.Status.FAILURE)
+
+    spray.add_children([move_target,traj_sequence])
+
+    return spray
 
 def create_raise_ee_to_first_target_pose_z(target_pose_src="target_poses"):
     """ takes first target in moveit/target_poses and raises gripper to match height (plans in base_link) """
@@ -361,15 +441,24 @@ def create_move_in_front_of_door(handle_pose_src,spray_path_src,distance_from_do
     def process_pose():
         pose : Pose = py_trees.Blackboard().get(handle_pose_src)
         if pose:
-            (a,b,c) = t.euler_from_quaternion([pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w])
+            handle_quat = [pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w]
+
+            
+            (a,b,c) = t.euler_from_quaternion(handle_quat)
             mat = t.euler_matrix(a,b,c)
-            rospy.logerr(mat)
-            vec =  (mat[:,:-1] @ np.array([[1],[0],[0]])) * distance_from_door
+            vec =  (mat[:,:-1] @ np.array([[1],[0],[0]])* distance_from_door )
+
             
             pose.position.x += vec[0]
             pose.position.y += vec[1]
             pose.position.z += vec[2]
-            pose.orientation.w *= -1
+            
+            rot = quat_from_yaw(math.pi)
+            
+            new_quat = t.quaternion_multiply(handle_quat,rot)
+            pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w = new_quat
+
+
             ps = PoseStamped()
             ps.pose = pose
             ps.header.frame_id = "base_link"
@@ -382,18 +471,80 @@ def create_move_in_front_of_door(handle_pose_src,spray_path_src,distance_from_do
         else:
             return None
 
-    wait = py_trees.timers.Timer(name="waitForNodes",duration=5)
     bb2target = "{}/target".format(name)
     move_target = SetBlackboardVariableCustom(
         variable_name=bb2target,
         variable_value=process_pose,
         name="moveTarget2BB")
+    
+    wait = py_trees.timers.Timer(duration=5)
+
+    disable_costmap_1 = DynamicReconfigure("disableGlobalCostmap","move_base/global_costmap/inflation_layer",{
+        "enabled":False
+    })
+
+    disable_costmap_2 = DynamicReconfigure("disableLocalCostmap","move_base/local_costmap/inflation_layer",{
+        "enabled":False
+    })
+
+    clear_costmaps = CallService("clearCostmaps","move_base/clear_costmaps",
+                                Empty,
+                                EmptyRequest(),
+                                blackboard_target="//trash")
 
     move_base = create_move_base_to_reach_pose(target_pose_src=bb2target)
 
     raise_ee = create_raise_ee_to_first_target_pose_z(spray_path_src)
 
-    return py_trees.composites.Sequence(name=name,children=[wait,move_target,move_base,raise_ee])
+    return py_trees.composites.Sequence(name=name,children=[move_target,wait,disable_costmap_1,disable_costmap_2,clear_costmaps,move_base,raise_ee])
+
+
+def create_localize_robot(name="localizeRobot"):
+    """ generates random walk for 10 seconds and initializes from unknown location using amcl, requires the navigation stack to be running"""
+
+    bb2target = "{}/".format(name)
+
+    sequence = py_trees.composites.Sequence(name)
+
+    # init_amcl = CallService("initGlobalLocalization",
+    #                 service_topic="/global_localization",
+    #                 service_type=Empty,
+    #                 service_content=EmptyRequest(),
+    #                 blackboard_target="//trash")
+
+
+    # walk_sequence = py_trees.composites.Sequence()
+
+
+    # def process_response(x : GenerateTargetResponse):
+    #     if x.success:
+    #         return x.goal
+    #     else:
+    #         raise Exception("Target was not generated") 
+
+    # get_random_pos = CallService("getRandomTarget",
+    #     service_topic="/target_generator/generate_nav_target",
+    #     service_type=GenerateTarget,
+    #     service_content=GenerateTargetRequest(),
+    #     blackboard_target=bb2target,
+    #     pre_process_callable=process_response)
+
+    # def get_pose():
+    #     return py_trees.Blackboard().get(bb2target)
+
+    # reach_pose = ActionClientConnectOnInit(name,
+    #                         MoveBaseAction,
+    #                         get_pose,
+    #                         action_namespace="/move_base",
+    #                         override_feedback_message_on_running="moving to reach target")
+
+    # walk_sequence.add_children([get_random_pos,reach_pose])
+
+    # random_walk = py_trees.decorators.Timeout(walk_sequence,duration=30)
+
+    # sequence.add_children([init_amcl,random_walk])
+    sequence.add_children([py_trees.behaviours.SuccessEveryN("dummy",1)])
+    return sequence
 
 import sys
 import inspect 

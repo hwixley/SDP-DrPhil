@@ -71,7 +71,7 @@ def localize_pixel(img_pos,camera : Camera,lidar : Lidar, scan : LaserScan) -> t
     cam_to_object_flat_length = np.linalg.norm(cam_to_object_flat)
 
     # angle from horizontal on camera ray
-    cam_ray_theta = angle_between_pi(cam_ray_lidar.get_vec(),cam_to_object_flat)
+    cam_ray_theta = angle_between_pi(cam_ray_lidar.get_vec(),cam_to_object_flat,plane_normal=np.array([[0],[0],[1]]))
 
     # length of original camera ray (knowing the length of its projection)
     # will fail if ray is pointing straight up or down

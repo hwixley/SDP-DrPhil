@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from move_base.cfg import MoveBaseConfig
 from dr_phil_hardware.behaviour.leafs.ros import CreateMoveitTrajectoryPlan
 from py_trees.visitors import SnapshotVisitor
 import rospy
@@ -7,21 +8,21 @@ import py_trees_ros
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import LaserScan
 from dr_phil_hardware.behaviour.leafs.general import CheckFileExists, SetBlackboardVariableCustom
-from dr_phil_hardware.behaviour.trees.trees import create_idle,create_explore_frontier_and_save_map,create_disinfect_doors_in_map
+from dr_phil_hardware.behaviour.trees.trees import create_idle,create_explore_frontier_and_save_map,create_disinfect_doors_in_map, create_localize_robot
 import functools 
 from visualization_msgs.msg import MarkerArray
 import os
 from py_trees import console 
 import json 
 from rospy.exceptions import ROSException
-from geometry_msgs.msg import Pose,PoseArray
+from geometry_msgs.msg import Pose,PoseArray,PoseStamped
 import sys
 
 class Controller:
     """ the controller responsible for dictating behaviours to dr-phil. Every node is to be controlled via this script and no node should command behaviours without going through the controller """
 
     SPRAY_PATH_SOURCE="spray_path/target_points"
-    HANDLE_POSE_SOURCE="spray_path/handle_pose"
+    HANDLE_POSE_SOURCE="handle_feature/pose"
 
     def __init__(self):
 
@@ -118,8 +119,8 @@ class Controller:
 
         handle2bb= py_trees_ros.subscribers.ToBlackboard(name="handle2bb",
                                                         topic_name=Controller.HANDLE_POSE_SOURCE,
-                                                        topic_type=Pose,
-                                                        blackboard_variables={Controller.HANDLE_POSE_SOURCE:None})
+                                                        topic_type=PoseStamped,
+                                                        blackboard_variables={Controller.HANDLE_POSE_SOURCE:"pose"})
 
         topics2bb.add_children([camera2bb,scan2bb,target2bb,handle2bb])
 
@@ -149,8 +150,8 @@ class Controller:
         disinfect_doors = create_disinfect_doors_in_map(handle_pose_src=Controller.HANDLE_POSE_SOURCE,
             spray_path_src=Controller.SPRAY_PATH_SOURCE,
             map_path=map_path,
-            distance_from_door=0.50)
-
+            distance_from_door=0.33)
+        
         disinfect_guard.add_children([map_exists,disinfect_doors])
 
 

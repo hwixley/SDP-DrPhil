@@ -1,4 +1,5 @@
 import threading
+from typing import Callable
 from numpy.core.fromnumeric import std
 import py_trees
 from py_trees.common import Status
@@ -16,6 +17,8 @@ from dr_phil_hardware.arm_interface.command_arm import ArmCommander
 import threading
 from moveit_msgs.msg import RobotTrajectory
 from geometry_msgs.msg import PoseArray 
+import dynamic_reconfigure
+import copy 
 
 try:
     from queue import Queue,LifoQueue, Empty
@@ -512,12 +515,14 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
         self.trajectory = None
         self.thread = None
         self.planning_complete = False
+        self.waypoints = None 
 
     def initialise(self):
         self.fraction = None
         self.trajectory = None
         self.planning_complete = False
         self.thread = None
+        self.waypoints = None
 
         super().initialise()
 
@@ -527,22 +532,22 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
         # if planning hasn't started
         if not self.thread:
             # get waypoints 
-            waypoints : PoseArray = self.blackboard.get(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE)
+            self.waypoints : PoseArray = copy.deepcopy(self.blackboard.get(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE))
             
-            if not waypoints:
+            if not self.waypoints:
                     self.feedback_message = "No waypoints at {}".format(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE)
                     return py_trees.Status.FAILURE
-            elif len(waypoints.poses) <= 0:
+            elif len(self.waypoints.poses) <= 0:
                     self.feedback_message = "Empty waypoints list"
                     return py_trees.Status.FAILURE
-            elif isinstance(waypoints,PoseArray):
+            elif isinstance(self.waypoints,PoseArray):
 
                 if self.include_idxs:
-                    waypoints_new_poses = [waypoints.poses[x] for x in self.include_idxs if len(waypoints.poses) -1 >= x]
-                    waypoints.poses = waypoints_new_poses
+                    waypoints_new_poses = [self.waypoints.poses[x] for x in self.include_idxs if len(self.waypoints.poses) -1 >= x]
+                    self.waypoints.poses = waypoints_new_poses
             
                 # start planning
-                self.thread = threading.Thread(target= self.__blocking_plan,args = (waypoints,))
+                self.thread = threading.Thread(target= self.__blocking_plan,args = (self.waypoints,))
                 self.thread.start()
                 return py_trees.Status.RUNNING
             else:
@@ -701,3 +706,113 @@ class ExecuteMoveItPlan(py_trees.Behaviour):
     def terminate(self, new_status):
         # TODO: halt arm commander
         return super().terminate(new_status)
+
+
+class CallService(py_trees.Behaviour):
+    """ calls a service and returns success if call was successfull """
+    def __init__(self, name,service_topic,service_type,service_content,blackboard_target,pre_process_callable : Callable[[object],object]=None, callable_none_is_failure=False):
+        """[summary]
+
+        Args:
+            name ([type]): [description]
+            service_topic ([type]): [description]
+            service_type ([type]): [description]
+            service_content ([type]): [description]
+            blackboard_target ([type]): [description]
+            pre_process_callable ([type], optional): [description]. Defaults to None. optional function to process the response before putting it on the blackboard, returning None here will be interpreted as Failure if none is failure is set. exceptions are failures by default
+        """
+        self.service_topic = service_topic
+        self.service_type = service_type    
+        self.service_content = service_content
+        self.blackboard_target = blackboard_target 
+        self.pre_process_callable = pre_process_callable
+        self.callable_none_is_failure = callable_none_is_failure
+        self.proxy = rospy.ServiceProxy(self.service_topic,self.service_type)
+        self.return_value = None
+        self.failed = False
+        self.thread = None
+        self.processing = False
+        self.exception = None
+        super().__init__(name=name)
+
+    def initialise(self):
+        self.return_value = None 
+        self.failed = False
+        self.thread = None 
+        self.processing = False 
+        self.exception = None
+        self.fail_exception = None
+
+        return super().initialise()
+
+    def __blocking_call(self,argument): 
+        # TODO: Race conditions on terminate on preempt followed by new initialize
+        try:
+            self.return_value = self.proxy.call(argument)
+        except Exception as E:
+            self.failed = True
+            self.exception = E
+            rospy.logfatal("ASDSDADSA\n|ASDASDASDSDA")
+            sys.exit(1)
+        sys.exit(0)
+
+    def update(self):
+        self.feedback_message = "Calling proxy.."
+
+        if not self.processing and self.return_value is None:
+
+            self.thread = threading.Thread(target=self.__blocking_call,args=(self.service_content,))
+            
+            self.thread.start()
+            self.processing = True 
+            return py_trees.Status.RUNNING
+
+        elif self.processing and self.return_value is None and self.failed == False:
+            return py_trees.Status.RUNNING
+        elif self.failed == True:
+            self.feedback_message = "Failed: {}".format(self.exception)
+            return py_trees.Status.FAILURE
+        else:
+
+            value = self.return_value
+            if callable(self.pre_process_callable):
+                try:
+                    value = self.pre_process_callable(value)
+                except Exception as E:
+                    self.feedback_message = "{}".format(E)
+                    return py_trees.Status.FAILURE
+     
+
+            if value is None and self.callable_none_is_failure:
+                return py_trees.Status.FAILURE
+            py_trees.Blackboard().set(self.blackboard_target,self.return_value)
+
+            return py_trees.Status.SUCCESS
+
+class DynamicReconfigure(py_trees.Behaviour):
+
+    def __init__(self, name,topic,update_dict):
+
+        self.topic = topic
+        self.update_dict = update_dict
+        super().__init__(name=name)
+
+
+    def callback(self,config):
+        self.feedback_message = str(config)
+    
+
+    def initialise(self):
+
+        return super().initialise()
+    
+    def update(self):
+        self.client = dynamic_reconfigure.client.Client(self.topic,timeout=10,config_callback=self.callback)
+        self.feedback_message = "updating configuration.."
+        if self.client is not None:
+            self.client.update_configuration(self.update_dict)
+            return py_trees.Status.SUCCESS
+        else:
+            self.feedback_message = "No client available"
+            return py_trees.Status.FAILURE
+
