@@ -2,12 +2,12 @@
 import math
 import numpy as np
 import rospy 
-import tf
+import  tf.transformations as t
 from geometry_msgs.msg import PointStamped,Point,PoseArray,Pose
 
 
 from dr_phil_hardware.vision.localisation import *
-
+from dr_phil_hardware.vision.utils import angle_between,angle_between_pi
 
 
 """
@@ -195,7 +195,6 @@ def get_position_and_orientation_of_spray_points(handle3D,normal_vector, robot_f
     spray_data = calculate_spray_path(Center,Direction)
     origin_points = []
     spray_direction = []
-
     #We want to convert the direction vectors we have to represent orientation. 
     #This will be done by taking the transformation from spray points to the direction pointed by end points in the vector AB
     #To further illustrate, origin_points are considered OA which are the points around the handles, spray direction as AB to represent vector 
@@ -205,14 +204,19 @@ def get_position_and_orientation_of_spray_points(handle3D,normal_vector, robot_f
     if spray_data is not None:
         for data in spray_data:
             #Calculate the orientation ; data[0:3] represents the points beside the handles and data[3:6] representing the "end" points or points on the same vertical line as pull-door handle
-            thetaHandle = angle_between_pi(np.array([data[0],data[1],data[2] ]), np.array([data[3],data[4],data[5] ]))
-            orientationHandle = tf.transformations.quaternion_from_matrix(tf.transformations.rotation_matrix(thetaHandle,np.array([ data[0],data[1] ,data[2] ])))
+
+            spray_ray = Ray(data[0:3,None],data[3:6,None] - data[0:3,None],length=1)
+
+            thetaHandle =- angle_between_pi(spray_ray.get_vec(), np.array([[1],[0],[0]]))
+            # TODO: for some reason one of the sides on the T points pi/4 rads away from handle center
+            
+            orientationHandle = t.quaternion_from_matrix(t.rotation_matrix(thetaHandle,np.array([0,0,1])))
             #Target points for arm to reach to
             point_pose = Pose()
             point = Point()
-            point.x = (data[0])  #in meters
-            point.y = (data[1])  #in meters
-            point.z = (data[2])  #in meters
+            point.x = spray_ray.origin[0] #in meters
+            point.y = spray_ray.origin[1] #in meters
+            point.z = spray_ray.origin[2] #in meters
             point_pose.position = point
             point_pose.orientation.x = orientationHandle[0]
             point_pose.orientation.y = orientationHandle[1]
@@ -226,10 +230,10 @@ def get_position_and_orientation_of_spray_points(handle3D,normal_vector, robot_f
             end_point.y = data[4] #in meters
             end_point.z = data[5] #in meters
             end_point_pose.position = end_point
-            end_point_pose.orientation.x = orientationHandle[0]
-            end_point_pose.orientation.y = orientationHandle[1]
-            end_point_pose.orientation.z = orientationHandle[2]
-            end_point_pose.orientation.w = orientationHandle[3]
+            end_point_pose.orientation.x = 0
+            end_point_pose.orientation.y = 0
+            end_point_pose.orientation.z = 0
+            end_point_pose.orientation.w = 1
 
 
             #Append pose results in a list to 
