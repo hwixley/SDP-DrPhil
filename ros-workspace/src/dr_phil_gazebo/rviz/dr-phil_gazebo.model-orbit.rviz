@@ -8,6 +8,7 @@ Panels:
         - /Status1
         - /DepthCloud1/Auto Size1
         - /Pose1
+        - /PoseArray1
       Splitter Ratio: 0.6029411554336548
     Tree Height: 374
   - Class: rviz/Selection
@@ -272,6 +273,7 @@ Visualization Manager:
         MarkerArray: true
         Odometry: true
         Polygon: true
+        Pose: true
         RobotModel: true
         TF: true
         Value: true
@@ -399,6 +401,7 @@ Visualization Manager:
         Odometry: true
         Polygon: true
         Pose: true
+        PoseArray: true
         RobotModel: true
         TF: true
         Value: true
@@ -425,6 +428,23 @@ Visualization Manager:
       Shaft Radius: 0.05000000074505806
       Shape: Arrow
       Topic: /move_base/current_goal
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Arrow Length: 0.30000001192092896
+      Axes Length: 0.30000001192092896
+      Axes Radius: 0.009999999776482582
+      Class: rviz/PoseArray
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.07000000029802322
+      Head Radius: 0.029999999329447746
+      Name: PoseArray
+      Queue Size: 10
+      Shaft Length: 0.23000000417232513
+      Shaft Radius: 0.009999999776482582
+      Shape: Arrow (3D)
+      Topic: /spray_path/target_points
       Unreliable: false
       Value: true
   Enabled: true
@@ -455,7 +475,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 5.188138961791992
+      Distance: 1.1495791673660278
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -463,9 +483,9 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -1.6927655935287476
-        Y: -0.22736284136772156
-        Z: 0.9233174324035645
+        X: 2.8132710456848145
+        Y: -4.348673343658447
+        Z: 2.1434085369110107
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
