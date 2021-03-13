@@ -9,7 +9,7 @@ import numpy as np
 from sensor_msgs.msg import CameraInfo, LaserScan
 from std_msgs.msg import Float64MultiArray
 import tf
-from geometry_msgs.msg import PointStamped,Point,PoseArray,Pose
+from geometry_msgs.msg import PointStamped,Point,PoseArray,Pose,PoseStamped
 from visualization_msgs.msg import Marker,MarkerArray
 from tf2_msgs.msg import TFMessage
 
@@ -22,7 +22,7 @@ from dr_phil_hardware.vision.camera import Camera
 from dr_phil_hardware.vision.lidar import Lidar
 from dr_phil_hardware.vision.ray import Ray
 from dr_phil_hardware.vision.localisation import localize_pixel
-from dr_phil_hardware.vision.utils import invert_homog_mat
+from dr_phil_hardware.vision.utils import invert_homog_mat, quat_from_yaw
 
 
 
@@ -58,7 +58,6 @@ class Handle3DTransformation:
         self.net, self.out, self.classes = load_network_and_classes(self.weights, self.cfg)
      
   
-        
         self.camera_info_sub = rospy.Subscriber("/camera_info",CameraInfo,callback=self.camera_info_callback)
         
         self.feature_pub = rospy.Publisher("/handle_feature/camera_points",MarkerArray,queue_size=10)
@@ -80,6 +79,7 @@ class Handle3DTransformation:
         #Initialise image publisher to send the calculated 3D world coordinates of handles from a camera image as well as normal to a vertical surface
         self.handle3D_pub = rospy.Publisher("/handle_feature/handle3D",Float64MultiArray,queue_size=10)
         self.normal_pub = rospy.Publisher("/handle_feature/normal",Float64MultiArray,queue_size=10)
+        self.handle_pose_pub = rospy.Publisher("/handle_feature/pose",PoseStamped,queue_size=10)
 
 
               
@@ -262,17 +262,32 @@ class Handle3DTransformation:
 
     print(point3d)
 
-    if point3d is not None:
+    if point3d is not None and normal is not None: # normal and point3d are either None together or actual numbers
         #Publish handle point results as an array of numbers 
         handle3D_array = Float64MultiArray()
         handle3D_array.data = point3d
         self.handle3D_pub.publish(handle3D_array)
-    #Publish normal vector results as array of numbers
-    if normal is not None:
+
+        #Publish normal vector results as array of numbers
+
         normal_array = Float64MultiArray()
         normal_array.data = normal.dir
         self.normal_pub.publish(normal_array)
 
+        # publish handle pose (facing inwards)
+        hps = PoseStamped()
+        hps.header.frame_id = self.robot_frame
+        hp = Pose()
+        hps.pose = hp
+
+        hp.position.x,hp.position.y,hp.position.z = point3d[0:3]
+        hp.orientation.x,hp.orientation.y,hp.orientation.z,hp.orientation.w = quat_from_yaw(
+            -angle_between_pi(
+                normal.get_vec(),
+                np.array([[1],[0],[0]]),
+                plane_normal=np.array([[0],[0],[1]])))
+
+        self.handle_pose_pub.publish(hps)
 
     
       
@@ -311,10 +326,12 @@ def main(args):
     
     rate = rospy.Rate(10)
 
-    while not rospy.is_shutdown():
-            camera_parser.spin()
-            rate.sleep()
-    
+    try:
+        while not rospy.is_shutdown():
+                camera_parser.spin()
+                rate.sleep()
+    except:
+        cv2.destroyAllWindows()
     cv2.destroyAllWindows()
 
 # run the code if the node is called
