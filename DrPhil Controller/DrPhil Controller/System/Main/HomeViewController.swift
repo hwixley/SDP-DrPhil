@@ -10,17 +10,18 @@ import UIKit
 
 class HomeViewController: UIViewController {
 
-    //MARK: Properties
+    //MARK: UI Components
     @IBOutlet weak var shiftLabel: UILabel!
     @IBOutlet weak var roundsLabel: UILabel!
     @IBOutlet weak var statusLabel: UILabel!
-    @IBOutlet weak var mapImageView: UIImageView!
     @IBOutlet weak var shiftStack: UIStackView!
     @IBOutlet weak var roundsTextLabel: UILabel!
     @IBOutlet weak var batteryLabel: UILabel!
     @IBOutlet weak var disinfectantLabel: UILabel!
     @IBOutlet weak var statusStack: UIStackView!
-    @IBOutlet weak var mapStack: UIStackView!
+    @IBOutlet weak var taskStack: UIStackView!
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var taskStatusLabel: UILabel!
     
     
     override func viewDidLoad() {
@@ -37,7 +38,17 @@ class HomeViewController: UIViewController {
     //MARK: Private methods
     func setupUI() {
         shiftStack.isHidden = false
-        mapStack.isHidden = true
+        taskStack.isHidden = false
+        if !MyUser.tasks!.isEmpty {
+            self.taskStatusLabel.isHidden = true
+            self.tableView.isHidden = false
+            //Load tableView
+        } else {
+            self.taskStatusLabel.isHidden = false
+            self.tableView.isHidden = true
+            self.taskStatusLabel.text = "There are no queued tasks"
+        }
+        
         roundsTextLabel.text = "Interval between cleaning rounds (mins):"
         
         if MyUser.robot != nil {
@@ -64,20 +75,12 @@ class HomeViewController: UIViewController {
                     batteryLabel.text = String(MyUser.statusInfo!.resources!.battery) + "%"
                     disinfectantLabel.text = String(MyUser.statusInfo!.resources!.disinfectant) + "%"
                 }
-                
-                if MyUser.statusInfo!.map != nil {
-                    mapImageView.image = MyUser.statusInfo!.map!
-                } else {
-                    mapStack.isHidden = true
-                }
             }
         }
-        mapStack.isHidden = true
         shiftStack.isHidden = true
         statusStack.isHidden = true
         roundsTextLabel.text = "No shift today"
         roundsLabel.text = ""
         statusLabel.text = "idle at charging station"
-        mapImageView.image = nil
     }
 }

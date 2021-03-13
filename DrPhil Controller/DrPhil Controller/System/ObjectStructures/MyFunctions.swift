@@ -35,6 +35,6 @@ func initStatusInfo(docData: [String : Any]?) -> StatusInfo {
     return StatusInfo(status: docData!["status"] as! Int, dayStats: nil, resources: nil, map: nil)
 }
 
-func initTaskStack(docData: QueryDocumentSnapshot) -> TaskStack {
-    return TaskStack()
+func initTaskStack(docData: QueryDocumentSnapshot) -> [Task] {
+    return []
 }

@@ -12,7 +12,7 @@ import UIKit
 struct MyUser {
     static var robot: Robot? = nil
     static var statusInfo: StatusInfo? = nil
-    static var taskStack: TaskStack? = nil
+    static var tasks: [Task]? = []
 }
 
 struct Robot {
@@ -43,10 +43,6 @@ struct StatusInfo {
     }
 }
 
-struct TaskStack {
-    var tasks: [Int]? = nil
-}
-
 struct Task {
     var task: Int
     var executionTime: String
@@ -55,11 +51,11 @@ struct Task {
     
     func getTask() -> String {
         if task == 0 {
-            return "cleaning"
+            return "Clean"
         } else if task == 1 {
-            return "returning to charging station"
+            return "Return to charging station"
         }
-        return ""
+        return "Stay idle at charging station"
     }
 }
 

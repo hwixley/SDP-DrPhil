@@ -63,6 +63,7 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
                     let db = Firestore.firestore()
                     
                     db.collection("robots").document(authResult!.user.uid).setData(["uid": authResult!.user.uid, "rid": self.idTextfield.text!,"weekends": [], "weekdays": []])
+                    MyUser.robot = Robot(UID: authResult!.user.uid, robotID: self.idTextfield.text!)
                     self.performSegue(withIdentifier: "registrationSuccess", sender: self)
                 }
             }

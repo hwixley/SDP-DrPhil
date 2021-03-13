@@ -69,6 +69,10 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
         self.setupUI()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        self.setupUI()
+    }
+    
     //MARK: Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "updateScheduleSegue" {
@@ -134,8 +138,8 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
         }
         
         let db = Firestore.firestore()
-        var weekdays: [String]? = []
-        var weekends: [String]? = []
+        var weekdays: [String]? = nil
+        var weekends: [String]? = nil
         
         if schedule.weekdays != nil {
             weekdays = [schedule.weekdays!.start, schedule.weekdays!.end, String(schedule.weekdays!.numRounds)]
@@ -143,8 +147,8 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
         if schedule.weekends != nil {
             weekends = [schedule.weekends!.start, schedule.weekends!.end, String(schedule.weekends!.numRounds)]
         }
-        
-        db.collection("robots").document(MyUser.robot!.UID).updateData(["weekdays": weekdays!, "weekends": weekends!])
+
+        db.collection("robots").document(MyUser.robot!.UID).updateData(["weekdays": weekdays ?? [], "weekends": weekends ?? []])
         MyUser.robot!.schedule = schedule
         self.performSegue(withIdentifier: "updateScheduleSegue", sender: self)
     }
@@ -209,20 +213,22 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
     
     //MARK: Private Methods
     func setupUI() {
-        if MyUser.robot!.schedule != nil {
-            if MyUser.robot!.schedule!.weekdays != nil {
-                weekdaysSwitch.isOn = true
-                weekdaysStack.isHidden = false
-                weekdaysStartTextField.text = MyUser.robot!.schedule!.weekdays!.start
-                weekdaysEndTextField.text = MyUser.robot!.schedule!.weekdays!.end
-                numRoundsWDTextField.text = String(MyUser.robot!.schedule!.weekdays!.numRounds)
-            }
-            if MyUser.robot!.schedule!.weekends != nil {
-                weekendsSwitch.isOn = true
-                weekendsStack.isHidden = false
-                weekendsStartTextField.text = MyUser.robot!.schedule!.weekends!.start
-                weekendsEndTextField.text = MyUser.robot!.schedule!.weekends!.end
-                numRoundsWETextField.text = String(MyUser.robot!.schedule!.weekends!.numRounds)
+        if MyUser.robot != nil {
+            if MyUser.robot!.schedule != nil {
+                if MyUser.robot!.schedule!.weekdays != nil {
+                    weekdaysSwitch.isOn = true
+                    weekdaysStack.isHidden = false
+                    weekdaysStartTextField.text = MyUser.robot!.schedule!.weekdays!.start
+                    weekdaysEndTextField.text = MyUser.robot!.schedule!.weekdays!.end
+                    numRoundsWDTextField.text = String(MyUser.robot!.schedule!.weekdays!.numRounds)
+                }
+                if MyUser.robot!.schedule!.weekends != nil {
+                    weekendsSwitch.isOn = true
+                    weekendsStack.isHidden = false
+                    weekendsStartTextField.text = MyUser.robot!.schedule!.weekends!.start
+                    weekendsEndTextField.text = MyUser.robot!.schedule!.weekends!.end
+                    numRoundsWETextField.text = String(MyUser.robot!.schedule!.weekends!.numRounds)
+                }
             }
         }
     }
