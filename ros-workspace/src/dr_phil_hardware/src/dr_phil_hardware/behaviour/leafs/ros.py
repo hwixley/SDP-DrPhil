@@ -270,6 +270,7 @@ class PublishTopic(py_trees.behaviour.Behaviour):
         """ 
         Args:
             name: the name of the behaviour
+            msg: the message to publish or callable which retrieves it at update time
             msg_type: the type of message to be published
             topic: the topic on which to publish the message
             queue_size: the publisher queue size
@@ -292,9 +293,10 @@ class PublishTopic(py_trees.behaviour.Behaviour):
         self.feedback_message = "Waiting for data"
         try:
             self.feedback_message = "Published"
-            self.publisher.publish(self.msg)
-        except:
-            self.feedback_message = "Publisher failure"
+                
+            self.publisher.publish(self.msg() if callable(self.msg) else self.msg)
+        except Exception as E:
+            self.feedback_message = "Publisher failure: {}".format(E)
             return py_trees.common.Status.FAILURE
 
         if self.success_on_publish or self.n_target >= 0:
@@ -303,8 +305,8 @@ class PublishTopic(py_trees.behaviour.Behaviour):
                 return py_trees.common.Status.RUNNING
             else:
                 return py_trees.common.Status.SUCCESS
-        else:
-            return py_trees.common.Status.RUNNING       
+
+        return py_trees.common.Status.RUNNING       
 
 class JointTargetSetAndForget(py_trees.behaviour.Behaviour):
     """ behaviour which sets move groups target and leaves it running with SUCCESS """
@@ -589,6 +591,7 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
                 self.feedback_message = "Found valid plan"
                 # success
                 self.ran = True
+                rospy.logerr("traj {}".format(self.trajectory))
                 self.blackboard.set(CreateMoveitTrajectoryPlan.PLAN_TARGET,self.trajectory)
                 return py_trees.Status.SUCCESS
 
@@ -626,21 +629,21 @@ class CreateMoveItMove(CreateMoveitTrajectoryPlan):
         ac.set_pose_planning_frame(self.move_group,self.pose_frame)
         ac.set_pose_target(self.move_group,waypoints.poses[0])
         ac.set_curr_state_as_start_state(self.move_group)
-        ac.set_goal_tolerance(self.move_group,self.goal_tolerance)
-        (success,plan,planning_time,errorCode) = ac.plan()
+        # ac.set_goal_tolerance(self.move_group,self.goal_tolerance)
+        (success,plan,planning_time,errorCode) = ac.plan(self.move_group)
         if success:
             self.trajectory = plan
         else:
+            self.fraction = -100 # impossible value
             self.trajectory = None
-            self.fraction = 999 # impossible value
-        sys.exit()
+        sys.exit(0)
 
 class ExecuteMoveItPlan(py_trees.Behaviour):
     """ Executes plan at moveit/plan on the blackboard, returns true once succeeded, fails if some point is not reached
     """
     PLAN_SOURCE=CreateMoveitTrajectoryPlan.PLAN_TARGET
 
-    def __init__(self, name,move_group : MoveGroup, distance_waypoint_threshold = 0.02,time_threshold_mult=0.1):
+    def __init__(self, name,move_group : MoveGroup, distance_waypoint_threshold = 0.02,time_threshold_mult=0.1,success_on_no_plan=False):
         """[summary]
 
         Args:
@@ -658,6 +661,7 @@ class ExecuteMoveItPlan(py_trees.Behaviour):
         self.move_group = move_group
         self.distance_waypoint_threshold = distance_waypoint_threshold
         self.time_threshold_mult = time_threshold_mult
+        self.success_on_no_plan = success_on_no_plan
 
     def initialise(self):
 
@@ -735,6 +739,10 @@ class ExecuteMoveItPlan(py_trees.Behaviour):
             return py_trees.Status.RUNNING
         else:
             if self.plan is None:
+                if self.success_on_no_plan:
+                    self.feedback_message = "No plan, so easy win"
+                    return py_trees.Status.SUCCESS
+                    
                 self.feedback_message = "Plan at {} is None".format(ExecuteMoveItPlan.PLAN_SOURCE)
                 return py_trees.Status.FAILURE
             elif len(self.plan.joint_trajectory.points) == 0:
@@ -746,6 +754,7 @@ class ExecuteMoveItPlan(py_trees.Behaviour):
             # start off the plan
             self.feedback_message = "Executing plan..."
             ac.execute_plan(self.move_group,self.plan,blocking=False)
+            py_trees.Blackboard().set(ExecuteMoveItPlan.PLAN_SOURCE,None)
             return py_trees.Status.RUNNING
 
     def terminate(self, new_status):
