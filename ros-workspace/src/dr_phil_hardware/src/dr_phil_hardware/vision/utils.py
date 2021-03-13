@@ -54,7 +54,7 @@ def interpolated_ray(ray1: Ray,ray2: Ray,r, newL):
     return Ray(ray1.origin,new_dir,newL)
 
 
-def angle_between_pi(v1, v2):
+def angle_between(v1, v2):
     """ Returns the angle in radians between vectors 'v1' and 'v2'::
             >>> angle_between([[1], [0], [0]], [[0], [1], [0]])
             1.5707963267948966

@@ -6,6 +6,8 @@ import numpy as np
 from dr_phil_hardware.vision.ray import Ray
 from dr_phil_hardware.vision.utils import subtract,intersect,invert_homog_mat,interpolated_ray,angle_between
 from dr_phil_hardware.test.test_utils.test_utils import assertRayEquals
+from dr_phil_hardware.utils import quaternion_from_dirs
+import tf.transformations as t 
 
 import math
 
@@ -17,175 +19,185 @@ import roslib; roslib.load_manifest(PKG)
 
 class VisionUtilsTest(unittest.TestCase):
 
-    def test_invert_homog_mat_identity_4x4(self):
-        identity = np.array([[1,0,0,0],
-                             [0,1,0,0],
-                             [0,0,1,0],
-                             [0,0,0,1]])
 
-        output = invert_homog_mat(identity)
+    def test_quaternion_from_unit(self):
+        # f = np.array([[1],[0],[0]])
+        # up = np.array([[0],[0],[1]])
 
-        self.assertTrue(np.allclose(identity,output),"The inverse of identity:\n {},\n was:\n {}".format(identity,output))
+        # quat = quaternion_from_dirs(f,up)
+        # euler = t.euler_from_quaternion(quat,"rxyz")
+
+        # self.assertTrue(False,"{} {}".format(quat,euler))
+
+    # def test_invert_homog_mat_identity_4x4(self):
+    #     identity = np.array([[1,0,0,0],
+    #                          [0,1,0,0],
+    #                          [0,0,1,0],
+    #                          [0,0,0,1]])
+
+    #     output = invert_homog_mat(identity)
+
+    #     self.assertTrue(np.allclose(identity,output),"The inverse of identity:\n {},\n was:\n {}".format(identity,output))
     
-    def test_invert_homog_mat_identity_3x3(self):
-        identity = np.array([[1,0,0],
-                             [0,1,0],
-                             [0,0,1]])
+    # def test_invert_homog_mat_identity_3x3(self):
+    #     identity = np.array([[1,0,0],
+    #                          [0,1,0],
+    #                          [0,0,1]])
 
-        output = invert_homog_mat(identity)
+    #     output = invert_homog_mat(identity)
 
-        self.assertTrue(np.allclose(identity,output),"The inverse of identity:\n {},\n was:\n {}".format(identity,output))
+    #     self.assertTrue(np.allclose(identity,output),"The inverse of identity:\n {},\n was:\n {}".format(identity,output))
     
-    def test_invert_homog_mat_4x4_1(self):        
-        input = np.array(   [[1,0,0,0],
-                             [0,0,-1,0],
-                             [0,1,0,3],
-                             [0,0,0,1]])
+    # def test_invert_homog_mat_4x4_1(self):        
+    #     input = np.array(   [[1,0,0,0],
+    #                          [0,0,-1,0],
+    #                          [0,1,0,3],
+    #                          [0,0,0,1]])
 
-        inverse = np.array( [[1,0,0,0],
-                             [0,0,1,-3],
-                             [0,-1,0,0],
-                             [0,0,0,1]])
-
-
-        output = invert_homog_mat(input)
-
-        self.assertTrue(np.allclose(output,inverse),"The inverse of input:\n {},\n was:\n {}".format(input,output))
-
-    def test_invert_homog_mat_4x4_1_reverse(self):        
-        input = np.array( [[1,0,0,0],
-                             [0,0,1,-3],
-                             [0,-1,0,0],
-                             [0,0,0,1]])
-
-        inverse = np.array(   [[1,0,0,0],
-                             [0,0,-1,0],
-                             [0,1,0,3],
-                             [0,0,0,1]])
+    #     inverse = np.array( [[1,0,0,0],
+    #                          [0,0,1,-3],
+    #                          [0,-1,0,0],
+    #                          [0,0,0,1]])
 
 
-        output = invert_homog_mat(input)
+    #     output = invert_homog_mat(input)
 
-        self.assertTrue(np.allclose(output,inverse),"The inverse of input:\n {},\n was:\n {}".format(input,output))
+    #     self.assertTrue(np.allclose(output,inverse),"The inverse of input:\n {},\n was:\n {}".format(input,output))
+
+    # def test_invert_homog_mat_4x4_1_reverse(self):        
+    #     input = np.array( [[1,0,0,0],
+    #                          [0,0,1,-3],
+    #                          [0,-1,0,0],
+    #                          [0,0,0,1]])
+
+    #     inverse = np.array(   [[1,0,0,0],
+    #                          [0,0,-1,0],
+    #                          [0,1,0,3],
+    #                          [0,0,0,1]])
+
+
+    #     output = invert_homog_mat(input)
+
+    #     self.assertTrue(np.allclose(output,inverse),"The inverse of input:\n {},\n was:\n {}".format(input,output))
     
-    def test_invert_homog_mat_4x4_2(self):        
-        input = np.array(   [[0,0,-1,1],
-                             [-1,0,0,2],
-                             [0,-1,0,3],
-                             [0,0,0,1]])
+    # def test_invert_homog_mat_4x4_2(self):        
+    #     input = np.array(   [[0,0,-1,1],
+    #                          [-1,0,0,2],
+    #                          [0,-1,0,3],
+    #                          [0,0,0,1]])
 
-        inverse = np.array( [[0,-1,0,2],
-                             [0, 0,-1,3],
-                             [-1,0,0,1],
-                             [0,0,0,1]])
+    #     inverse = np.array( [[0,-1,0,2],
+    #                          [0, 0,-1,3],
+    #                          [-1,0,0,1],
+    #                          [0,0,0,1]])
 
 
-        output = invert_homog_mat(input)
+    #     output = invert_homog_mat(input)
 
-        self.assertTrue(np.allclose(output,inverse),"The inverse of input:\n {},\n was:\n {}".format(input,output))
+    #     self.assertTrue(np.allclose(output,inverse),"The inverse of input:\n {},\n was:\n {}".format(input,output))
 
-    def test_invert_homog_mat_4x4_2_reverse(self):
+    # def test_invert_homog_mat_4x4_2_reverse(self):
         
-        input = np.array( [[0,-1,0,2],
-                             [0, 0,-1,3],
-                             [-1,0,0,1],
-                             [0,0,0,1]])
-        inverse = np.array(   [[0,0,-1,1],
-                             [-1,0,0,2],
-                             [0,-1,0,3],
-                             [0,0,0,1]])
+    #     input = np.array( [[0,-1,0,2],
+    #                          [0, 0,-1,3],
+    #                          [-1,0,0,1],
+    #                          [0,0,0,1]])
+    #     inverse = np.array(   [[0,0,-1,1],
+    #                          [-1,0,0,2],
+    #                          [0,-1,0,3],
+    #                          [0,0,0,1]])
 
 
 
-        output = invert_homog_mat(input)
+    #     output = invert_homog_mat(input)
 
-        self.assertTrue(np.allclose(output,inverse),"The inverse of input:\n {},\n was:\n {}".format(input,output))
+    #     self.assertTrue(np.allclose(output,inverse),"The inverse of input:\n {},\n was:\n {}".format(input,output))
 
-    def test_subtract_length_square(self):
+    # def test_subtract_length_square(self):
 
-        ray1 = Ray(np.array([[0], [0], [0]]), np.array([[1], [0], [0]]), length=1)
-        ray2 = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [1]]), length=1)
+    #     ray1 = Ray(np.array([[0], [0], [0]]), np.array([[1], [0], [0]]), length=1)
+    #     ray2 = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [1]]), length=1)
 
-        subtr = subtract(ray1, ray2)
-        self.assertTrue(subtr.length == math.sqrt(2))
+    #     subtr = subtract(ray1, ray2)
+    #     self.assertTrue(subtr.length == math.sqrt(2))
 
-    def test_subtract_vector_square(self):
-        ray1 = Ray(np.array([[0], [0], [0]]), np.array([[1], [0], [0]]), length=1)
-        ray2 = Ray(np.array([[0], [0], [0]]), np.array([[0], [1], [0]]), length=1)
+    # def test_subtract_vector_square(self):
+    #     ray1 = Ray(np.array([[0], [0], [0]]), np.array([[1], [0], [0]]), length=1)
+    #     ray2 = Ray(np.array([[0], [0], [0]]), np.array([[0], [1], [0]]), length=1)
 
-        ray_correct = Ray(ray2.get_point(),np.array([[1],[-1],[0]]),length=math.sqrt(2))
-        assertRayEquals(self,ray_correct,subtract(ray1,ray2),msg="subtracted ray was off")
+    #     ray_correct = Ray(ray2.get_point(),np.array([[1],[-1],[0]]),length=math.sqrt(2))
+    #     assertRayEquals(self,ray_correct,subtract(ray1,ray2),msg="subtracted ray was off")
 
-    def test_intersect(self):
-        ray1 = Ray(np.array([[0], [0], [0]]), np.array([[1], [0], [0]]), length=1)
-        ray2 = Ray(np.array([[0], [0], [0]]), np.array([[0], [1], [0]]), length=1)
+    # def test_intersect(self):
+    #     ray1 = Ray(np.array([[0], [0], [0]]), np.array([[1], [0], [0]]), length=1)
+    #     ray2 = Ray(np.array([[0], [0], [0]]), np.array([[0], [1], [0]]), length=1)
 
-        self.assertTrue(intersect(ray1,ray2),"these rays should intersect")
+    #     self.assertTrue(intersect(ray1,ray2),"these rays should intersect")
 
-    def test_no_intersect(self):
-        ray1 = Ray(np.array([[0], [0], [0]]), np.array([[1], [0], [0]]), length=1)
-        ray2 = Ray(np.array([[0], [1], [0]]), np.array([[0], [1], [0]]), length=1)
+    # def test_no_intersect(self):
+    #     ray1 = Ray(np.array([[0], [0], [0]]), np.array([[1], [0], [0]]), length=1)
+    #     ray2 = Ray(np.array([[0], [1], [0]]), np.array([[0], [1], [0]]), length=1)
 
-        self.assertFalse(intersect(ray1,ray2),"these rays should not intersect")
+    #     self.assertFalse(intersect(ray1,ray2),"these rays should not intersect")
 
-    def test_no_intersect_2(self):
-        ray1 = Ray(np.array([[1], [0], [0]]), np.array([[-1], [0], [0]]), length=0.9)
-        ray2 = Ray(np.array([[0], [1], [0]]), np.array([[0], [-1], [0]]), length=0.9)
+    # def test_no_intersect_2(self):
+    #     ray1 = Ray(np.array([[1], [0], [0]]), np.array([[-1], [0], [0]]), length=0.9)
+    #     ray2 = Ray(np.array([[0], [1], [0]]), np.array([[0], [-1], [0]]), length=0.9)
 
-        self.assertFalse(intersect(ray1,ray2),"these rays should not intersect")
+    #     self.assertFalse(intersect(ray1,ray2),"these rays should not intersect")
 
-    def test_interpolated_ray_1(self):
+    # def test_interpolated_ray_1(self):
 
-        ray1 = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [1]]), length=1)
-        ray2 = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [-1]]), length=1)
+    #     ray1 = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [1]]), length=1)
+    #     ray2 = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [-1]]), length=1)
 
-        ray_correct = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [0]]), length=0)
+    #     ray_correct = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [0]]), length=0)
 
-        assertRayEquals(self,ray_correct,interpolated_ray(ray1,ray2,0.5,0))
+    #     assertRayEquals(self,ray_correct,interpolated_ray(ray1,ray2,0.5,0))
 
-    def test_interpolated_ray_2(self):
+    # def test_interpolated_ray_2(self):
 
-        ray1 = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [1]]), length=1)
-        ray2 = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [-1]]), length=1)
+    #     ray1 = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [1]]), length=1)
+    #     ray2 = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [-1]]), length=1)
 
-        ray_correct = ray1
+    #     ray_correct = ray1
 
-        assertRayEquals(self,ray_correct,interpolated_ray(ray1,ray2,0,1))
+    #     assertRayEquals(self,ray_correct,interpolated_ray(ray1,ray2,0,1))
 
-    def test_interpolated_ray_3(self):
+    # def test_interpolated_ray_3(self):
 
-        ray1 = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [1]]), length=1)
-        ray2 = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [-1]]), length=1)
+    #     ray1 = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [1]]), length=1)
+    #     ray2 = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [-1]]), length=1)
 
-        ray_correct = ray2
+    #     ray_correct = ray2
 
-        assertRayEquals(self,ray_correct,interpolated_ray(ray1,ray2,1,1))
+    #     assertRayEquals(self,ray_correct,interpolated_ray(ray1,ray2,1,1))
 
-    def test_interpolated_ray_diff_origin(self):
+    # def test_interpolated_ray_diff_origin(self):
 
-        ray1 = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [1]]), length=1)
-        ray2 = Ray(np.array([[0.00000000001], [0], [0]]), np.array([[0], [0], [-1]]), length=1)
+    #     ray1 = Ray(np.array([[0], [0], [0]]), np.array([[0], [0], [1]]), length=1)
+    #     ray2 = Ray(np.array([[0.00000000001], [0], [0]]), np.array([[0], [0], [-1]]), length=1)
 
-        try:
-            interpolated_ray(ray1,ray2,0.5,1)
-            self.assertTrue(False,"Rays with different origins should not be allowed, exception wasn't thrown")
-        except:
-            self.assertTrue(True)
+    #     try:
+    #         interpolated_ray(ray1,ray2,0.5,1)
+    #         self.assertTrue(False,"Rays with different origins should not be allowed, exception wasn't thrown")
+    #     except:
+    #         self.assertTrue(True)
         
-    def test_angle_between_1_2_quadrant(self):
-        self.assertAlmostEqual(math.pi/2,angle_between(np.array([[1],[0],[0]]),np.array([[0],[1],[0]]) ))
+    # def test_angle_between_1_2_quadrant(self):
+    #     self.assertAlmostEqual(math.pi/2,angle_between(np.array([[1],[0],[0]]),np.array([[0],[1],[0]]) ))
 
-    def test_angle_between_1_quadrant(self):
-        self.assertAlmostEqual(0,angle_between(np.array([[1],[0],[0]]),np.array([[1],[0],[0]]) ))
+    # def test_angle_between_1_quadrant(self):
+    #     self.assertAlmostEqual(0,angle_between(np.array([[1],[0],[0]]),np.array([[1],[0],[0]]) ))
 
-    def test_angle_between_2_quadrant(self):
-        self.assertAlmostEqual((math.pi*3)/4,angle_between(np.array([[1],[0],[0]]),np.array([[-0.5],[0.5],[0]]) ))
+    # def test_angle_between_2_quadrant(self):
+    #     self.assertAlmostEqual((math.pi*3)/4,angle_between(np.array([[1],[0],[0]]),np.array([[-0.5],[0.5],[0]]) ))
         
-    def test_angle_between_3_quadrant(self):
-        self.assertAlmostEqual((math.pi*3)/4,angle_between(np.array([[1],[0],[0]]),np.array([[-0.5],[-0.5],[0]]) ))
+    # def test_angle_between_3_quadrant(self):
+    #     self.assertAlmostEqual((math.pi*3)/4,angle_between(np.array([[1],[0],[0]]),np.array([[-0.5],[-0.5],[0]]) ))
 
-    def test_angle_between_4_quadrant(self):
-        self.assertAlmostEqual(math.pi/4,angle_between(np.array([[1],[0],[0]]),np.array([[0.5],[-0.5],[0]]) ))
+    # def test_angle_between_4_quadrant(self):
+    #     self.assertAlmostEqual(math.pi/4,angle_between(np.array([[1],[0],[0]]),np.array([[0.5],[-0.5],[0]]) ))
 
 if __name__ == "__main__":
     import rosunit
