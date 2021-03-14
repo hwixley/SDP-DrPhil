@@ -26,22 +26,7 @@ public:
     sub1_ = n_.subscribe("/spray_controller/command", 1, &SubscribeAndPublish::callback1, this);
     
     
-    //find transform from camera frame to global
-    tf::TransformListener listener;
-    ros::Rate rate(30.0);
-    while (n_.ok()){
-
-        try{
-            listener.waitForTransform("odom", "px100/led_link1", ros::Time::now(), ros::Duration(5));
-            listener.lookupTransform("odom", "px100/led_link1", ros::Time(), transform);
-        }
-        catch (tf::TransformException ex){
-            ROS_ERROR("%s",ex.what());
-        }
-
-        ros::spinOnce();
-        rate.sleep();
-    }
+  
   }
 
   void callback1(const std_msgs::Float32 &msg_range)
@@ -71,6 +56,18 @@ public:
     pcl::PCLPointCloud2 pcl_pc2;
     pcl_conversions::toPCL(*input, pcl_pc2);
     pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);
+
+    //find transform from camera frame to global
+    tf::TransformListener listener;
+
+    try{
+        listener.waitForTransform("odom", "px100/led_link1", ros::Time::now(), ros::Duration(5));
+        listener.lookupTransform("odom", "px100/led_link1", ros::Time(), transform);
+    }
+    catch (tf::TransformException ex){
+        ROS_ERROR("%s",ex.what());
+    }
+
 
     pcl_ros::transformPointCloud(*temp_cloud, *cloud_transformed, transform);
     sensor_msgs::PointCloud2 cloud_publish;

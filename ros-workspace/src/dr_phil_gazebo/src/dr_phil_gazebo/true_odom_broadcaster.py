@@ -32,7 +32,7 @@ def true_pose(pose_service : ServiceProxy):
 if __name__ =="__main__":
     rospy.init_node("true_pose_broadcaster")
 
-    r = rospy.Rate(10)
+    r = rospy.Rate(100)
     s = rospy.ServiceProxy("/gazebo/get_model_state",GetModelState,persistent=True)
 
     while not rospy.is_shutdown():
