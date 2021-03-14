@@ -12,9 +12,6 @@
 #include <pcl/io/ply_io.h>
 
 
-double doorX;
-double doorY;
-double doorZ;
 class SubscribeAndPublish
 {
 
@@ -40,30 +37,9 @@ SubscribeAndPublish()
 void
 filteredOut(sensor_msgs::PointCloud cloud_msg)
 {
-  double depthThreshold = 0.5;
-  double threshold2 = depthThreshold*depthThreshold;
+
   sensor_msgs::PointCloud2 cloud_filtered;
 
-
-  // Perform the actual filtering
-  for (int p=0; p<cloud_msg.points.size(); ++p)
-  {
-
-         double myDistance=sqrt(pow((double)(cloud_msg.points[p].x-doorX),2.0)+
-         pow((double)(cloud_msg.points[p].y-doorY),2.0)+
-         pow((double)(cloud_msg.points[p].z-doorZ),2.0));              
-                       
-
-    // remove point if it's outside the threshold range
-
-    if (myDistance > depthThreshold)
-    {
-      cloud_msg.points[p] = cloud_msg.points[cloud_msg.points.size()-1];
-      cloud_msg.points.resize(cloud_msg.points.size()-1);
-      --p;
-    }
-  }
-  
   //convert to .ply to save and publish to topic
   pcl::PCLPointCloud2 pcl_pc2;
   sensor_msgs::convertPointCloudToPointCloud2(cloud_msg, cloud_filtered);
@@ -76,17 +52,8 @@ filteredOut(sensor_msgs::PointCloud cloud_msg)
 };
 int main(int argc, char **argv)
 {
-   if (argc < 3) {
-        // Tell the user how to run the program
-        std::cerr << "enter x, y and z coordinates of door handle centre as arguments" << std::endl;
-        /* "Usage messages" are a conventional way of telling the user
-         * how to run a program if they enter the command incorrectly.
-         */
-        return 1;
-    }
-    doorX = atof(argv[1]);
-    doorY = atof(argv[2]);
-    doorZ = atof(argv[3]);
+
+
   //Initiate ROS
   ros::init(argc, argv, "filterCloud");
 
