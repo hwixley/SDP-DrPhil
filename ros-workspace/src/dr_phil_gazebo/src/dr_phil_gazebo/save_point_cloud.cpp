@@ -38,16 +38,30 @@ void
 filteredOut(sensor_msgs::PointCloud cloud_msg)
 {
 
+  for (int p=0; p<cloud_msg.points.size(); ++p)
+  {
+    if (isnan(cloud_msg.points[p].x))
+    {
+      cloud_msg.points[p] = cloud_msg.points[cloud_msg.points.size()-1];
+      cloud_msg.points.resize(cloud_msg.points.size()-1);
+      --p;
+    }
+  }
+
   sensor_msgs::PointCloud2 cloud_filtered;
 
   //convert to .ply to save and publish to topic
   pcl::PCLPointCloud2 pcl_pc2;
+  ROS_ERROR("Converting...");
   sensor_msgs::convertPointCloudToPointCloud2(cloud_msg, cloud_filtered);
   pcl_conversions::toPCL(cloud_filtered, pcl_pc2);
   pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);
+  ROS_ERROR("Saving...");
   pcl::io::savePLYFile("handle_coverage.ply",  *temp_cloud);
+  ROS_ERROR("Saved!");
   pub_.publish(cloud_filtered);
+  ros::shutdown();
 }
 };
 int main(int argc, char **argv)

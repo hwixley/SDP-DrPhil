@@ -22,7 +22,7 @@ public:
   SubscribeAndPublish()
   {
     
-    pub_ = n_.advertise<sensor_msgs::PointCloud>("/pointCloud", 1000);
+    pub_ = n_.advertise<sensor_msgs::PointCloud>("/pointCloud", 10);
     sub1_ = n_.subscribe("/spray_controller/command", 1, &SubscribeAndPublish::callback1, this);
     
     
@@ -48,7 +48,7 @@ public:
   {
     if (msg_range.data ==1){
   
-      sub_ = n_.subscribe("/depth_camera/depth/points", 1000, &SubscribeAndPublish::callback, this);
+      sub_ = n_.subscribe("/depth_camera/depth/points", 10, &SubscribeAndPublish::callback, this);
     }
     
     if (msg_range.data ==0){
@@ -80,6 +80,17 @@ public:
     //convert to old pointcloud type to merge latest pointcloud with 
     //larger cloud being built up
     sensor_msgs::convertPointCloud2ToPointCloud(cloud_publish, inputCloud);
+    
+
+    for (int p=0; p<inputCloud.points.size(); ++p)
+    {
+      if (isnan(inputCloud.points[p].x))
+      {
+        inputCloud.points[p] = inputCloud.points[inputCloud.points.size()-1];
+        inputCloud.points.resize(inputCloud.points.size()-1);
+        --p;
+      }
+    }
     
     if(n==0){
       MergedCloud = inputCloud;
