@@ -16,7 +16,7 @@ class SubscribeAndPublish
 sensor_msgs::PointCloud MergedCloud;
 int n=0;
 tf::StampedTransform transform;
-
+tf::TransformListener listener;
 
 public:
   SubscribeAndPublish()
@@ -25,8 +25,15 @@ public:
     pub_ = n_.advertise<sensor_msgs::PointCloud>("/pointCloud", 10);
     sub1_ = n_.subscribe("/spray_controller/command", 1, &SubscribeAndPublish::callback1, this);
     
-    
-  
+
+
+    // try{
+    //     listener.waitForTransform("odom", "px100/led_link1", ros::Time::now(), ros::Duration(5));
+    //     listener.lookupTransform("odom", "px100/led_link1", ros::Time(), transform);
+    // }
+    // catch (tf::TransformException ex){
+    //     ROS_ERROR("%s",ex.what());
+    // }
   }
 
   void callback1(const std_msgs::Float32 &msg_range)
@@ -57,19 +64,16 @@ public:
     pcl_conversions::toPCL(*input, pcl_pc2);
     pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);
 
-    //find transform from camera frame to global
-    tf::TransformListener listener;
-
     try{
-        listener.waitForTransform("odom", "px100/led_link1", ros::Time::now(), ros::Duration(5));
-        listener.lookupTransform("odom", "px100/led_link1", ros::Time(), transform);
+        listener.waitForTransform("odom", "px100/led_link1", input->header.stamp, ros::Duration(5));
+        listener.lookupTransform("odom", "px100/led_link1", input->header.stamp, transform);
     }
     catch (tf::TransformException ex){
         ROS_ERROR("%s",ex.what());
     }
 
 
-    pcl_ros::transformPointCloud(*temp_cloud, *cloud_transformed, transform);
+    pcl_ros::transformPointCloud(*temp_cloud, *cloud_transformed,transform);
     sensor_msgs::PointCloud2 cloud_publish;
     pcl::toROSMsg(*cloud_transformed,cloud_publish);
 
