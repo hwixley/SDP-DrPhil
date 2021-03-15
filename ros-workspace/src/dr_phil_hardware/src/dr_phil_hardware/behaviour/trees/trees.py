@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from py_trees import blackboard
 import py_trees_ros
 from py_trees.blackboard import Blackboard
 from dr_phil_hardware.arm_interface.command_arm import ArmCommander, MoveGroup
@@ -11,7 +12,7 @@ import operator
 from geometry_msgs.msg import Twist, PoseArray, Pose, PoseStamped
 import os
 from std_msgs.msg import Float64MultiArray
-from py_trees.common import Status
+from py_trees.common import BlackBoxLevel, Status
 import rospy 
 from move_base_msgs.msg import MoveBaseAction,MoveBaseGoal
 from std_srvs.srv import Empty,EmptyRequest
@@ -150,7 +151,7 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,map_path=None,d
     bb2bufferSpray = "{}/spray_poses".format(name)
 
     # ------ start nodes ----------
-    parallel = py_trees.composites.Parallel()
+    parallel = py_trees.composites.Parallel("disinfectDoors")
 
     load_map = create_load_map(map_path=map_path + ".yaml")
 
@@ -160,16 +161,19 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,map_path=None,d
         launch_file="disinfect_task.launch",
         package="dr_phil_hardware"
     )
+    start_disinfection_nodes.blackbox_level = BlackBoxLevel.DETAIL
 
     # ------ do some movement ---------
 
-    sequence = py_trees.composites.Sequence()
+    sequence = py_trees.composites.Sequence(name="mainSequence")
+    sequence.blackbox_level = BlackBoxLevel.BIG_PICTURE
 
     wait = py_trees.timers.Timer(duration=8)
 
     reset_arm = create_set_positions_arm([0,0,-1.5,1.5,-1.5,0],name="resetArm")
 
     localize = create_localize_robot()
+    localize.blackbox_level = BlackBoxLevel.COMPONENT
 
 
     def snapshot_targets(snapshot=False):
@@ -184,11 +188,11 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,map_path=None,d
             return py_trees.Status.SUCCESS
         else:
             return py_trees.Status.RUNNING
-    wait = py_trees.timers.Timer(name="hold",duration=2)
+    wait = py_trees.timers.Timer(name="wait",duration=2)
 
     await_targets = Lambda("awaitTargets",snapshot_targets)
-
-    wait_2 = py_trees.timers.Timer(name="holdAgain",duration=8)
+    
+    wait_2 = py_trees.timers.Timer(name="wait",duration=8)
 
     snapshot_target = Lambda("snapshotTargets",lambda:snapshot_targets(snapshot=True))
 
@@ -204,7 +208,7 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,map_path=None,d
 
     publish_vis_h = PublishTopic("publishHandle",get_pose,PoseStamped,"/vis/handle_target",success_on_publish=True)
     publish_vis_s = PublishTopic("publishSprayTargets",get_spray,PoseArray,"/vis/spray_targets",success_on_publish=True)
-
+    
     move_to_door = create_move_in_front_of_door(bb2bufferPose,bb2bufferSpray,distance_from_door=distance_from_door,name="moveToDoor")
 
     
@@ -385,7 +389,7 @@ def create_try_various_arm_plans(pose_frame):
 
 def create_execute_spray_trajectory(target_pose_src):
 
-    spray = py_trees.Sequence()
+    spray = py_trees.Sequence("executeSprayTrajectory")
 
     def process_pose():
         return py_trees.Blackboard().get(target_pose_src)
@@ -414,7 +418,9 @@ def create_execute_spray_trajectory(target_pose_src):
 
     
     plan = create_try_various_arm_plans("base_link")
+    plan.name="tryFindPlan"
     plan.add_child(py_trees.behaviours.SuccessEveryN("dummySuccess",1))
+    plan.blackbox_level = plan.blackbox_level.COMPONENT
 
     def remove():
         poses : PoseArray = py_trees.Blackboard().get(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE) 
@@ -436,7 +442,7 @@ def create_execute_spray_trajectory(target_pose_src):
     traj_sequence = py_trees.decorators.Condition(traj_sequence,status=py_trees.Status.FAILURE)
 
     spray.add_children([move_target,traj_sequence])
-
+    spray.blackbox_level = spray.blackbox_level.BIG_PICTURE
     return spray
 
 def create_raise_ee_to_first_target_pose_z(target_pose_src="target_poses"):
@@ -572,10 +578,13 @@ def create_move_in_front_of_door(handle_pose_src,spray_path_src,distance_from_do
         success_after_n_publishes=2,
         success_on_publish=True
     ) 
+    door_open =py_trees.composites.Sequence(name=name,children=[wait,move_target,
+            disable_costmap_1,disable_costmap_2,clear_costmaps,move_base,hold_move,halt])
+    
+    door_open.blackbox_level = py_trees.common.BlackBoxLevel.COMPONENT
+    door_open.name = "move2Door"
 
-
-    return py_trees.composites.Sequence(name=name,children=[wait,move_target,
-        disable_costmap_1,disable_costmap_2,clear_costmaps,move_base,hold_move,halt])
+    return door_open
 
 
 def create_localize_robot(name="localizeRobot"):
@@ -640,16 +649,18 @@ if __name__ == "__main__":
 
     trees = [
         ("create_explore_frontier_and_save_map",create_explore_frontier_and_save_map()),
-        ("create_face_closest_obstacle",create_face_closest_obstacle())
+        ("create_face_closest_obstacle",create_face_closest_obstacle()),
+        ("create_disinfect_doors_in_map",create_disinfect_doors_in_map("","",""))
+
     ]
 
     
 
-    dir = os.path.join(os.path.dirname(os.path.realpath(__file__)),"docs","trees")
+    dir = os.path.join(os.path.dirname(os.path.realpath(__file__)),"..","..","docs","trees")
 
     for (n,t) in trees:
         t = py_trees.composites.Sequence(name=n,children=[t])
-        py_graph = py_trees.display.generate_pydot_graph(t,py_trees.common.VisibilityLevel.ALL)
+        py_graph = py_trees.display.generate_pydot_graph(t,py_trees.common.VisibilityLevel.COMPONENT)
         py_graph.write(os.path.join(dir,n+".dot"))
         py_graph.write_png(os.path.join(dir,n + ".png"))
     
