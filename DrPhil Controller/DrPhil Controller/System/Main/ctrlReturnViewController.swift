@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class ctrlReturnViewController: UIViewController, UITextFieldDelegate {
 
@@ -39,7 +40,7 @@ class ctrlReturnViewController: UIViewController, UITextFieldDelegate {
         segmentLabel.textColor = UIColor.white
         returnLabel.textColor = UIColor.white
         
-        var dateAndTime = returnTextfield!.text
+        var dateAndTime = dateFormatter.string(from: Date()) + " " + returnTextfield.text!
         
         if segmentControl.selectedSegmentIndex == 0 {
             self.navigationItem.prompt = "Error: you must select a return time"
@@ -53,6 +54,9 @@ class ctrlReturnViewController: UIViewController, UITextFieldDelegate {
             dateAndTime = "ASAP"
         }
         
+        Firestore.firestore().collection("robots").document(MyUser.robot!.robotID).updateData(["returnTime": dateAndTime])
+        
+        MyUser.robot!.returnTime = dateAndTime
         
         self.performSegue(withIdentifier: "submitStopSegue", sender: self)
     }

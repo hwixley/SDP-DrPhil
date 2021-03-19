@@ -23,7 +23,7 @@ func initRobot(docData: [String : Any]?) -> Robot? {
     }
     let cleanSched = CleanSchedule(weekdays: wdTF, weekends: weTF)
     
-    return Robot(UID: docData!["uid"] as! String, robotID: docData!["rid"] as! String, schedule: cleanSched)
+    return Robot(UID: docData!["uid"] as! String, robotID: docData!["rid"] as! String, schedule: cleanSched, returnTime: docData!["returnTime"] as! String)
 }
 
 func initStatusInfo(docData: [String : Any]?) -> StatusInfo {

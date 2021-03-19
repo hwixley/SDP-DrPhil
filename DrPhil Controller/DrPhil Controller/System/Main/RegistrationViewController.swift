@@ -46,23 +46,28 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
     @IBAction func clickVerify(_ sender: Any) {
         let db = Firestore.firestore()
         
-        db.collection("unregistered-models").document(idTextfield.text!).getDocument { (docSnapshot, err) in
-            
-            if err != nil {
-                print(err!.localizedDescription)
-                self.navigationItem.prompt = "This"
-            } else if docSnapshot != nil && docSnapshot!.exists {
-                let key = docSnapshot!.data()!["key"] as! String
+        if idTextfield.text! != "" && keyTextfield.text! != "" {
+            db.collection("unregistered-models").document(idTextfield.text!).getDocument { (docSnapshot, err) in
                 
-                if key == self.keyTextfield.text! {
-                    self.verifyStack.isHidden = true
-                    self.createStack.isHidden = false
-                    self.clickedTxtf!.resignFirstResponder()
-                    self.tapOutsideKB.isEnabled = false
+                if err != nil {
+                    print(err!.localizedDescription)
+                    self.navigationItem.prompt = "This"
+                } else if docSnapshot != nil && docSnapshot!.exists {
+                    let key = docSnapshot!.data()!["key"] as! String
+                    
+                    if key == self.keyTextfield.text! {
+                        self.verifyStack.isHidden = true
+                        self.createStack.isHidden = false
+                        self.clickedTxtf!.resignFirstResponder()
+                        self.tapOutsideKB.isEnabled = false
+                        self.navigationItem.prompt = nil
+                    }
+                } else {
+                    self.navigationItem.prompt = "ERROR: There is no unregistered robot with this ID and key"
                 }
-            } else {
-                self.navigationItem.prompt = "ERROR: There is no unregistered robot with this ID and key"                
             }
+        } else {
+            self.navigationItem.prompt = "ERROR: You must fill in the ID and Key fields"
         }
     }
     
@@ -76,7 +81,7 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
                 } else {
                     let db = Firestore.firestore()
                     
-                    db.collection("robots").document(self.idTextfield.text!).setData(["uid": authResult!.user.uid, "rid": self.idTextfield.text!,"weekends": [], "weekdays": []])
+                    db.collection("robots").document(self.idTextfield.text!).setData(["uid": authResult!.user.uid, "rid": self.idTextfield.text!,"weekends": [], "weekdays": [], "returnTime": ""])
                     
                     db.collection("unregistered-models").document(self.idTextfield.text!).delete()
                     

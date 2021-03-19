@@ -39,19 +39,24 @@ class HomeViewController: UIViewController {
     func setupUI() {
         shiftStack.isHidden = false
         taskStack.isHidden = false
-        if !MyUser.tasks!.isEmpty {
-            self.taskStatusLabel.isHidden = true
-            self.tableView.isHidden = false
-            //Load tableView
-        } else {
-            self.taskStatusLabel.isHidden = false
-            self.tableView.isHidden = true
-            self.taskStatusLabel.text = "There are no queued tasks"
-        }
         
         roundsTextLabel.text = "Interval between cleaning rounds (mins):"
         
         if MyUser.robot != nil {
+            self.taskStatusLabel.isHidden = false
+            self.tableView.isHidden = true
+            
+            if MyUser.robot!.returnTime != "" {
+                if MyUser.robot!.returnTime == "ASAP" {
+                    self.taskStatusLabel.text = "Return to station ASAP"
+                } else {
+                    self.taskStatusLabel.text = "Return to station at " + MyUser.robot!.returnTime!
+                }
+            } else {
+                self.taskStatusLabel.text = "There are no queued tasks"
+            }
+            
+            
             if MyUser.robot!.schedule != nil {
                 if isWeekday() {
                     if MyUser.robot!.schedule!.weekdays != nil {

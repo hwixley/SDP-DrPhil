@@ -19,6 +19,7 @@ struct Robot {
     var UID: String
     var robotID: String
     var schedule: CleanSchedule? = nil
+    var returnTime: String? = ""
 }
 
 struct StatusInfo {
@@ -46,8 +47,6 @@ struct StatusInfo {
 struct Task {
     var task: Int
     var executionTime: String
-    var date: String
-    var taskID: Int
     
     func getTask() -> String {
         if task == 0 {
