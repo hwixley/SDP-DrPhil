@@ -32,7 +32,6 @@ class ctrlReturnViewController: UIViewController, UITextFieldDelegate {
         segmentControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .selected)
         segmentControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
         self.setupDPbounds()
-        dp.minuteInterval = 15
     }
     
     //MARK: Actions
@@ -40,20 +39,22 @@ class ctrlReturnViewController: UIViewController, UITextFieldDelegate {
         segmentLabel.textColor = UIColor.white
         returnLabel.textColor = UIColor.white
         
+        var dateAndTime = returnTextfield!.text
+        
         if segmentControl.selectedSegmentIndex == 0 {
             self.navigationItem.prompt = "Error: you must select a return time"
             segmentLabel.textColor = UIColor.systemPink
             return
-        } else if segmentControl.selectedSegmentIndex == 2 {
-            if returnTextfield.text != "" {
-                self.performSegue(withIdentifier: "submitStopSegue", sender: self)
-            } else {
-                self.returnLabel.textColor = UIColor.systemPink
-                self.navigationItem.prompt = "Error: you must enter a valid return time"
-            }
+        } else if segmentControl.selectedSegmentIndex == 2 && returnTextfield.text == "" {
+            self.returnLabel.textColor = UIColor.systemPink
+            self.navigationItem.prompt = "Error: you must enter a valid return time"
+            return
         } else {
-            self.performSegue(withIdentifier: "submitStopSegue", sender: self)
+            dateAndTime = "ASAP"
         }
+        
+        
+        self.performSegue(withIdentifier: "submitStopSegue", sender: self)
     }
     
     @IBAction func tapOutsideKB(_ sender: UITapGestureRecognizer) {
@@ -75,19 +76,52 @@ class ctrlReturnViewController: UIViewController, UITextFieldDelegate {
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        returnTextfield.text = dateFormatter.string(from: dp.date)
+        returnTextfield.text = dateFormatter3.string(from: dp.date)
     }
     
     //MARK: Date picker
-    func setupDPbounds() {            dp.datePickerMode = UIDatePicker.Mode.time
+    func setupDPbounds() {
+        dp.datePickerMode = UIDatePicker.Mode.time
         dp.locale = Locale(identifier: "en_GB")
+        
+        dp.minimumDate = Date()
+        
+        if isWeekday() {
+            if MyUser.robot!.schedule!.weekdays == nil {
+                segmentControl.isEnabled = false
+                segmentLabel.text = "Your robot does not have a shift on weekdays"
+            } else {
+                dp.maximumDate = dateFormatter2.date(from: dateFormatter.string(from: Date()) + " " + MyUser.robot!.schedule!.weekdays!.end)
+            }
+        } else {
+            if MyUser.robot!.schedule!.weekends == nil {
+                segmentControl.isEnabled = false
+                segmentLabel.text = "Your robot does not have a shift on weekends"
+            } else {
+                dp.maximumDate = dateFormatter2.date(from: dateFormatter.string(from: Date()) + " " + MyUser.robot!.schedule!.weekends!.end)
+            }
+        }
+        dp.minuteInterval = 5
     }
     
     lazy var dateFormatter: DateFormatter = {
         let df = DateFormatter()
-        df.timeStyle = .short
+        df.dateFormat = "YYYY-MM-dd"
         df.locale = Locale(identifier: "en_GB")
         return df
     }()
-
+    
+    lazy var dateFormatter2: DateFormatter = {
+        let df = DateFormatter()
+        df.dateFormat = "YYYY-MM-dd HH:mm"
+        df.locale = Locale(identifier: "en_GB")
+        return df
+    }()
+    
+    lazy var dateFormatter3: DateFormatter = {
+        let df = DateFormatter()
+        df.dateFormat = "HH:mm"
+        df.locale = Locale(identifier: "en_GB")
+        return df
+    }()
 }
