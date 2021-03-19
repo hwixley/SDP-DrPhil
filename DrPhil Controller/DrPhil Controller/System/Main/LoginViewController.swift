@@ -46,11 +46,16 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     print(err!.localizedDescription)
                 } else if authResult != nil {
                     let db = Firestore.firestore()
-                    let robotDoc = db.collection("robots").document(authResult!.user.uid)
+                    let robotDoc = db.collection("robots").whereField("uid", isEqualTo: authResult!.user.uid)
                     
-                    robotDoc.getDocument { (document, err) in
-                        if document != nil && document!.exists {
-                            MyUser.robot = initRobot(docData: document!.data())
+                    robotDoc.getDocuments { (querySnapshot, err) in
+                        
+                        if err != nil {
+                            
+                        } else if querySnapshot != nil {
+                            let doc = querySnapshot!.documents[0]
+                            
+                            MyUser.robot = initRobot(docData: doc.data())
                             self.logged = true
                         }
                     }

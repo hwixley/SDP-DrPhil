@@ -148,7 +148,7 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
             weekends = [schedule.weekends!.start, schedule.weekends!.end, String(schedule.weekends!.numRounds)]
         }
 
-        db.collection("robots").document(MyUser.robot!.UID).updateData(["weekdays": weekdays ?? [], "weekends": weekends ?? []])
+        db.collection("robots").document(MyUser.robot!.robotID).updateData(["weekdays": weekdays ?? [], "weekends": weekends ?? []])
         MyUser.robot!.schedule = schedule
         self.performSegue(withIdentifier: "updateScheduleSegue", sender: self)
     }

@@ -44,11 +44,25 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
 
     //MARK: Actions
     @IBAction func clickVerify(_ sender: Any) {
-        if true {
-            verifyStack.isHidden = true
-            createStack.isHidden = false
-            clickedTxtf!.resignFirstResponder()
-            tapOutsideKB.isEnabled = false
+        let db = Firestore.firestore()
+        
+        db.collection("unregistered-models").document(idTextfield.text!).getDocument { (docSnapshot, err) in
+            
+            if err != nil {
+                print(err!.localizedDescription)
+                self.navigationItem.prompt = "This"
+            } else if docSnapshot != nil && docSnapshot!.exists {
+                let key = docSnapshot!.data()!["key"] as! String
+                
+                if key == self.keyTextfield.text! {
+                    self.verifyStack.isHidden = true
+                    self.createStack.isHidden = false
+                    self.clickedTxtf!.resignFirstResponder()
+                    self.tapOutsideKB.isEnabled = false
+                }
+            } else {
+                self.navigationItem.prompt = "ERROR: There is no unregistered robot with this ID and key"                
+            }
         }
     }
     
@@ -62,7 +76,10 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
                 } else {
                     let db = Firestore.firestore()
                     
-                    db.collection("robots").document(authResult!.user.uid).setData(["uid": authResult!.user.uid, "rid": self.idTextfield.text!,"weekends": [], "weekdays": []])
+                    db.collection("robots").document(self.idTextfield.text!).setData(["uid": authResult!.user.uid, "rid": self.idTextfield.text!,"weekends": [], "weekdays": []])
+                    
+                    db.collection("unregistered-models").document(self.idTextfield.text!).delete()
+                    
                     MyUser.robot = Robot(UID: authResult!.user.uid, robotID: self.idTextfield.text!)
                     self.performSegue(withIdentifier: "registrationSuccess", sender: self)
                 }
