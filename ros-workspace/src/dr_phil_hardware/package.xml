@@ -68,7 +68,8 @@
   <depend>teb_local_planner</depend>
   <depend>costmap_converter</depend>
   <depend>moveit</depend>
-  <depend>move_base_to_manip</depend>
+  <depend>rosbridge_suite</depend>
+  <depend>rospy_message_converter</depend>
 
   <!-- python deps -->
 <!--   <exec_depend>python-shapely</exec_depend> temporary fix -->
