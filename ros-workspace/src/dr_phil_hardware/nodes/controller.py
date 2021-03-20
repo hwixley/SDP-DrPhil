@@ -8,7 +8,7 @@ import py_trees_ros
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import LaserScan
 from dr_phil_hardware.behaviour.leafs.general import CheckFileExists, SetBlackboardVariableCustom
-from dr_phil_hardware.behaviour.trees.trees import create_idle,create_explore_frontier_and_save_map,create_disinfect_doors_in_map, create_localize_robot, create_check_on_according_to_schedule
+from dr_phil_hardware.behaviour.trees.trees import create_idle,create_explore_frontier_and_save_map,create_disinfect_doors_in_map, create_localize_robot, create_check_on_according_to_schedule,create_wait_for_next_clean
 import functools 
 from visualization_msgs.msg import MarkerArray
 import os
@@ -93,6 +93,7 @@ class Controller:
 
     def create_tree(self):
         """ creates the behaviour tree  for dr-phil """
+        map_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"map")
 
         root = py_trees.composites.Parallel("drphil")
 
@@ -133,15 +134,15 @@ class Controller:
 
 
         # priorities  branch for main tasks, the rest of the tree is to go here
+
         priorities = py_trees.composites.Selector("priorities")
 
         non_preempt_tasks = py_trees.composites.Chooser("nonPreempt")
 
 
-        map_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"map")
+        disinfection_sequence = py_trees.composites.Sequence("disinfectionSequence")
 
-        not_on_schedule = py_trees.decorators.Inverter(
-            create_check_on_according_to_schedule(Controller.SCHEDULE_SOURCE))
+        on_schedule = py_trees.decorators.FailureIsRunning(create_check_on_according_to_schedule(Controller.SCHEDULE_SOURCE))
       
         map_guard = py_trees.composites.Sequence()
 
@@ -162,15 +163,18 @@ class Controller:
             spray_path_src=Controller.SPRAY_PATH_SOURCE,
             map_path=map_path,
             distance_from_door=0.45)
+            
+        wait_for_next_clean = create_wait_for_next_clean(Controller.SCHEDULE_SOURCE)
 
-        disinfect_guard.add_children([map_exists,py_trees.decorators.OneShot(disinfect_doors)])
+        disinfect_guard.add_children([map_exists,disinfect_doors,wait_for_next_clean])
 
 
+        disinfection_sequence.add_children([on_schedule,disinfect_guard])
 
-
-        non_preempt_tasks.add_children([not_on_schedule,map_guard,disinfect_guard])
+        non_preempt_tasks.add_children([disinfection_sequence])
    
         priorities.add_children([non_preempt_tasks])
+        priorities = py_trees.decorators.SuccessIsRunning(priorities)
 
         root.add_children([topics2bb,priorities])
 

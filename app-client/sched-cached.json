@@ -11,7 +11,19 @@
             "stringValue": "ASAP"
         },
         "weekends": {
-            "arrayValue": {}
+            "arrayValue": {
+                "values": [
+                    {
+                        "stringValue": "12:45"
+                    },
+                    {
+                    "stringValue": "15:43"
+                    },
+                    {
+                        "stringValue": "1"
+                    }
+                ]
+            }
         },
         "weekdays": {
             "arrayValue": {
@@ -20,10 +32,10 @@
                         "stringValue": "12:45"
                     },
                     {
-                        "stringValue": "12:54"
+                        "stringValue": "15:10"
                     },
                     {
-                        "stringValue": "50"
+                        "stringValue": "1"
                     }
                 ]
             }

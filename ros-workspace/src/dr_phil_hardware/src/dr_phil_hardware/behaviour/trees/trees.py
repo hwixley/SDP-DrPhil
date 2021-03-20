@@ -24,7 +24,7 @@ import math
 from move_base.cfg import MoveBaseConfig
 from dr_phil_hardware.msg import CleaningTime,CleaningSchedule
 import datetime
-
+import time
 
 
 def create_check_on_according_to_schedule(schedule_src):
@@ -38,7 +38,6 @@ def create_check_on_according_to_schedule(schedule_src):
         time_now_seconds = time.hour * 60 * 60 + time.minute * 60
         cleaning_time_on_seconds = cleaningTime.hour_on * 60 * 60 + cleaningTime.minute_on * 60
         cleaning_time_off_seconds = cleaningTime.hour_off * 60 * 60 + cleaningTime.minute_off * 60
-        print("n:{},s:{},e:{}".format(time_now_seconds,cleaning_time_on_seconds,cleaning_time_off_seconds))
         return time_now_seconds >= cleaning_time_on_seconds and time_now_seconds < cleaning_time_off_seconds
 
     def check_schedule():
@@ -49,15 +48,52 @@ def create_check_on_according_to_schedule(schedule_src):
         if schedule is None:
             return Status.FAILURE
         
-        on_schedule_weekday = not is_weekend and in_cleaning_interval(now,schedule.weekends)
-        on_schedule_weekend = is_weekend and in_cleaning_interval(now,schedule.weekdays)
+        on_schedule_weekday = not is_weekend and in_cleaning_interval(now,schedule.weekdays)
+        on_schedule_weekend = is_weekend and in_cleaning_interval(now,schedule.weekends)
+    
         if on_schedule_weekend or on_schedule_weekday:
             return Status.SUCCESS
         else:
             return Status.FAILURE
 
-
     return Lambda("checkOnSchedule",check_schedule)
+
+def create_wait_for_next_clean(schedule_src):
+    """creates subtree which returns failure if we are not on schedule or schedule does not exist,
+    and succeeds if we are on schedule and should be cleaning
+
+    Args:
+        schedule_src ([type]): [description]
+    """
+    def check_schedule():
+
+        last_clean = Blackboard().get("clean/ended")
+
+        if last_clean is None:
+            last_clean = time.time()
+            Blackboard().set("clean/ended",last_clean)
+
+        schedule : CleaningSchedule = Blackboard().get(schedule_src)
+        now = datetime.datetime.now()
+        is_weekend = now.weekday() >= 5
+
+        if schedule is None:
+            return Status.FAILURE
+        
+        interval = 0
+        if is_weekend:
+            interval = schedule.weekends.interval
+        else:
+            interval = schedule.weekdays.interval 
+
+        if time.time() >= interval * 60 + last_clean:
+            return Status.SUCCESS
+
+        return Status.RUNNING
+    def reset():
+        Blackboard().set("clean/ended",None)
+
+    return Lambda("waitForNextClean",check_schedule,reset)
 
 
 def create_exploration_completed_check(duration=60):
@@ -99,7 +135,7 @@ def create_set_positions_arm(parameters,name="positionArm"):
         msg=positions,
         msg_type=Float64MultiArray,
         topic="/joint_trajectory_point",
-        success_after_n_publishes=5,
+        success_after_n_publishes=2,
         queue_size=10
     )
     
@@ -186,15 +222,15 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,map_path=None,d
 
     bb2bufferPose = "{}/handle_pose".format(name)
     bb2bufferSpray = "{}/spray_poses".format(name)
-
+    killkey = "/disinfect/kill"
     # ------ start nodes ----------
-    parallel = py_trees.composites.Parallel("disinfectDoors")
+    parallel = py_trees.composites.Parallel("disinfectDoors",policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
 
     load_map = create_load_map(map_path=map_path + ".yaml")
 
     start_disinfection_nodes = RunRos(name="runDisinfectionNodes",
         blackboard_alive_key="/disinfect/alive",
-        blackboard_kill_trigger_key="/disinfect/kill",
+        blackboard_kill_trigger_key=killkey,
         launch_file="disinfect_task.launch",
         package="dr_phil_hardware"
     )
@@ -205,7 +241,6 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,map_path=None,d
     sequence = py_trees.composites.Sequence(name="mainSequence")
     sequence.blackbox_level = BlackBoxLevel.BIG_PICTURE
 
-    wait = py_trees.timers.Timer(duration=8)
 
     reset_arm = create_set_positions_arm([0,0,-1.5,1.5,-1.5,0],name="resetArm")
 
@@ -251,7 +286,9 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,map_path=None,d
     
     execute_spray_sequence = create_execute_spray_trajectory(bb2bufferSpray)
 
-    sequence.add_children([wait,reset_arm,localize,await_targets,wait_2,snapshot_target,publish_vis_s,publish_vis_h,move_to_door,execute_spray_sequence])
+    kill_nodes = py_trees.blackboard.SetBlackboardVariable(name="killNodes",variable_name=killkey)
+    
+    sequence.add_children([wait,reset_arm,localize,await_targets,wait_2,snapshot_target,publish_vis_s,publish_vis_h,move_to_door,execute_spray_sequence,kill_nodes])
 
     parallel.add_children([load_map,start_disinfection_nodes,sequence])
 
