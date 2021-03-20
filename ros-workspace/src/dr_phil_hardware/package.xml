@@ -74,7 +74,9 @@
   <!-- python deps -->
 <!--   <exec_depend>python-shapely</exec_depend> temporary fix -->
 
-  <depend>message_runtime</depend>
+  <exec_depend>message_runtime</exec_depend>
+  <build_depend>message_generation</build_depend>
+  
   <depend>actionlib_msgs</depend>
   <depend>moveit_msgs</depend>
   <depend>trajectory_msgs</depend>

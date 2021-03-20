@@ -8,7 +8,7 @@ import py_trees_ros
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import LaserScan
 from dr_phil_hardware.behaviour.leafs.general import CheckFileExists, SetBlackboardVariableCustom
-from dr_phil_hardware.behaviour.trees.trees import create_idle,create_explore_frontier_and_save_map,create_disinfect_doors_in_map, create_localize_robot
+from dr_phil_hardware.behaviour.trees.trees import create_idle,create_explore_frontier_and_save_map,create_disinfect_doors_in_map, create_localize_robot, create_check_on_according_to_schedule
 import functools 
 from visualization_msgs.msg import MarkerArray
 import os
@@ -17,12 +17,13 @@ import json
 from rospy.exceptions import ROSException
 from geometry_msgs.msg import Pose,PoseArray,PoseStamped
 import sys
-
+from dr_phil_hardware.msg import CleaningSchedule
 class Controller:
     """ the controller responsible for dictating behaviours to dr-phil. Every node is to be controlled via this script and no node should command behaviours without going through the controller """
 
     SPRAY_PATH_SOURCE="spray_path/target_points"
     HANDLE_POSE_SOURCE="handle_feature/pose"
+    SCHEDULE_SOURCE="app/rdata"
 
     def __init__(self):
 
@@ -43,6 +44,7 @@ class Controller:
         self.root.visitors.append(snapshot_visitor)
 
 
+        
     def tree_display(self,snapshot_visitor,behaviour_tree):
         print(py_trees.display.ascii_tree(behaviour_tree.root,
             snapshot_information=snapshot_visitor))
@@ -121,26 +123,35 @@ class Controller:
                                                         topic_name=Controller.HANDLE_POSE_SOURCE,
                                                         topic_type=PoseStamped,
                                                         blackboard_variables={Controller.HANDLE_POSE_SOURCE:"pose"})
+        
+        schedule2bb= py_trees_ros.subscribers.ToBlackboard(name="schedule2bb",
+                                                        topic_name=Controller.SCHEDULE_SOURCE,
+                                                        topic_type=CleaningSchedule,
+                                                        blackboard_variables={Controller.SCHEDULE_SOURCE:None})
 
-        topics2bb.add_children([camera2bb,scan2bb,target2bb,handle2bb])
+        topics2bb.add_children([camera2bb,scan2bb,target2bb,handle2bb,schedule2bb])
 
 
         # priorities  branch for main tasks, the rest of the tree is to go here
         priorities = py_trees.composites.Selector("priorities")
 
         non_preempt_tasks = py_trees.composites.Chooser("nonPreempt")
+
+
         map_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"map")
 
-
+        not_on_schedule = py_trees.decorators.Inverter(
+            create_check_on_according_to_schedule(Controller.SCHEDULE_SOURCE))
+      
         map_guard = py_trees.composites.Sequence()
 
 
         map_doesnt_exist =  py_trees.decorators.Inverter(CheckFileExists("mapExists",map_path + ".pgm"))
 
-        runMapper = py_trees.decorators.OneShot(
+        run_mapper = py_trees.decorators.OneShot(
             create_explore_frontier_and_save_map(timeout=600,no_data_timeout=60,map_path=map_path))
 
-        map_guard.add_children([map_doesnt_exist,runMapper])
+        map_guard.add_children([map_doesnt_exist,run_mapper])
 
 
         disinfect_guard = py_trees.composites.Sequence()
@@ -151,12 +162,13 @@ class Controller:
             spray_path_src=Controller.SPRAY_PATH_SOURCE,
             map_path=map_path,
             distance_from_door=0.45)
+
         disinfect_guard.add_children([map_exists,py_trees.decorators.OneShot(disinfect_doors)])
 
 
 
 
-        non_preempt_tasks.add_children([map_guard,disinfect_guard])
+        non_preempt_tasks.add_children([not_on_schedule,map_guard,disinfect_guard])
    
         priorities.add_children([non_preempt_tasks])
 

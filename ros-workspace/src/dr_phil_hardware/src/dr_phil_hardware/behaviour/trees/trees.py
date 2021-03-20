@@ -22,6 +22,43 @@ import numpy as np
 from dr_phil_hardware.srv import GenerateTarget,GenerateTargetRequest,GenerateTargetResponse
 import math 
 from move_base.cfg import MoveBaseConfig
+from dr_phil_hardware.msg import CleaningTime,CleaningSchedule
+import datetime
+
+
+
+def create_check_on_according_to_schedule(schedule_src):
+    """creates subtree which returns failure if we are not on schedule or schedule does not exist,
+    and succeeds if we are on schedule and should be cleaning
+
+    Args:
+        schedule_src ([type]): [description]
+    """
+    def in_cleaning_interval(time: datetime.datetime,cleaningTime : CleaningTime):
+        time_now_seconds = time.hour * 60 * 60 + time.minute * 60
+        cleaning_time_on_seconds = cleaningTime.hour_on * 60 * 60 + cleaningTime.minute_on * 60
+        cleaning_time_off_seconds = cleaningTime.hour_off * 60 * 60 + cleaningTime.minute_off * 60
+        print("n:{},s:{},e:{}".format(time_now_seconds,cleaning_time_on_seconds,cleaning_time_off_seconds))
+        return time_now_seconds >= cleaning_time_on_seconds and time_now_seconds < cleaning_time_off_seconds
+
+    def check_schedule():
+        schedule : CleaningSchedule= Blackboard().get(schedule_src)
+        now = datetime.datetime.now()
+        is_weekend = now.weekday() >= 5
+
+        if schedule is None:
+            return Status.FAILURE
+        
+        on_schedule_weekday = not is_weekend and in_cleaning_interval(now,schedule.weekends)
+        on_schedule_weekend = is_weekend and in_cleaning_interval(now,schedule.weekdays)
+        if on_schedule_weekend or on_schedule_weekday:
+            return Status.SUCCESS
+        else:
+            return Status.FAILURE
+
+
+    return Lambda("checkOnSchedule",check_schedule)
+
 
 def create_exploration_completed_check(duration=60):
     """ creates subtree which returns SUCCESS if no data has been received from the exploration nodes for the given duration.
