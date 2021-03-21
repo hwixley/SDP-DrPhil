@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
     std_msgs
     trajectory_msgs
     geometry_msgs
+    move_base_msgs
     moveit_msgs
     moveit_ros_planning_interface
 )
@@ -61,11 +62,10 @@ catkin_python_setup()
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+ add_service_files(
+   FILES
+   GenerateTarget.srv
+ )
 
 ## Generate actions in the 'action' folder
  add_action_files(
@@ -78,6 +78,7 @@ catkin_python_setup()
    DEPENDENCIES
    std_msgs  # Or other packages containing msgs
    actionlib_msgs
+   move_base_msgs
    geometry_msgs
  )
 
@@ -149,6 +150,10 @@ include_directories(
 add_executable(dr_phil_hardware_bringup src/dr_phil_hardware_bringup.cpp)
 add_dependencies(dr_phil_hardware_bringup ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(dr_phil_hardware_bringup ${catkin_LIBRARIES})
+
+add_executable(target_generator src/target_generator.cpp)
+add_dependencies(target_generator ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(target_generator ${catkin_LIBRARIES})
 
 
 ## Add cmake target dependencies of the library
