@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 import rospy
-from geometry_msgs.msg import Twist, PoseStamped
+from geometry_msgs.msg import Twist, PoseStamped, Pose
 import numpy as np
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import actionlib
 from nav_msgs.msg import GetPlan
 
-def is_location_available(goal: MoveBaseGoal) -> bool:
+def get_current_pose() -> Pose:
+    pass
+
+def is_location_available(start: Pose, goal: MoveBaseGoal) -> bool:
     start = PoseStamped()
     start.header.seq = 0
     start.header.frame_id = "map"
     start.header.stamp = rospy.Time(0)
-    start.pose.position.x = robot_x  
-    start.pose.position.y = robot_y 
+    start.pose = start
 
     get_plan = rospy.ServiceProxy('/move_base/make_plan', GetPlan)
     req = GetPlan()
