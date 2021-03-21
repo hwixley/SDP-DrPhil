@@ -20,20 +20,19 @@ class MapExplorer:
         self.global_costmap = global_costmap
 
     def spin(self):
-        pass
-        #goal = explore.get_test_goal()
+        goal = explore.get_test_goal()
         #print(self.robot_pose)
         
         #print("goal: {}\n\n robot_pose: {}\n\n".format(goal, self.robot_pose))
-        #print(explore.is_location_available(self.robot_pose, goal))
+        print(explore.is_location_available(self.robot_pose, goal))
 
 if __name__ == "__main__":
     rospy.init_node("map_explorer", anonymous=False)
     mapExplorer = MapExplorer()
-    goal = explore.get_test_goal()
+    #goal = explore.get_test_goal()
     #print(mapExplorer.robot_pose)
     #print(explore.is_location_available(mapExplorer.robot_pose, goal))
-
+    """
     result = explore.move_to_goal(goal)
 
     if result:
@@ -44,4 +43,4 @@ if __name__ == "__main__":
     while not rospy.is_shutdown():
         mapExplorer.spin()
         rate.sleep()
-    """
+    
