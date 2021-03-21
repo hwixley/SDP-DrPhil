@@ -4,40 +4,61 @@ from geometry_msgs.msg import Twist, PoseStamped, Pose
 import numpy as np
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import actionlib
-from nav_msgs.msg import GetPlan
+from nav_msgs.srv import GetPlan
+import random
+from nav_msgs.msg import OccupancyGrid
 
-def get_current_pose() -> Pose:
-    pass
-
-def is_location_available(start: Pose, goal: MoveBaseGoal) -> bool:
+def is_location_available(startPose: Pose, moveBaseGoal: MoveBaseGoal):
     start = PoseStamped()
     start.header.seq = 0
     start.header.frame_id = "map"
     start.header.stamp = rospy.Time(0)
-    start.pose = start
+    start.pose = startPose
+
+    goal = moveBaseGoal.target_pose
 
     get_plan = rospy.ServiceProxy('/move_base/make_plan', GetPlan)
     req = GetPlan()
     req.start = start
     req.goal = goal
-    req.tolerance = .5
+    req.tolerance = 0
     resp = get_plan(req.start, req.goal, req.tolerance)
-    
+    #return resp
     if resp:
         return True
     else:
         return False
 
-def select_rand_point_on_map():
-    pass
+def select_rand_point_on_map(startPose: Pose, costmap : OccupancyGrid) -> MoveBaseGoal:
+    goal = MoveBaseGoal()
+    goal.target_pose.header.frame_id = "map"
+    goal.target_pose.header.stamp = rospy.Time.now()
+
+    width_m = costmap.info.width * costmap.info.resolution
+    height_m = costmap.info.height * costmap.info.resolution
+
+    # Move ? meters forward along the x axis of the "map" coordinate frame 
+    goal.target_pose.pose.position.x = random.randint(-width_m, width_m)
+    # Move ? meters forward along the y axis of the "map" coordinate frame 
+    goal.target_pose.pose.position.y = random.randint(-height_m, height_m)
+    # No rotation of the mobile base frame w.r.t. map frame
+    goal.target_pose.pose.orientation.w = 1.0
+
+    while (not is_location_available(startPose, goal)):
+        goal.target_pose.pose.position.x = random.randint(-width_m, width_m)
+        goal.target_pose.pose.position.y = random.randint(-height_m, height_m)
+
+    return goal
 
 def get_test_goal():
     # Creates a new goal with the MoveBaseGoal constructor
     goal = MoveBaseGoal()
     goal.target_pose.header.frame_id = "map"
     goal.target_pose.header.stamp = rospy.Time.now()
-    # Move 0.1 meters forward along the x axis of the "map" coordinate frame 
-    goal.target_pose.pose.position.x = 0.1
+    # Move ? meters forward along the x axis of the "map" coordinate frame 
+    goal.target_pose.pose.position.x = 0
+    # Move ? meters forward along the y axis of the "map" coordinate frame 
+    goal.target_pose.pose.position.y = .2
     # No rotation of the mobile base frame w.r.t. map frame
     goal.target_pose.pose.orientation.w = 1.0
 
