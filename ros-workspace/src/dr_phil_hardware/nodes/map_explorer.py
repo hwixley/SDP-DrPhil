@@ -20,7 +20,8 @@ class MapExplorer:
         self.global_costmap = global_costmap
 
     def spin(self):
-        goal = explore.get_test_goal()
+        pass
+        #goal = explore.get_test_goal()
         #print(self.robot_pose)
         
         #print("goal: {}\n\n robot_pose: {}\n\n".format(goal, self.robot_pose))

@@ -45,6 +45,7 @@ def select_rand_point_on_map(startPose: Pose, costmap : OccupancyGrid) -> MoveBa
     goal.target_pose.pose.orientation.w = 1.0
 
     while (not is_location_available(startPose, goal)):
+        goal.target_pose.header.stamp = rospy.Time.now()
         goal.target_pose.pose.position.x = random.randint(-width_m, width_m)
         goal.target_pose.pose.position.y = random.randint(-height_m, height_m)
 
@@ -56,9 +57,9 @@ def get_test_goal():
     goal.target_pose.header.frame_id = "map"
     goal.target_pose.header.stamp = rospy.Time.now()
     # Move ? meters forward along the x axis of the "map" coordinate frame 
-    goal.target_pose.pose.position.x = 0
+    goal.target_pose.pose.position.x = 0.5
     # Move ? meters forward along the y axis of the "map" coordinate frame 
-    goal.target_pose.pose.position.y = .2
+    goal.target_pose.pose.position.y = 0
     # No rotation of the mobile base frame w.r.t. map frame
     goal.target_pose.pose.orientation.w = 1.0
 
