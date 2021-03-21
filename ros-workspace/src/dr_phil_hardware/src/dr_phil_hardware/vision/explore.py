@@ -1,7 +1,60 @@
 #!/usr/bin/env python3
 import rospy
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, PoseStamped
 import numpy as np
+from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+import actionlib
+from nav_msgs.msg import GetPlan
+
+def is_location_available(goal: MoveBaseGoal) -> bool:
+    start = PoseStamped()
+    start.header.seq = 0
+    start.header.frame_id = "map"
+    start.header.stamp = rospy.Time(0)
+    start.pose.position.x = robot_x  
+    start.pose.position.y = robot_y 
+
+    get_plan = rospy.ServiceProxy('/move_base/make_plan', GetPlan)
+    req = GetPlan()
+    req.start = start
+    req.goal = goal
+    req.tolerance = .5
+    resp = get_plan(req.start, req.goal, req.tolerance)
+    
+    if resp:
+        return True
+    else:
+        return False
+
+def select_rand_point_on_map():
+    pass
+
+def get_test_goal():
+    # Creates a new goal with the MoveBaseGoal constructor
+    goal = MoveBaseGoal()
+    goal.target_pose.header.frame_id = "map"
+    goal.target_pose.header.stamp = rospy.Time.now()
+    # Move 0.1 meters forward along the x axis of the "map" coordinate frame 
+    goal.target_pose.pose.position.x = 0.1
+    # No rotation of the mobile base frame w.r.t. map frame
+    goal.target_pose.pose.orientation.w = 1.0
+
+    return goal
+
+def move_to_goal(goal : MoveBaseGoal):
+    client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
+    client.wait_for_server()
+    # Sends the goal to the action server.
+    client.send_goal(goal)
+    # Waits for the server to finish performing the action.
+    wait = client.wait_for_result()
+    # If the result doesn't arrive, assume the Server is not available
+    if not wait:
+        rospy.logerr("Action server not available!")
+        rospy.signal_shutdown("Action server not available!")
+    else:
+    # Result of executing the action
+        return client.get_result()   
 
 def rotate360():
     #Starts a new node
@@ -9,7 +62,7 @@ def rotate360():
     velocity_publisher = rospy.Publisher('cmd_vel', Twist, queue_size=10)
     vel_msg = Twist()
 
-    print("Rotating the robot by 360deg")
+    print("Rotating the robot by 360 deg")
     # larger than 360 because rospy.Time.now() has a slight delay
     angle = 490 #angle in deg
     speed = 40 #speed in deg/sec
@@ -45,10 +98,3 @@ def rotate360():
     vel_msg.angular.z = 0
     velocity_publisher.publish(vel_msg)
     rospy.spin()
-
-if __name__ == '__main__':
-    try:
-        # Testing our function
-        rotate360()
-    except rospy.ROSInterruptException:
-        pass
