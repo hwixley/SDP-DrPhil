@@ -20,6 +20,7 @@ struct Robot {
     var robotID: String
     var schedule: CleanSchedule? = nil
     var returnTime: String? = ""
+    var returnDuration: String? = ""
 }
 
 struct StatusInfo {

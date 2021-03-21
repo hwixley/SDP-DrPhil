@@ -46,12 +46,20 @@ class HomeViewController: UIViewController {
             self.taskStatusLabel.isHidden = false
             self.tableView.isHidden = true
             
-            if MyUser.robot!.returnTime != "" {
+            if MyUser.robot!.returnTime != "" && MyUser.robot!.returnDuration != "" {
+                var status = ""
                 if MyUser.robot!.returnTime == "ASAP" {
-                    self.taskStatusLabel.text = "Return to station ASAP"
+                    status = "Return to station ASAP"
                 } else {
-                    self.taskStatusLabel.text = "Return to station at " + MyUser.robot!.returnTime!
+                    status = "Return to station at " + MyUser.robot!.returnTime!
                 }
+                if MyUser.robot!.returnDuration == "REST" {
+                    status += " for the rest of today's shift"
+                } else {
+                    status += " for " + MyUser.robot!.returnDuration! + " minutes"
+                }
+                self.taskStatusLabel.text = status
+                
             } else {
                 self.taskStatusLabel.text = "There are no queued tasks"
             }
@@ -84,6 +92,7 @@ class HomeViewController: UIViewController {
         }
         shiftStack.isHidden = true
         statusStack.isHidden = true
+        taskStack.isHidden = true
         roundsTextLabel.text = "No shift today"
         roundsLabel.text = ""
         statusLabel.text = "idle at charging station"

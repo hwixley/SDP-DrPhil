@@ -12,12 +12,22 @@ import Firebase
 class ctrlReturnViewController: UIViewController, UITextFieldDelegate {
 
     //MARK: Properties
-    @IBOutlet weak var segmentControl: UISegmentedControl!
-    @IBOutlet weak var scheduledStack: UIStackView!
-    @IBOutlet weak var returnTextfield: UITextField!
+    @IBOutlet weak var headerLabel: UILabel!
+    @IBOutlet weak var timeSegmentControl: UISegmentedControl!
+    @IBOutlet weak var durationSegmentControl: UISegmentedControl!
+    @IBOutlet weak var timeTextfield: UITextField!
+    @IBOutlet weak var durationTextfield: UITextField!
     @IBOutlet var tapOutsideKB: UITapGestureRecognizer!
-    @IBOutlet weak var segmentLabel: UILabel!
-    @IBOutlet weak var returnLabel: UILabel!
+    @IBOutlet weak var timeSegmentLabel: UILabel!
+    @IBOutlet weak var durationSegmentLabel: UILabel!
+    @IBOutlet weak var timeLabel: UILabel!
+    @IBOutlet weak var durationLabel: UILabel!
+    @IBOutlet weak var timeStack: UIStackView!
+    @IBOutlet weak var durationStack: UIStackView!
+    @IBOutlet weak var timeTextStack: UIStackView!
+    @IBOutlet weak var durationTextStack: UIStackView!
+    
+    
     
     //MARK: Pickers
     var dp = UIDatePicker()
@@ -26,51 +36,84 @@ class ctrlReturnViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        returnTextfield.delegate = self
-        self.returnTextfield.inputView = dp
+        timeTextfield.delegate = self
+        durationTextfield.delegate = self
+        self.timeTextfield.inputView = dp
         self.tapOutsideKB.isEnabled = false
-        self.scheduledStack.isHidden = true
-        segmentControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .selected)
-        segmentControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
+        self.timeTextStack.isHidden = true
+        self.durationTextStack.isHidden = true
+        timeSegmentControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .selected)
+        timeSegmentControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
+        durationSegmentControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .selected)
+        durationSegmentControl.setTitleTextAttributes([NSAttributedString.Key.foregroundColor: UIColor.white], for: .normal)
         self.setupDPbounds()
     }
     
     //MARK: Actions
     @IBAction func tapSubmit(_ sender: UIBarButtonItem) {
-        segmentLabel.textColor = UIColor.white
-        returnLabel.textColor = UIColor.white
+        timeSegmentLabel.textColor = UIColor.white
+        durationSegmentLabel.textColor = UIColor.white
+        timeLabel.textColor = UIColor.white
         
-        var dateAndTime = dateFormatter.string(from: Date()) + " " + returnTextfield.text!
+        var dateAndTime = dateFormatter.string(from: Date()) + " " + timeTextfield.text!
         
-        if segmentControl.selectedSegmentIndex == 0 {
-            self.navigationItem.prompt = "Error: you must select a return time"
-            segmentLabel.textColor = UIColor.systemPink
+        if headerLabel.isHidden == false {
+            self.navigationItem.prompt = "Error: your robot does not have a shift today"
             return
-        } else if segmentControl.selectedSegmentIndex == 2 && returnTextfield.text == "" {
-            self.returnLabel.textColor = UIColor.systemPink
+        }
+        
+        if timeSegmentControl.selectedSegmentIndex == 0 {
+            self.navigationItem.prompt = "Error: you must select a return time"
+            timeSegmentLabel.textColor = UIColor.systemPink
+            return
+        } else if timeSegmentControl.selectedSegmentIndex == 2 && timeTextfield.text == "" {
+            self.timeLabel.textColor = UIColor.systemPink
             self.navigationItem.prompt = "Error: you must enter a valid return time"
             return
-        } else {
+        } else if timeSegmentControl.selectedSegmentIndex == 1 {
             dateAndTime = "ASAP"
         }
         
-        Firestore.firestore().collection("robots").document(MyUser.robot!.robotID).updateData(["returnTime": dateAndTime])
+        var duration = durationTextfield.text ?? ""
+        
+        if durationSegmentControl.selectedSegmentIndex == 0 {
+            self.navigationItem.prompt = "Error: you must select a duration"
+            durationSegmentLabel.textColor = UIColor.systemPink
+            return
+        } else if durationSegmentControl.selectedSegmentIndex == 2 && durationTextfield.text == "" {
+            self.durationLabel.textColor = UIColor.systemPink
+            self.navigationItem.prompt = "Error: you must enter a valid duration"
+            return
+        } else if durationSegmentControl.selectedSegmentIndex == 1 {
+            duration = "REST"
+        }
+        Firestore.firestore().collection("robots").document(MyUser.robot!.robotID).updateData(["returnTime": dateAndTime, "returnDuration": duration])
         
         MyUser.robot!.returnTime = dateAndTime
+        MyUser.robot!.returnDuration = duration
         
         self.performSegue(withIdentifier: "submitStopSegue", sender: self)
     }
     
     @IBAction func tapOutsideKB(_ sender: UITapGestureRecognizer) {
-        returnTextfield.resignFirstResponder()
+        timeTextfield.resignFirstResponder()
+        durationTextfield.resignFirstResponder()
         tapOutsideKB.isEnabled = false
     }
     
     @IBAction func segmentChanged(_ sender: UISegmentedControl) {
-        if segmentControl.selectedSegmentIndex == 2 {
-            scheduledStack.isHidden = false
+        if timeSegmentControl.selectedSegmentIndex == 2 {
+            timeTextStack.isHidden = false
         } else {
-            scheduledStack.isHidden = true
+            timeTextStack.isHidden = true
+        }
+    }
+    
+    @IBAction func durationSegmentChanged(_ sender: UISegmentedControl) {
+        if durationSegmentControl.selectedSegmentIndex == 2 {
+            durationTextStack.isHidden = false
+        } else {
+            durationTextStack.isHidden = true
         }
     }
     
@@ -80,7 +123,9 @@ class ctrlReturnViewController: UIViewController, UITextFieldDelegate {
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        returnTextfield.text = dateFormatter3.string(from: dp.date)
+        if textField == timeTextfield {
+            timeTextfield.text = dateFormatter3.string(from: dp.date)
+        }
     }
     
     //MARK: Date picker
@@ -92,16 +137,21 @@ class ctrlReturnViewController: UIViewController, UITextFieldDelegate {
         
         if isWeekday() {
             if MyUser.robot!.schedule!.weekdays == nil {
-                segmentControl.isEnabled = false
-                segmentLabel.text = "Your robot does not have a shift on weekdays"
+                timeSegmentControl.isEnabled = false
+                headerLabel.text = "Your robot does not have a shift on weekdays"
             } else {
                 dp.maximumDate = dateFormatter2.date(from: dateFormatter.string(from: Date()) + " " + MyUser.robot!.schedule!.weekdays!.end)
             }
         } else {
             if MyUser.robot!.schedule!.weekends == nil {
-                segmentControl.isEnabled = false
-                segmentLabel.text = "Your robot does not have a shift on weekends"
+                timeStack.isHidden = true
+                durationStack.isHidden = true
+                headerLabel.isHidden = false
+                headerLabel.text = "Your robot does not have a shift on weekends"
             } else {
+                headerLabel.isHidden = true
+                timeStack.isHidden = false
+                durationStack.isHidden = false
                 dp.maximumDate = dateFormatter2.date(from: dateFormatter.string(from: Date()) + " " + MyUser.robot!.schedule!.weekends!.end)
             }
         }

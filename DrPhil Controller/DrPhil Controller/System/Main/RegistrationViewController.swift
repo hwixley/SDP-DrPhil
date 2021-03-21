@@ -81,7 +81,9 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
                 } else {
                     let db = Firestore.firestore()
                     
-                    db.collection("robots").document(self.idTextfield.text!).setData(["uid": authResult!.user.uid, "rid": self.idTextfield.text!,"weekends": [], "weekdays": [], "returnTime": ""])
+                    db.collection("robots").document(self.idTextfield.text!).setData(["uid": authResult!.user.uid, "rid": self.idTextfield.text!,"weekends": [], "weekdays": [], "returnTime": "", "returnDuration": ""])
+                    
+                    db.collection("users").document(authResult!.user.uid).setData(["rid": self.idTextfield.text!])
                     
                     db.collection("unregistered-models").document(self.idTextfield.text!).delete()
                     

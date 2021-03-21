@@ -744,7 +744,7 @@
                                 <rect key="frame" x="8" y="96" width="398" height="709"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="yhD-JR-XHb">
-                                        <rect key="frame" x="0.0" y="0.0" width="398" height="107"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="398" height="103"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Cleaning schedule for today" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ygQ-aL-zVb">
                                                 <rect key="frame" x="0.0" y="0.0" width="398" height="33"/>
@@ -753,7 +753,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Er4-Q4-zKb">
-                                                <rect key="frame" x="0.0" y="38" width="398" height="69"/>
+                                                <rect key="frame" x="0.0" y="38" width="398" height="65"/>
                                                 <subviews>
                                                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HP6-wH-m3P">
                                                         <rect key="frame" x="0.0" y="0.0" width="398" height="20.5"/>
@@ -776,10 +776,10 @@
                                                         </subviews>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="sJX-iM-sSI">
-                                                        <rect key="frame" x="0.0" y="25.5" width="398" height="43.5"/>
+                                                        <rect key="frame" x="0.0" y="25.5" width="398" height="39.5"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Cleaning intervals (mins):" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bnn-ZA-19p">
-                                                                <rect key="frame" x="0.0" y="0.0" width="165" height="43.5"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="165" height="39.5"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="width" constant="165" id="bvW-CV-9GE"/>
                                                                 </constraints>
@@ -788,7 +788,7 @@
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="NA" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lpW-1r-VuW">
-                                                                <rect key="frame" x="175" y="0.0" width="223" height="43.5"/>
+                                                                <rect key="frame" x="175" y="0.0" width="223" height="39.5"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <nil key="highlightedColor"/>
@@ -800,7 +800,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="ZZN-my-ddE">
-                                        <rect key="frame" x="0.0" y="132" width="398" height="117.5"/>
+                                        <rect key="frame" x="0.0" y="128" width="398" height="117.5"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dr Phil's status" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4nN-5U-OaF">
                                                 <rect key="frame" x="0.0" y="0.0" width="398" height="33"/>
@@ -857,7 +857,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="v8Y-H0-aod">
-                                        <rect key="frame" x="0.0" y="274.5" width="398" height="434.5"/>
+                                        <rect key="frame" x="0.0" y="270.5" width="398" height="438.5"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Task queue" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="czc-Ua-tgF">
                                                 <rect key="frame" x="0.0" y="0.0" width="398" height="33"/>
@@ -865,14 +865,14 @@
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gv7-SE-Ed0">
-                                                <rect key="frame" x="0.0" y="38" width="398" height="20.5"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gv7-SE-Ed0">
+                                                <rect key="frame" x="0.0" y="38" width="398" height="24.5"/>
+                                                <fontDescription key="fontDescription" name="DINAlternate-Bold" family="DIN Alternate" pointSize="21"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="k7T-vm-CsX">
-                                                <rect key="frame" x="0.0" y="63.5" width="398" height="371"/>
+                                                <rect key="frame" x="0.0" y="67.5" width="398" height="371"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                             </tableView>
                                         </subviews>
@@ -1217,6 +1217,12 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="80" translatesAutoresizingMaskIntoConstraints="NO" id="4mK-Kx-71l">
                                 <rect key="frame" x="8" y="108" width="398" height="450"/>
                                 <subviews>
+                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WAY-TU-OLZ">
+                                        <rect key="frame" x="0.0" y="0.0" width="398" height="0.0"/>
+                                        <fontDescription key="fontDescription" name="DINAlternate-Bold" family="DIN Alternate" pointSize="23"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="d8P-9q-9d4">
                                         <rect key="frame" x="0.0" y="0.0" width="398" height="185"/>
                                         <subviews>
@@ -1279,6 +1285,9 @@
                                                     <segment title="Custom duration"/>
                                                 </segments>
                                                 <color key="selectedSegmentTintColor" red="0.38909316059999999" green="0.1214886978" blue="0.96904164550000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <connections>
+                                                    <action selector="durationSegmentChanged:" destination="kvl-YG-ruZ" eventType="valueChanged" id="EnM-yp-x9w"/>
+                                                </connections>
                                             </segmentedControl>
                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="6" translatesAutoresizingMaskIntoConstraints="NO" id="FgD-2z-JNz">
                                                 <rect key="frame" x="0.0" y="125" width="398" height="60"/>
@@ -1334,12 +1343,20 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="returnLabel" destination="aEL-b8-lDg" id="Hgv-xT-B0j"/>
-                        <outlet property="returnTextfield" destination="gXr-P3-lfg" id="mmZ-m9-PtF"/>
-                        <outlet property="scheduledStack" destination="mMP-4p-AUO" id="GeP-MK-RHa"/>
-                        <outlet property="segmentControl" destination="IQy-nf-qwS" id="G37-3y-ZBR"/>
-                        <outlet property="segmentLabel" destination="VkF-Sx-kjQ" id="qPg-R2-imc"/>
+                        <outlet property="durationLabel" destination="c3s-g1-qNe" id="pmq-pG-EJy"/>
+                        <outlet property="durationSegmentControl" destination="2jX-tS-NRu" id="zsj-iU-L6O"/>
+                        <outlet property="durationSegmentLabel" destination="bld-08-D2O" id="7OD-ek-PN7"/>
+                        <outlet property="durationStack" destination="H9U-T3-lmf" id="zxt-tn-Iaz"/>
+                        <outlet property="durationTextStack" destination="FgD-2z-JNz" id="Xu1-GY-1wi"/>
+                        <outlet property="durationTextfield" destination="e1e-Uh-eYE" id="uB4-V1-KcD"/>
+                        <outlet property="headerLabel" destination="WAY-TU-OLZ" id="ynK-fZ-NhY"/>
                         <outlet property="tapOutsideKB" destination="9ip-dw-zah" id="cx5-Nt-5YO"/>
+                        <outlet property="timeLabel" destination="aEL-b8-lDg" id="ZWV-gU-cs9"/>
+                        <outlet property="timeSegmentControl" destination="IQy-nf-qwS" id="qQS-Dy-Zqf"/>
+                        <outlet property="timeSegmentLabel" destination="VkF-Sx-kjQ" id="plp-SQ-4k9"/>
+                        <outlet property="timeStack" destination="d8P-9q-9d4" id="DTg-cT-SUI"/>
+                        <outlet property="timeTextStack" destination="mMP-4p-AUO" id="8C9-N0-51T"/>
+                        <outlet property="timeTextfield" destination="gXr-P3-lfg" id="95x-Cq-6Cg"/>
                         <segue destination="Fxf-AG-u3o" kind="presentation" identifier="submitStopSegue" modalPresentationStyle="fullScreen" id="ugT-5q-Mwz"/>
                     </connections>
                 </viewController>
