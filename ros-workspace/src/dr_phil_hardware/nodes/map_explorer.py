@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
+from socket import timeout
 import rospy
+import tf
 from nav_msgs.msg import OccupancyGrid
 import dr_phil_hardware.vision.explore as explore
-from geometry_msgs.msg import PoseWithCovarianceStamped, Pose
+from geometry_msgs.msg import PoseWithCovarianceStamped, Pose, PoseStamped
 
 
 class MapExplorer:
@@ -21,10 +23,21 @@ class MapExplorer:
 
     def spin(self):
         goal = explore.get_test_goal()
+        tf_goal = goal
+        
+        self.listener = tf.TransformListener()
+        self.listener.waitForTransform(
+            'map',
+            'base_link',
+            rospy.Time(0),
+            timeout=rospy.Duration(2)
+        )
+
+        tf_goal.target_pose = self.listener.transformPose('map', goal.target_pose)
         #print(self.robot_pose)
         
         #print("goal: {}\n\n robot_pose: {}\n\n".format(goal, self.robot_pose))
-        print(explore.is_location_available(self.robot_pose, goal))
+        print(explore.is_location_available(self.robot_pose, tf_goal))
 
 if __name__ == "__main__":
     rospy.init_node("map_explorer", anonymous=False)
