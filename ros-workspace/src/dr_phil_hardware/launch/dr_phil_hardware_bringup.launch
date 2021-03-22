@@ -2,4 +2,6 @@
   <!-- those nodes cannot be run in simulation or they will otherwise interfere with gazebo -->
   
   <node pkg="dr_phil_hardware" type="dr_phil_hardware_bringup" name="dr_phil_hardware_bringup" output="screen"/>
+  <include file="$(find dr_phil_hardware)/launch/client_stack/rosbridge.launch"/>
+
 </launch>

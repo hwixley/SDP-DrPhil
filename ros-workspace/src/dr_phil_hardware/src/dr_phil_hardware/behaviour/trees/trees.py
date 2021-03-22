@@ -6,7 +6,7 @@ from py_trees.blackboard import Blackboard
 from dr_phil_hardware.arm_interface.command_arm import ArmCommander, MoveGroup
 import py_trees
 from dr_phil_hardware.behaviour.leafs.ros import CallService, CreateMoveItMove, DynamicReconfigure, PublishTopic,RunRos,MessageChanged,ActionClientConnectOnInit,CreateMoveitTrajectoryPlan,ExecuteMoveItPlan
-from dr_phil_hardware.behaviour.leafs.general import ClosestObstacle, Lambda,SetBlackboardVariableCustom,CheckFileExists
+from dr_phil_hardware.behaviour.leafs.general import ClosestObstacle,Lambda,SetBlackboardVariableCustom
 from dr_phil_hardware.behaviour.decorators import HoldStateForDuration
 import operator
 from geometry_msgs.msg import Twist, PoseArray, Pose, PoseStamped
@@ -17,11 +17,82 @@ import rospy
 from move_base_msgs.msg import MoveBaseAction,MoveBaseGoal
 from std_srvs.srv import Empty,EmptyRequest
 import tf.transformations as t 
-from dr_phil_hardware.vision.utils import quat_from_yaw
+from dr_phil_hardware.utils import rotate_pose_by_yaw, quat_to_vec, quat_from_yaw
 import numpy as np
-from dr_phil_hardware.srv import GenerateTarget,GenerateTargetRequest,GenerateTargetResponse
 import math 
-from move_base.cfg import MoveBaseConfig
+from dr_phil_hardware.msg import CleaningTime,CleaningSchedule
+import datetime
+import time
+
+
+def create_check_on_according_to_schedule(schedule_src):
+    """creates subtree which returns failure if we are not on schedule or schedule does not exist,
+    and succeeds if we are on schedule and should be cleaning
+
+    Args:
+        schedule_src ([type]): [description]
+    """
+    def in_cleaning_interval(time: datetime.datetime,cleaningTime : CleaningTime):
+        time_now_seconds = time.hour * 60 * 60 + time.minute * 60
+        cleaning_time_on_seconds = cleaningTime.hour_on * 60 * 60 + cleaningTime.minute_on * 60
+        cleaning_time_off_seconds = cleaningTime.hour_off * 60 * 60 + cleaningTime.minute_off * 60
+        return time_now_seconds >= cleaning_time_on_seconds and time_now_seconds < cleaning_time_off_seconds
+
+    def check_schedule():
+        schedule : CleaningSchedule= Blackboard().get(schedule_src)
+        now = datetime.datetime.now()
+        is_weekend = now.weekday() >= 5
+
+        if schedule is None:
+            return Status.FAILURE
+        
+        on_schedule_weekday = not is_weekend and in_cleaning_interval(now,schedule.weekdays)
+        on_schedule_weekend = is_weekend and in_cleaning_interval(now,schedule.weekends)
+    
+        if on_schedule_weekend or on_schedule_weekday:
+            return Status.SUCCESS
+        else:
+            return Status.FAILURE
+
+    return Lambda("checkOnSchedule",check_schedule)
+
+def create_wait_for_next_clean(schedule_src):
+    """creates subtree which returns failure if we are not on schedule or schedule does not exist,
+    and succeeds if we are on schedule and should be cleaning
+
+    Args:
+        schedule_src ([type]): [description]
+    """
+    def check_schedule():
+
+        last_clean = Blackboard().get("clean/ended")
+
+        if last_clean is None:
+            last_clean = time.time()
+            Blackboard().set("clean/ended",last_clean)
+
+        schedule : CleaningSchedule = Blackboard().get(schedule_src)
+        now = datetime.datetime.now()
+        is_weekend = now.weekday() >= 5
+
+        if schedule is None:
+            return Status.FAILURE
+        
+        interval = 0
+        if is_weekend:
+            interval = schedule.weekends.interval
+        else:
+            interval = schedule.weekdays.interval 
+
+        if time.time() >= interval * 60 + last_clean:
+            return Status.SUCCESS
+
+        return Status.RUNNING
+    def reset():
+        Blackboard().set("clean/ended",None)
+
+    return Lambda("waitForNextClean",check_schedule,reset)
+
 
 def create_exploration_completed_check(duration=60):
     """ creates subtree which returns SUCCESS if no data has been received from the exploration nodes for the given duration.
@@ -62,7 +133,7 @@ def create_set_positions_arm(parameters,name="positionArm"):
         msg=positions,
         msg_type=Float64MultiArray,
         topic="/joint_trajectory_point",
-        success_after_n_publishes=5,
+        success_after_n_publishes=2,
         queue_size=10
     )
     
@@ -149,15 +220,15 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,map_path=None,d
 
     bb2bufferPose = "{}/handle_pose".format(name)
     bb2bufferSpray = "{}/spray_poses".format(name)
-
+    killkey = "/disinfect/kill"
     # ------ start nodes ----------
-    parallel = py_trees.composites.Parallel("disinfectDoors")
+    parallel = py_trees.composites.Parallel("disinfectDoors",policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
 
     load_map = create_load_map(map_path=map_path + ".yaml")
 
     start_disinfection_nodes = RunRos(name="runDisinfectionNodes",
         blackboard_alive_key="/disinfect/alive",
-        blackboard_kill_trigger_key="/disinfect/kill",
+        blackboard_kill_trigger_key=killkey,
         launch_file="disinfect_task.launch",
         package="dr_phil_hardware"
     )
@@ -168,7 +239,6 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,map_path=None,d
     sequence = py_trees.composites.Sequence(name="mainSequence")
     sequence.blackbox_level = BlackBoxLevel.BIG_PICTURE
 
-    wait = py_trees.timers.Timer(duration=8)
 
     reset_arm = create_set_positions_arm([0,0,-1.5,1.5,-1.5,0],name="resetArm")
 
@@ -214,7 +284,9 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,map_path=None,d
     
     execute_spray_sequence = create_execute_spray_trajectory(bb2bufferSpray)
 
-    sequence.add_children([wait,reset_arm,localize,await_targets,wait_2,snapshot_target,publish_vis_s,publish_vis_h,move_to_door,execute_spray_sequence])
+    kill_nodes = py_trees.blackboard.SetBlackboardVariable(name="killNodes",variable_name=killkey)
+    
+    sequence.add_children([wait,reset_arm,localize,await_targets,wait_2,snapshot_target,publish_vis_s,publish_vis_h,move_to_door,execute_spray_sequence,kill_nodes])
 
     parallel.add_children([load_map,start_disinfection_nodes,sequence])
 
@@ -495,27 +567,19 @@ def create_move_in_front_of_door(handle_pose_src,spray_path_src,distance_from_do
         if pose:
             handle_quat = [pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w]
 
-            
-            (a,b,c) = t.euler_from_quaternion(handle_quat)
-            mat = t.euler_matrix(a,b,c)
-            vec =  (mat[:,:-1] @ np.array([[1],[0],[0]])* distance_from_door )
+            vec = quat_to_vec(handle_quat) * distance_from_door
 
-            
             pose.position.x += vec[0]
             pose.position.y += vec[1]
             pose.position.z += vec[2]
             
-            rot = quat_from_yaw(math.pi)
-            
-            new_quat = t.quaternion_multiply(handle_quat,rot)
-            pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w = new_quat
-
+            rotated_pose = rotate_pose_by_yaw(math.pi,pose)
 
             ps = PoseStamped()
-            ps.pose = pose
+            ps.pose = rotated_pose
             ps.header.frame_id = "base_link"
             ps.header.stamp = rospy.Time.now()
-
+            
             g = MoveBaseGoal()
             g.target_pose = ps
             
