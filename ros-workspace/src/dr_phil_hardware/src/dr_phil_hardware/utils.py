@@ -5,7 +5,55 @@ import rospy
 import sys
 from std_msgs.msg import String
 import py_trees
+from geometry_msgs.msg import Pose
+from dr_phil_hardware.vision.utils import quat_from_yaw
+import math
+import numpy as np
+import tf.transformations as t
+import copy 
 
+
+
+
+def quat_to_vec(quat : list):
+    """returns the vector resulting from rotating the x unit vector by the given quaternion
+
+    Args:
+        quat (list): [description]
+
+    Returns:
+        [type]: [description]
+    """
+
+    (a,b,c) = t.euler_from_quaternion(quat)
+    mat = t.euler_matrix(a,b,c)
+    vec =  mat[:,:-1] @ np.array([[1],[0],[0]])
+
+    return vec
+
+
+            
+
+def rotate_pose_by_yaw(yaw,pose : Pose):
+    """Returns new pose with orientation rotated by the given yaw angle in radians
+
+    Args:
+        yaw ([type]): [description]
+        pose (Pose): [description]
+
+    Returns:
+        [type]: [description]
+    """
+    curr_quat = [pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w]
+    (a,b,c) = t.euler_from_quaternion(curr_quat)
+    rot = quat_from_yaw(yaw)
+    new_quat = t.quaternion_multiply(curr_quat,rot)
+
+    new_pose = Pose()
+    new_pose.position = copy.deepcopy(pose.position)
+    new_pose.orientation.x,new_pose.orientation.y,new_pose.orientation.z,new_pose.orientation.w = new_quat
+
+    return  new_pose
 
 
 def interpolate(self,min_v,max_v,r):

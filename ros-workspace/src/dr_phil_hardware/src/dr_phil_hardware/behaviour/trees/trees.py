@@ -6,7 +6,7 @@ from py_trees.blackboard import Blackboard
 from dr_phil_hardware.arm_interface.command_arm import ArmCommander, MoveGroup
 import py_trees
 from dr_phil_hardware.behaviour.leafs.ros import CallService, CreateMoveItMove, DynamicReconfigure, PublishTopic,RunRos,MessageChanged,ActionClientConnectOnInit,CreateMoveitTrajectoryPlan,ExecuteMoveItPlan
-from dr_phil_hardware.behaviour.leafs.general import ClosestObstacle, Lambda,SetBlackboardVariableCustom,CheckFileExists
+from dr_phil_hardware.behaviour.leafs.general import ClosestObstacle,Lambda,SetBlackboardVariableCustom
 from dr_phil_hardware.behaviour.decorators import HoldStateForDuration
 import operator
 from geometry_msgs.msg import Twist, PoseArray, Pose, PoseStamped
@@ -17,11 +17,9 @@ import rospy
 from move_base_msgs.msg import MoveBaseAction,MoveBaseGoal
 from std_srvs.srv import Empty,EmptyRequest
 import tf.transformations as t 
-from dr_phil_hardware.vision.utils import quat_from_yaw
+from dr_phil_hardware.utils import rotate_pose_by_yaw, quat_to_vec, quat_from_yaw
 import numpy as np
-from dr_phil_hardware.srv import GenerateTarget,GenerateTargetRequest,GenerateTargetResponse
 import math 
-from move_base.cfg import MoveBaseConfig
 from dr_phil_hardware.msg import CleaningTime,CleaningSchedule
 import datetime
 import time
@@ -569,27 +567,19 @@ def create_move_in_front_of_door(handle_pose_src,spray_path_src,distance_from_do
         if pose:
             handle_quat = [pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w]
 
-            
-            (a,b,c) = t.euler_from_quaternion(handle_quat)
-            mat = t.euler_matrix(a,b,c)
-            vec =  (mat[:,:-1] @ np.array([[1],[0],[0]])* distance_from_door )
+            vec = quat_to_vec(handle_quat) * distance_from_door
 
-            
             pose.position.x += vec[0]
             pose.position.y += vec[1]
             pose.position.z += vec[2]
             
-            rot = quat_from_yaw(math.pi)
-            
-            new_quat = t.quaternion_multiply(handle_quat,rot)
-            pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w = new_quat
-
+            rotated_pose = rotate_pose_by_yaw(math.pi,pose)
 
             ps = PoseStamped()
-            ps.pose = pose
+            ps.pose = rotated_pose
             ps.header.frame_id = "base_link"
             ps.header.stamp = rospy.Time.now()
-
+            
             g = MoveBaseGoal()
             g.target_pose = ps
             
