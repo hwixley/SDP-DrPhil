@@ -1,3 +1,5 @@
+bool set_custom_distance_threshold
+float64 distance_thresh
 ---
 bool success
 move_base_msgs/MoveBaseGoal goal

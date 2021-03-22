@@ -83,27 +83,43 @@ bool
 TargetGenerator::generateTargetService(
   dr_phil_hardware::GenerateTarget::Request& req,
   dr_phil_hardware::GenerateTarget::Response& res)
-{
+
+{ 
+  //If the parameter is set of custom distance threshold is true, change the value to the one passed in the call
+  if (req.set_custom_distance_threshold){
+    DISTANCE_THRESHOLD_ = req.distance_thresh;
+  }
+
+
   std::random_device rd;
   std::mt19937 gen(rd());
 
   // Use 5 as buffer for map boundaries, as want to avoid edge cases.
-  std::uniform_int_distribution<> grid_x(5, map_size_x_ - 5);
-  std::uniform_int_distribution<> grid_y(5, map_size_y_ - 5);
+  std::uniform_int_distribution<> grid_x(50, map_size_x_ - 50);
+  std::uniform_int_distribution<> grid_y(50, map_size_y_ - 50);
 
   double world_x, world_y;
   uint32_t idx;
   bool thresh;
 
   auto checkThresh = [&](double x, double y, double wx, double wy) {
-    return sqrt(pow(wx - x, 2) + pow(wy - y, 2)) > DISTANCE_THRESHOLD_;
+    return sqrt(pow(wx - x, 2) + pow(wy - y, 2)) <= DISTANCE_THRESHOLD_; //Must be lower than the threshold
   };
 
   auto printTarget = [](double wx, double wy) {
     std::cout << "Target: (" << wx << " ," << wy << ")" << std::endl;
   };
 
+  
+  // int count_iterations = 0;
+  // auto original_threshold = DISTANCE_THRESHOLD;
   do {
+    // count_iterations++;
+    // //Every 5 iterations, increase the distance threshold. This is done in order to prevent the robot from getting stuck.
+    // if (count_iterations%5==0){
+    //   count_iterations=0
+    //   _DISTANCE_THRESHOLD+=1;
+    // }
     uint32_t map_x = grid_x(gen);
     uint32_t map_y = grid_y(gen);
 
@@ -114,7 +130,10 @@ TargetGenerator::generateTargetService(
                     world_x,
                     world_y);
 
+
   } while (!((map_data_[idx] == 0) && (thresh == 1)));
+  //Reset threshold
+  // _DISTANCE_THRESHOLD = original_threshold;
 
   double radians = theta_ * (PI_ / 180.0);
   tf::Quaternion quaternion;
@@ -168,7 +187,7 @@ TargetGenerator::targetMarker(const double x, const double y) const
   marker.action = visualization_msgs::Marker::ADD;
   marker.pose.position.x = x;
   marker.pose.position.y = y;
-  marker.pose.position.z = 1;
+  marker.pose.position.z = 0;
   marker.pose.orientation.x = 0.0;
   marker.pose.orientation.y = 0.0;
   marker.pose.orientation.z = 0.0;
@@ -190,7 +209,7 @@ TargetGenerator::setParams()
   // set target orientation of robot.
   theta_ = 90.0;
   PI_ = 3.14159265358;
-  DISTANCE_THRESHOLD_ = 0.0;
+  DISTANCE_THRESHOLD_ = 1.0; //Setting the threshold low 
 }
 
 
@@ -200,7 +219,7 @@ int main(int argc, char** argv)
   ros::NodeHandle nh;
 
   TargetGenerator generator(nh);
-
+  
   ros::spin();
   return 0;
 }
