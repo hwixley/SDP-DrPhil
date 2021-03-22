@@ -105,11 +105,25 @@ def move_to_goal(goal : MoveBaseGoal):
         rospy.signal_shutdown("Action server not available!")
     else:
     # Result of executing the action
-        return client.get_result()   
+        return client.get_result()  
+
+def stop_in_place():
+    velocity_publisher = rospy.Publisher('cmd_vel', Twist, queue_size=10)
+    vel_msg = Twist()
+    vel_msg.linear.x=0
+    vel_msg.linear.y=0
+    vel_msg.linear.z=0
+    vel_msg.angular.x = 0
+    vel_msg.angular.y = 0
+    vel_msg.angular.z = 0 
+    velocity_publisher.publish(vel_msg)
+
+
+
 
 def rotate360():
     #Starts a new node
-    rospy.init_node('map_explore', anonymous=True)
+    #rospy.init_node('ok', anonymous=True)
     velocity_publisher = rospy.Publisher('cmd_vel', Twist, queue_size=10)
     vel_msg = Twist()
 
@@ -148,4 +162,4 @@ def rotate360():
     #Forcing our robot to stop
     vel_msg.angular.z = 0
     velocity_publisher.publish(vel_msg)
-    rospy.spin()
+    #rospy.spin()
