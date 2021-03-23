@@ -34,6 +34,18 @@ void sprayCallback(const std_msgs::Float32 &msg_range)
   // Send the message
   pub->Publish(msg);
   
+    // Create a lightmessage
+  //gazebo::msgs::Light msg1;
+  msg.set_name("dr-phil::px100/right_finger_link::led");
+  msg.set_range(float(msg_range.data));
+  pub->Publish(msg);
+  
+    // Create a lightmessage
+  //gazebo::msgs::Light msg2;
+  msg.set_name("dr-phil::px100/left_finger_link::led");
+  msg.set_range(float(msg_range.data));
+  pub->Publish(msg);
+  
   gazebo::client::shutdown();
  // printf("I heard: [%s]", msg_range->data.c_str());
 }
