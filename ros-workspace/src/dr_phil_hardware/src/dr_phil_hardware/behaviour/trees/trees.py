@@ -23,7 +23,7 @@ import math
 from dr_phil_hardware.msg import CleaningTime,CleaningSchedule
 import datetime
 import time
-
+import copy
 
 def create_check_on_according_to_schedule(schedule_src):
     """creates subtree which returns failure if we are not on schedule or schedule does not exist,
@@ -206,11 +206,11 @@ def create_explore_frontier_and_save_map(map_path=None,timeout=120,no_data_timeo
 
 
     
-def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,map_path=None,distance_from_door=0.1,name="disinfectDoors"):
+def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,pose_frame="map",map_path=None,distance_from_door=0.1,name="disinfectDoors"):
     """[summary]
 
     Args:
-        handle_pose_src (`str->Pose`): 
+        handle_pose_src (`str->PoseStamped`): 
         spray_path_src (`str->PoseArray`):
         map_path ([type], optional): [description]. path to file without extension.
         name (str, optional): [description]. Defaults to "disinfectDoors".
@@ -266,27 +266,20 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,map_path=None,d
 
     snapshot_target = Lambda("snapshotTargets",lambda:snapshot_targets(snapshot=True))
 
-    def get_pose():
-        ps = PoseStamped()
-        ps.pose = Blackboard().get(bb2bufferPose)
-        ps.header.frame_id = "base_link"
-        return ps 
 
     def get_spray():
-        s = Blackboard().get(bb2bufferSpray)
-        return s
+        s :PoseArray= Blackboard().get(bb2bufferSpray)
+        sc = copy.deepcopy(s)
+        sc.poses = [sc.poses[0]]
+        return sc
 
-    publish_vis_h = PublishTopic("publishHandle",get_pose,PoseStamped,"/vis/handle_target",success_on_publish=True)
     publish_vis_s = PublishTopic("publishSprayTargets",get_spray,PoseArray,"/vis/spray_targets",success_on_publish=True)
     
-    move_to_door = create_move_in_front_of_door(bb2bufferPose,bb2bufferSpray,distance_from_door=distance_from_door,name="moveToDoor")
-
-    
-    execute_spray_sequence = create_execute_spray_trajectory(bb2bufferSpray)
+    execute_spray_sequence = create_execute_spray_trajectory(bb2bufferSpray,pose_frame,distance_from_pose=distance_from_door)
 
     kill_nodes = py_trees.blackboard.SetBlackboardVariable(name="killNodes",variable_name=killkey)
     
-    sequence.add_children([wait,reset_arm,localize,await_targets,wait_2,snapshot_target,publish_vis_s,publish_vis_h,move_to_door,execute_spray_sequence,kill_nodes])
+    sequence.add_children([wait,reset_arm,localize,await_targets,wait_2,snapshot_target,publish_vis_s,execute_spray_sequence,kill_nodes])
 
     parallel.add_children([load_map,start_disinfection_nodes,sequence])
 
@@ -418,16 +411,29 @@ def create_move_base_to_reach_pose(target_pose_src,name="reachTargetPos"):
     """ reaches first target in the given pose array on the blackboard """
 
 
-    def get_pose():
+    def get_goal():
         return py_trees.Blackboard().get(target_pose_src)
+
+    def get_pose():
+        goal : MoveBaseGoal= get_goal()
+        if goal is None:
+            return PoseStamped()
+        else:
+            print(goal.target_pose)
+            return goal.target_pose
+
+    sequence = py_trees.composites.Sequence(name="reachTargetPosSequence")
+
+    publish_vis_h = PublishTopic("publishMoveTarget",get_pose,PoseStamped,"/vis/handle_target",success_on_publish=True)
 
     move_base = ActionClientConnectOnInit(name,
                             MoveBaseAction,
-                            get_pose,
+                            get_goal,
                             action_namespace="/move_base",
                             override_feedback_message_on_running="moving to reach target")
 
-    return move_base
+    sequence.add_children([publish_vis_h,move_base])
+    return sequence
 
 def create_try_various_arm_plans(pose_frame):
     plan = py_trees.composites.Selector()
@@ -459,7 +465,7 @@ def create_try_various_arm_plans(pose_frame):
     plan.add_children([create_trajectory_plan,create_lenient_trajectory_plan,create_p2p_plan,create_p2p_plan_lenient])
     return plan
 
-def create_execute_spray_trajectory(target_pose_src):
+def create_execute_spray_trajectory(target_pose_src,planning_frame,distance_from_pose=0.1):
 
     spray = py_trees.Sequence("executeSprayTrajectory")
 
@@ -482,14 +488,18 @@ def create_execute_spray_trajectory(target_pose_src):
 
     check_not_completed = Lambda("check_not_completed",check)
 
-    def get_spray():
-        s = Blackboard().get(target_pose_src)
-        return s
+    move_in_front = create_move_in_front_of_current_spray_pose(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE,distance_from_pose)
 
+
+    def get_spray():
+        s = Blackboard().get(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE)
+        sc = copy.deepcopy(s)
+        sc.poses = [sc.poses[0]]
+        return sc
     publish_vis_s = PublishTopic("publishSprayTargets",get_spray,PoseArray,"/vis/spray_targets",success_on_publish=True)
 
     
-    plan = create_try_various_arm_plans("base_link")
+    plan = create_try_various_arm_plans(planning_frame)
     plan.name="tryFindPlan"
     plan.add_child(py_trees.behaviours.SuccessEveryN("dummySuccess",1))
     plan.blackbox_level = plan.blackbox_level.COMPONENT
@@ -510,78 +520,115 @@ def create_execute_spray_trajectory(target_pose_src):
 
     remove_pose = Lambda("popPose",remove)
 
-    traj_sequence.add_children([publish_vis_s,check_not_completed,plan,execute_plan,remove_pose])
+    traj_sequence.add_children([publish_vis_s,check_not_completed,move_in_front,plan,execute_plan,remove_pose])
     traj_sequence = py_trees.decorators.Condition(traj_sequence,status=py_trees.Status.FAILURE)
 
     spray.add_children([move_target,traj_sequence])
     spray.blackbox_level = spray.blackbox_level.BIG_PICTURE
     return spray
 
-def create_raise_ee_to_first_target_pose_z(target_pose_src="target_poses"):
-    """ takes first target in moveit/target_poses and raises gripper to match height (plans in base_link) """
 
 
-    sequence = py_trees.composites.Sequence()
-
+def create_move_in_front_of_current_spray_pose(spray_poses_src,distance_from_pose=0.1,name="moveToSprayPose"):
     def process_pose():
-        ArmCommander().set_goal_tolerance(MoveGroup.ARM,0.15)
-        p = ArmCommander().get_current_pose(MoveGroup.ARM).pose
-        target_poses : PoseArray = py_trees.Blackboard().get(target_pose_src)
-        if target_poses:
-
-            p.position.z = target_poses.poses[0].position.z
-            pa = PoseArray()
-            pa.poses = [p]
-            pa.header = target_poses.header
-            return pa
-        else:
+        poses : PoseArray = py_trees.Blackboard().get(spray_poses_src)
+        
+        if poses is None or len(poses.poses) == 0:
             return None
 
+        pose : Pose = poses.poses[0]
+        handle_quat = [pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w]
+
+        from random import random
+        vec = quat_to_vec(handle_quat) * (-distance_from_pose + (random()*0.05))
+
+        new_pose = Pose()
+        new_pose.position.x = vec[0] + pose.position.x
+        new_pose.position.y = vec[1] + pose.position.y
+        new_pose.position.z = vec[2] + pose.position.z
+        new_pose.orientation = copy.deepcopy(pose.orientation)
+
+        ps = PoseStamped()
+        ps.pose = new_pose
+        ps.header.stamp = rospy.Time.now()
+        ps.header.frame_id = poses.header.frame_id
+        g = MoveBaseGoal()
+        g.target_pose = ps
+        
+        return  g
+
+    bb2target = "{}/target".format(name)
+
+    
+    wait = py_trees.timers.Timer(duration=5)
+
     move_target = SetBlackboardVariableCustom(
-            variable_name=CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE,
-            variable_value=process_pose,
-            name="moveTarget2BB")
+        variable_name=bb2target,
+        variable_value=process_pose,
+        name="moveTarget2BB")
 
-    create_plan = CreateMoveitTrajectoryPlan("planRaiseEE",
-        MoveGroup.ARM,0.9,
-        pose_frame="base_link",
-        pose_target_include_only_idxs=[0],
-        )
+    disable_costmap_1 = DynamicReconfigure("disableGlobalCostmap","move_base/global_costmap/inflation_layer",{
+        "enabled":False
+    })
 
-    execute_plan = ExecuteMoveItPlan("raiseEE",MoveGroup.ARM)
+    disable_costmap_2 = DynamicReconfigure("disableLocalCostmap","move_base/local_costmap/inflation_layer",{
+        "enabled":False
+    })
 
-    sequence.add_children([move_target,create_plan,execute_plan])
+    clear_costmaps = CallService("clearCostmaps","move_base/clear_costmaps",
+                                Empty,
+                                EmptyRequest(),
+                                blackboard_target="//trash")
 
-    return sequence
+    move_base = create_move_base_to_reach_pose(target_pose_src=bb2target)
+
+    enable_costmap_1 = DynamicReconfigure("disableGlobalCostmap","move_base/global_costmap/inflation_layer",{
+        "enabled":True
+    })
+
+    enable_costmap_2 = DynamicReconfigure("disableLocalCostmap","move_base/local_costmap/inflation_layer",{
+        "enabled":True
+    })
+  
+    door_open =py_trees.composites.Sequence(name=name,children=[wait,move_target,
+            disable_costmap_1,disable_costmap_2,clear_costmaps,move_base,enable_costmap_1,enable_costmap_2])
+    
+    door_open.blackbox_level = py_trees.common.BlackBoxLevel.COMPONENT
+    door_open.name = "move2Door"
+
+    return door_open
+
 
 def create_move_in_front_of_door(handle_pose_src,spray_path_src,distance_from_door=0.1,name="moveToDoor"):
     """ positions the robot perpendicular to the door at specified distance from the normal in the direction of it 
     
         Args:
-            handle_pose_src (`str->Pose`): 
+            handle_pose_src (`str->PoseStamped`): 
             spray_path_src (`str->PoseArray`): 
     """
 
     def process_pose():
-        pose : Pose = py_trees.Blackboard().get(handle_pose_src)
-        if pose:
-            handle_quat = [pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w]
+        pose_original : PoseStamped = py_trees.Blackboard().get(handle_pose_src)
+        if pose_original:
+            
+            handle_quat = [pose_original.pose.orientation.x,
+                pose_original.pose.orientation.y,
+                pose_original.pose.orientation.z,
+                pose_original.pose.orientation.w]
+
+            pose_clone = copy.deepcopy(pose_original)
 
             vec = quat_to_vec(handle_quat) * distance_from_door
 
-            pose.position.x += vec[0]
-            pose.position.y += vec[1]
-            pose.position.z += vec[2]
+            pose_clone.pose.position.x += vec[0]
+            pose_clone.pose.position.y += vec[1]
+            pose_clone.pose.position.z += vec[2]
             
-            rotated_pose = rotate_pose_by_yaw(math.pi,pose)
+            rotated_pose = rotate_pose_by_yaw(math.pi,pose_clone.pose)
 
-            ps = PoseStamped()
-            ps.pose = rotated_pose
-            ps.header.frame_id = "base_link"
-            ps.header.stamp = rospy.Time.now()
-            
+            pose_clone.pose.orientation = rotated_pose.orientation
             g = MoveBaseGoal()
-            g.target_pose = ps
+            g.target_pose = pose_clone
             
             return  g
         else:
@@ -612,38 +659,9 @@ def create_move_in_front_of_door(handle_pose_src,spray_path_src,distance_from_do
 
     move_base = create_move_base_to_reach_pose(target_pose_src=bb2target)
 
-    # manually come a bit closer as well
-    speed= 0.05
-    distance = distance_from_door * 0.5
-    time = distance / speed
 
-    moveMsg = Twist()
-    moveMsg.linear.x = speed
-    moveMsg.angular.z = 0 
-
-
-    move = PublishTopic(
-        name="haltCmdVel",
-        msg=moveMsg,
-        msg_type=Twist,
-        topic="/cmd_vel",
-        success_after_n_publishes=2,
-        success_on_publish=True
-    )
-    hold_move = HoldStateForDuration(move,"HoldFailureIgnoreRunning",time,state=py_trees.common.Status.SUCCESS,ignore_running=True)
-
-    haltMsg = Twist()
-
-    halt = PublishTopic(
-        name="haltCmdVel",
-        msg=haltMsg,
-        msg_type=Twist,
-        topic="/cmd_vel",
-        success_after_n_publishes=2,
-        success_on_publish=True
-    ) 
     door_open =py_trees.composites.Sequence(name=name,children=[wait,move_target,
-            disable_costmap_1,disable_costmap_2,clear_costmaps,move_base,hold_move,halt])
+            disable_costmap_1,disable_costmap_2,clear_costmaps,move_base])
     
     door_open.blackbox_level = py_trees.common.BlackBoxLevel.COMPONENT
     door_open.name = "move2Door"

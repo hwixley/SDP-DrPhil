@@ -18,7 +18,9 @@ import threading
 from moveit_msgs.msg import RobotTrajectory
 from geometry_msgs.msg import PoseArray 
 import dynamic_reconfigure
-import copy 
+import copy
+import tf2_py 
+import tf2_ros 
 
 try:
     from queue import Queue,LifoQueue, Empty
@@ -462,22 +464,24 @@ class ActionClientConnectOnInit(py_trees_ros.actions.ActionClient):
     def update(self):
        # we change slightly the behaviour on when action client is missing
        # and also setup the action client here in a non blocking way
-        time_left = self.connection_timeout - (rospy.get_time() -  self.time_start)
-        if not self.connected and time_left > 0:
-            if not self.action_client:
-                self.action_client = actionlib.SimpleActionClient(
-                    self.action_namespace,
-                    self.action_spec
-                )
-            if self.action_client.wait_for_server(
-                rospy.Duration(min(time_left,1))): # wait for at most a second each time
-                self.connected = True 
-            else: return py_trees.Status.RUNNING             
-
-        # the super() implementation will expect self.action_client to be non null iff connected
         if not self.connected:
-            self.action_client = None 
-            self.logger.error("{0}.could not connect to the action server at '{1}'".format(self.__class__.__name__, self.action_namespace))
+            time_left = self.connection_timeout - (rospy.get_time() -  self.time_start)
+            if time_left > 0:
+                if not self.action_client:
+                    self.action_client = actionlib.SimpleActionClient(
+                        self.action_namespace,
+                        self.action_spec
+                    )
+
+                self.feedback_message = "Waiting for action server"
+                if self.action_client.wait_for_server(
+                    rospy.Duration(min(time_left,1))): # wait for at a bit of a second each time
+                    self.connected = True 
+                else: return py_trees.Status.RUNNING             
+            else:
+                self.action_client = None 
+                self.logger.error("{0}.could not connect to the action server at '{1}'".format(self.__class__.__name__, self.action_namespace))
+                self.feedback_message = "No action server found"
 
         super_state = super().update()
 
@@ -487,6 +491,9 @@ class ActionClientConnectOnInit(py_trees_ros.actions.ActionClient):
         else:
             return super_state
 
+
+    def terminate(self, new_status):
+        super().terminate(new_status)
 
 
 
@@ -583,6 +590,8 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
         # planning finished
         else:
             # check it's valid
+            assert(self.fraction)
+
             if self.fraction < self.fraction_threshold:
                 self.feedback_message = "Fraction too low"
                 self.ran = True
@@ -591,7 +600,6 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
                 self.feedback_message = "Found valid plan"
                 # success
                 self.ran = True
-                rospy.logerr("traj {}".format(self.trajectory))
                 self.blackboard.set(CreateMoveitTrajectoryPlan.PLAN_TARGET,self.trajectory)
                 return py_trees.Status.SUCCESS
 
@@ -604,6 +612,7 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
 
     def blocking_plan(self,waypoints : PoseArray):
         """ starts planning, and blocks thread """
+    
         #TODO: check for race conditions on terminate, and anotehr startup swiftly after
         assert(isinstance(waypoints,PoseArray))
         ac = ArmCommander()
@@ -611,6 +620,7 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
         ac.set_pose_planning_frame(self.move_group,self.pose_frame)
 
         (self.trajectory,self.fraction) = ac.plan_smooth_path(self.move_group,[x for x in waypoints.poses])
+
         sys.exit()
 
 class CreateMoveItMove(CreateMoveitTrajectoryPlan):
@@ -633,9 +643,12 @@ class CreateMoveItMove(CreateMoveitTrajectoryPlan):
         (success,plan,planning_time,errorCode) = ac.plan(self.move_group)
         if success:
             self.trajectory = plan
+            self.fraction = 1 # always successfull value
+            rospy.logerr("Successfull plan fraction 1")
         else:
             self.fraction = -100 # impossible value
             self.trajectory = None
+            rospy.logerr("No plan fraction -100")
         sys.exit(0)
 
 class ExecuteMoveItPlan(py_trees.Behaviour):
@@ -870,3 +883,92 @@ class DynamicReconfigure(py_trees.Behaviour):
             self.feedback_message = "No client available"
             return py_trees.Status.FAILURE
 
+
+class TransformToBlackboard(py_trees.behaviour.Behaviour):
+    """
+    Blocking behaviour that looks for a transform and writes
+    it to a variable on the blackboard.
+    If it fails to find a transform immediately, it will update
+    with status :attr:`~py_trees.common.Status.RUNNING` and write
+    'None' to the blackboard.
+    .. tip::
+       To ensure consistent decision making, use this behaviour
+       up-front in your tree's tick to record a transform that
+       can be locked in for the remainder of the tree tick.
+    **Usage Patterns**
+    * clearing_policy == :attr:`~py_trees.common.ClearingPolicy.ON_INTIALISE`
+    Use if you have subsequent behaviours that need to make decisions on
+    whether the transform was received or not.
+    * clearing_policy == :attr:`~py_trees.common.ClearingPolicy.NEVER`
+    Never clear the result. Useful for static transforms or if you are doing
+    your own lookup on the timestamps for any relevant decision making.
+    Args:
+        variable_name: name of the key to write to on the blackboard
+        target_frame: name of the frame to transform into
+        source_frame: name of the input frame
+        qos_profile: qos profile for the non-static subscriber
+        static_qos_profile: qos profile for the static subscriber (default: use tf2_ros' defaults)
+        name: name of the behaviour
+    Raises:
+        TypeError: if the clearing policy is neither
+           :attr:`~py_trees.common.ClearingPolicy.ON_INITIALISE`
+           or :attr:`~py_trees.common.ClearingPolicy.NEVER`
+    """
+    def __init__(
+        self,
+        variable_name,
+        target_frame: str,
+        source_frame: str,
+        clearing_policy: py_trees.common.ClearingPolicy=py_trees.common.ClearingPolicy.ON_INITIALISE,
+        name: str=py_trees.common.Name.AUTO_GENERATED,
+    ):
+        super().__init__(name=name)
+        self.variable_name = variable_name
+
+        self.target_frame = target_frame
+        self.source_frame = source_frame
+        self.clearing_policy = clearing_policy
+        if self.clearing_policy == py_trees.common.ClearingPolicy.ON_SUCCESS:
+            raise TypeError("ON_SUCCESS is not a valid policy for transforms.ToBlackboard")
+        self.buffer = tf2_ros.Buffer()
+        # initialise the blackboard
+        py_trees.Blackboard().set(self.variable_name, None)
+
+        self.listener = tf2_ros.TransformListener(
+            buffer=self.buffer,
+        )
+
+
+    def initialise(self):
+        """
+        Clear the blackboard variable (set to 'None') if using the
+        :attr:`~py_trees.common.ClearingPolicy.ON_INTIALISE` policy.
+        """
+        if self.clearing_policy == py_trees.common.ClearingPolicy.ON_INITIALISE:
+            py_trees.Blackboard().set(self.variable_name, None)
+
+    def update(self):
+        """
+        Checks for the latest transform and posts it to the blackboard
+        if available.
+        """
+
+        if self.buffer.can_transform(
+            target_frame=self.target_frame,
+            source_frame=self.source_frame,
+            time=rospy.Time(0),
+        ):
+            stamped_transform = self.buffer.lookup_transform(
+                target_frame=self.target_frame,
+                source_frame=self.source_frame,
+                time=rospy.Time(0),
+            )
+            py_trees.Blackboard().set(self.variable_name, stamped_transform)
+            self.feedback_message = "transform saved to {} at {}m".format(self.variable_name,rospy.Time.now().to_sec() / 60)
+            return py_trees.common.Status.SUCCESS
+        else:
+            self.feedback_message = "waiting for transform {} <- {}".format(
+                self.target_frame,
+                self.source_frame
+            )
+            return py_trees.common.Status.RUNNING
