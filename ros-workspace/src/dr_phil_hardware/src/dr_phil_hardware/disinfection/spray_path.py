@@ -187,30 +187,26 @@ Orientation in quaternions denotes the direction of the spray from a position to
 
 Returns two variables of type PoseArray() from geometry_msgs.msg in ROS, with 
 """
-def get_position_and_orientation_of_spray_points(handle3D,normal_vector, robot_frame):
-    Center = Coord(handle3D[0], handle3D[1], handle3D[2])
-    Direction = Coord(normal_vector[0], normal_vector[1], normal_vector[2])
+def get_spray_path_poses(handle_3d,normal_vector, robot_frame):
+    center = Coord(handle_3d[0], handle_3d[1], handle_3d[2])
+    direction = Coord(normal_vector[0], normal_vector[1], normal_vector[2])
 
     #Calculate points and appropriate "end points"/ directions
-    spray_data = calculate_spray_path(Center,Direction)
-    origin_points = []
-    spray_direction = []
+    spray_data = calculate_spray_path(center,direction)
     #We want to convert the direction vectors we have to represent orientation. 
     #This will be done by taking the transformation from spray points to the direction pointed by end points in the vector AB
     #To further illustrate, origin_points are considered OA which are the points around the handles, spray direction as AB to represent vector 
     #pointing to center of handle (**only similar in one axis, doesnt actually point to straight into the center**), where OB is the center of handle.
     poses = []
-    end_poses = []
     if spray_data is not None:
         for data in spray_data:
             #Calculate the orientation ; data[0:3] represents the points beside the handles and data[3:6] representing the "end" points or points on the same vertical line as pull-door handle
 
             spray_ray = Ray(data[0:3,None],data[3:6,None] - data[0:3,None],length=1)
 
-            thetaHandle =- angle_between_pi(spray_ray.get_vec(), np.array([[1],[0],[0]]),plane_normal=np.array([[0],[0],[1]]))
-            # TODO: for some reason one of the sides on the T points pi/4 rads away from handle center
+            theta_handle = -angle_between_pi(spray_ray.get_vec(), np.array([[1],[0],[0]]),plane_normal=np.array([[0],[0],[1]]))
+            orientation_handle = t.quaternion_from_matrix(t.rotation_matrix(theta_handle,np.array([0,0,1])))
 
-            orientationHandle = t.quaternion_from_matrix(t.rotation_matrix(thetaHandle,np.array([0,0,1])))
             #Target points for arm to reach to
             point_pose = Pose()
             point = Point()
@@ -218,47 +214,17 @@ def get_position_and_orientation_of_spray_points(handle3D,normal_vector, robot_f
             point.y = spray_ray.origin[1] #in meters
             point.z = spray_ray.origin[2] #in meters
             point_pose.position = point
-            point_pose.orientation.x = orientationHandle[0]
-            point_pose.orientation.y = orientationHandle[1]
-            point_pose.orientation.z = orientationHandle[2]
-            point_pose.orientation.w = orientationHandle[3]
-
-            #Endpoint - Spray direction 
-            end_point_pose = Pose()
-            end_point = Point()
-            end_point.x = data[3] #in meters
-            end_point.y = data[4] #in meters
-            end_point.z = data[5] #in meters
-            end_point_pose.position = end_point
-            end_point_pose.orientation.x = 0
-            end_point_pose.orientation.y = 0
-            end_point_pose.orientation.z = 0
-            end_point_pose.orientation.w = 1
-
+            point_pose.orientation.x,point_pose.orientation.y,point_pose.orientation.z,point_pose.orientation.w = orientation_handle
 
             #Append pose results in a list to 
-            origin_points.append(point)
             poses.append(point_pose)
-            spray_direction.append(end_point)
-            end_poses.append(end_point_pose)
-        #Store the results in PoseArray
-        #data[0:3]
+
         spray_origin_poses = PoseArray()
         spray_origin_poses.header.frame_id = robot_frame
         spray_origin_poses.header.stamp = rospy.Time.now()
         spray_origin_poses.poses = poses
-        #data[3:6]
-        spray_endpoints_poses = PoseArray()
-        spray_endpoints_poses.header.frame_id = robot_frame
-        spray_endpoints_poses.header.stamp = rospy.Time.now()
-        spray_endpoints_poses.poses = end_poses
 
-        return spray_origin_poses, spray_endpoints_poses
-
-        
-
-        
-    
+        return spray_origin_poses
     return None, None
 
 
