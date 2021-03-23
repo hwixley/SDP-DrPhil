@@ -1,35 +1,35 @@
 #!/usr/bin/env python3
-from move_base.cfg import MoveBaseConfig
-from dr_phil_hardware.behaviour.leafs.ros import CreateMoveitTrajectoryPlan
-from py_trees.visitors import SnapshotVisitor
+from numpy.core.fromnumeric import var
 import rospy
 import py_trees
 import py_trees_ros
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import LaserScan
-from dr_phil_hardware.behaviour.leafs.general import CheckFileExists, SetBlackboardVariableCustom
-from dr_phil_hardware.behaviour.trees.trees import create_idle,create_explore_frontier_and_save_map,create_disinfect_doors_in_map, create_localize_robot, create_check_on_according_to_schedule,create_wait_for_next_clean
+from dr_phil_hardware.behaviour.leafs.general import CheckFileExists
+from dr_phil_hardware.behaviour.leafs.ros import TransformToBlackboard
+from dr_phil_hardware.behaviour.trees.trees import create_explore_frontier_and_save_map,create_disinfect_doors_in_map, create_localize_robot, create_check_on_according_to_schedule,create_wait_for_next_clean
 import functools 
-from visualization_msgs.msg import MarkerArray
 import os
-from py_trees import console 
 import json 
 from rospy.exceptions import ROSException
-from geometry_msgs.msg import Pose,PoseArray,PoseStamped
+from geometry_msgs.msg import PoseArray,PoseStamped
 import sys
 from dr_phil_hardware.msg import CleaningSchedule
+
 class Controller:
     """ the controller responsible for dictating behaviours to dr-phil. Every node is to be controlled via this script and no node should command behaviours without going through the controller """
 
     SPRAY_PATH_SOURCE="spray_path/target_points"
     HANDLE_POSE_SOURCE="handle_feature/pose"
     SCHEDULE_SOURCE="app/rdata"
-
-    def __init__(self):
+    MAP_TO_ROB_TRANSFORM_SOURCE="tf/map/robot"
+    
+    def __init__(self,ignore_schedule=False):
 
         py_trees.logging.level = py_trees.logging.Level.INFO # set this to info for more information
 
-        self.root = self.create_tree() 
+        
+        self.root = self.create_tree(ignore_schedule) 
         # issue setup cycle on the tree with 10 ms timeout
         # not sure what the timeout does TODO: make sure this parameter is okay
         self.root.setup(10)
@@ -91,7 +91,7 @@ class Controller:
         # tick the tree
         self.root.tick()
 
-    def create_tree(self):
+    def create_tree(self,ignore_schedule):
         """ creates the behaviour tree  for dr-phil """
         map_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"map")
 
@@ -123,14 +123,19 @@ class Controller:
         handle2bb= py_trees_ros.subscribers.ToBlackboard(name="handle2bb",
                                                         topic_name=Controller.HANDLE_POSE_SOURCE,
                                                         topic_type=PoseStamped,
-                                                        blackboard_variables={Controller.HANDLE_POSE_SOURCE:"pose"})
+                                                        blackboard_variables={Controller.HANDLE_POSE_SOURCE:None})
         
         schedule2bb= py_trees_ros.subscribers.ToBlackboard(name="schedule2bb",
                                                         topic_name=Controller.SCHEDULE_SOURCE,
                                                         topic_type=CleaningSchedule,
                                                         blackboard_variables={Controller.SCHEDULE_SOURCE:None})
 
-        topics2bb.add_children([camera2bb,scan2bb,target2bb,handle2bb,schedule2bb])
+        map2robtransform2bb = TransformToBlackboard(variable_name=Controller.MAP_TO_ROB_TRANSFORM_SOURCE,
+                                                        target_frame="base_link",
+                                                        source_frame="map",
+                                                        name="map2rob2bb")
+
+        topics2bb.add_children([camera2bb,scan2bb,target2bb,handle2bb,schedule2bb,map2robtransform2bb])
 
 
         # priorities  branch for main tasks, the rest of the tree is to go here
@@ -143,7 +148,9 @@ class Controller:
         disinfection_sequence = py_trees.composites.Sequence("disinfectionSequence")
 
         on_schedule = py_trees.decorators.FailureIsRunning(create_check_on_according_to_schedule(Controller.SCHEDULE_SOURCE))
-      
+        if ignore_schedule:
+            on_schedule = py_trees.behaviours.Success()
+
         map_guard = py_trees.composites.Sequence()
 
 
@@ -162,9 +169,11 @@ class Controller:
         disinfect_doors = create_disinfect_doors_in_map(handle_pose_src=Controller.HANDLE_POSE_SOURCE,
             spray_path_src=Controller.SPRAY_PATH_SOURCE,
             map_path=map_path,
-            distance_from_door=0.45)
+            distance_from_door=0.30)
             
         wait_for_next_clean = create_wait_for_next_clean(Controller.SCHEDULE_SOURCE)
+        if ignore_schedule:
+            wait_for_next_clean = py_trees.behaviours.Success()
 
         disinfect_guard.add_children([map_exists,disinfect_doors,wait_for_next_clean])
 
@@ -187,7 +196,13 @@ class Controller:
 
 if __name__ == "__main__":
     rospy.init_node("controller",anonymous=True)
-    controller = Controller()
+
+
+    ignore_schedule = "-i" in sys.argv
+
+    print("ignoring schedule")
+
+    controller = Controller(ignore_schedule=ignore_schedule)
     rate = rospy.Rate(1)
 
     while not rospy.is_shutdown():
