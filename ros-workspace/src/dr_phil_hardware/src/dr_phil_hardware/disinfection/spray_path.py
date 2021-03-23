@@ -267,7 +267,6 @@ def get_position_and_orientation_of_spray_points(handle3D,normal_vector, robot_f
 def calculate_spray_path(handle_center, vector):
     data = None
     
-    print("Calculating spray coordinates...")
     if vector.x == 0 and vector.z == 0 and vector.y == 0:
         print("ERROR: cannot have unit vector direction (0,0,0)")
         exit(1)

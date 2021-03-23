@@ -1,5 +1,5 @@
 <launch>
     <node pkg="dr_phil_hardware" name="get_handle3D" type="get_handle3D.py"/>
-    <node pkg="dr_phil_hardware" name="visualise_spray_path" type="visualise_spray_path.py"/>
+    <!-- <node pkg="dr_phil_hardware" name="visualise_spray_path" type="visualise_spray_path.py"/> -->
     
 </launch>

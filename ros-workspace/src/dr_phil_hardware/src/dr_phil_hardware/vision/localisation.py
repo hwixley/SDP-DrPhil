@@ -8,10 +8,11 @@ from sensor_msgs.msg import LaserScan
 import numpy as np
 import math 
 
+from typing import Tuple 
 
 HANDLE_DOOR_DEPTH = 0.07
 
-def localize_pixel(img_pos,camera : Camera,lidar : Lidar, scan : LaserScan) -> tuple:
+def localize_pixel(img_pos,camera : Camera,lidar : Lidar, scan : LaserScan) -> Tuple[np.array,Ray]:
     """ given 2d image, lidar and camera as well as the current scan message, localizes the pixel against the lidar data 
 
         Args:
