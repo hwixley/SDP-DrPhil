@@ -99,7 +99,7 @@ ul#menu .actif, ul#menu .actif:hover, ul#menu .actif:active {
 }
 
 #content {
-padding: 10px 20px;
+padding: 3rem;
 }
 
 #tab {
@@ -274,4 +274,8 @@ p{
   margin: auto;
   padding: 1rem;
   background-color: lightyellow;
+}
+
+.beginInd {
+  font-size: large;
 }
