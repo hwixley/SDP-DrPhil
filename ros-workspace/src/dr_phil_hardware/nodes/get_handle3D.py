@@ -28,7 +28,7 @@ from dr_phil_hardware.vision.utils import invert_homog_mat, quat_from_yaw
 
 
 from dr_phil_hardware.vision.vision_handle_axis_algorithm import define_handle_features_heursitic as get_center
-from dr_phil_hardware.disinfection.spray_path import get_position_and_orientation_of_spray_points
+from dr_phil_hardware.disinfection.spray_path import get_spray_path_poses
 
 """
 #The purpose of this node: 
@@ -278,7 +278,7 @@ class Handle3DTransformation:
         """
         if point3d is not None and normal is not None: # normal and point3d are either None together or actual numbers
 
-            spray_origin_poses, _ = get_position_and_orientation_of_spray_points(point3d,normal.dir,self.map_frame)
+            spray_origin_poses = get_spray_path_poses(point3d,normal.dir,self.map_frame)
 
             # publish target poses
             self.spray_path_pub.publish(spray_origin_poses)
