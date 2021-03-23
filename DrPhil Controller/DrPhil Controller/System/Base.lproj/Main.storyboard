@@ -78,7 +78,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-57.971014492753625" y="98.4375"/>
+            <point key="canvasLocation" x="314" y="96"/>
         </scene>
         <!--Log in-->
         <scene sceneID="qfw-0i-33n">
@@ -144,6 +144,9 @@
                                         <state key="normal" title="I forgot my password">
                                             <color key="titleColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
+                                        <connections>
+                                            <segue destination="j2x-gx-G2L" kind="presentation" modalPresentationStyle="fullScreen" id="CBK-6D-MFO"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                             </stackView>
@@ -162,7 +165,7 @@
                         </connections>
                     </view>
                     <navigationItem key="navigationItem" title="Log in" largeTitleDisplayMode="always" id="gLe-e0-kYd">
-                        <barButtonItem key="leftBarButtonItem" title="&lt; Back" id="gin-Mt-293">
+                        <barButtonItem key="leftBarButtonItem" title="◀︎ Back" id="gin-Mt-293">
                             <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="BYZ-38-t0r" kind="presentation" modalPresentationStyle="fullScreen" id="eIn-O2-O5H"/>
@@ -422,7 +425,7 @@
                         </connections>
                     </view>
                     <navigationItem key="navigationItem" title="Register my robot" id="k38-hs-6o5">
-                        <barButtonItem key="leftBarButtonItem" title="&lt; Back" id="dRc-si-fQW">
+                        <barButtonItem key="leftBarButtonItem" title="◀︎ Back" id="dRc-si-fQW">
                             <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="BYZ-38-t0r" kind="presentation" modalPresentationStyle="fullScreen" id="q8k-8q-zkt"/>
@@ -451,7 +454,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2873.913043478261" y="164.73214285714286"/>
+            <point key="canvasLocation" x="3784.057971014493" y="164.73214285714286"/>
         </scene>
         <!--Day Stats-->
         <scene sceneID="QKG-lG-GB3">
@@ -778,7 +781,7 @@
                                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="sJX-iM-sSI">
                                                         <rect key="frame" x="0.0" y="25.5" width="398" height="39.5"/>
                                                         <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Cleaning intervals (mins):" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bnn-ZA-19p">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Cleaning intervals: (mins)" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bnn-ZA-19p">
                                                                 <rect key="frame" x="0.0" y="0.0" width="165" height="39.5"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="width" constant="165" id="bvW-CV-9GE"/>
@@ -973,7 +976,7 @@
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <nil key="highlightedColor"/>
                                                                     </label>
-                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Intervals (min):" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="g7Y-BY-zPm">
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Intervals: (min)" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="g7Y-BY-zPm">
                                                                         <rect key="frame" x="0.0" y="107" width="96.5" height="51.5"/>
                                                                         <fontDescription key="fontDescription" name="DINAlternate-Bold" family="DIN Alternate" pointSize="22"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1059,7 +1062,7 @@
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <nil key="highlightedColor"/>
                                                                     </label>
-                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Intervals (min):" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B5E-3R-U74">
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Intervals: (min)" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B5E-3R-U74">
                                                                         <rect key="frame" x="0.0" y="107" width="96.5" height="51.5"/>
                                                                         <fontDescription key="fontDescription" name="DINAlternate-Bold" family="DIN Alternate" pointSize="22"/>
                                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1119,7 +1122,7 @@
                         </connections>
                     </view>
                     <navigationItem key="navigationItem" title="Schedule Cleaning" id="MwO-XA-g6q">
-                        <barButtonItem key="leftBarButtonItem" title="&lt; Cancel" id="6AA-Eb-rDw">
+                        <barButtonItem key="leftBarButtonItem" title="◀︎ Cancel" id="6AA-Eb-rDw">
                             <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="XDy-f7-6zx" kind="unwind" unwindAction="unwindToControlSegue:" id="5tR-xH-ecN"/>
@@ -1329,7 +1332,7 @@
                         </connections>
                     </view>
                     <navigationItem key="navigationItem" title="Stop &amp; Return" id="j9S-J2-p6U">
-                        <barButtonItem key="leftBarButtonItem" title="&lt; Cancel" id="nqM-HO-re3">
+                        <barButtonItem key="leftBarButtonItem" title="◀︎ Cancel" id="nqM-HO-re3">
                             <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="zVC-c0-amQ" kind="unwind" unwindAction="unwindToControlSegue:" id="TBG-6K-xHR"/>
@@ -1571,7 +1574,7 @@
                         <viewLayoutGuide key="safeArea" id="Kjh-81-Jjv"/>
                     </view>
                     <navigationItem key="navigationItem" title="Lifetime Stats" id="Fqr-yU-Et6">
-                        <barButtonItem key="leftBarButtonItem" title="&lt; Back" id="HGH-zx-tHs">
+                        <barButtonItem key="leftBarButtonItem" title="◀︎ Back" id="HGH-zx-tHs">
                             <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="vZg-4E-vDh" kind="unwind" unwindAction="unwindToMenuSegue:" id="jrS-Zm-Ucx"/>
@@ -1733,7 +1736,7 @@
                         <viewLayoutGuide key="safeArea" id="h2H-qj-pzI"/>
                     </view>
                     <navigationItem key="navigationItem" title="Help" id="Wl8-fI-sAz">
-                        <barButtonItem key="leftBarButtonItem" title="&lt; Back" id="Efn-Fj-PGX">
+                        <barButtonItem key="leftBarButtonItem" title="◀︎ Back" id="Efn-Fj-PGX">
                             <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="2Eb-p7-ePo" kind="unwind" unwindAction="unwindToMenuSegue:" id="VtC-yf-X4W"/>
@@ -1815,7 +1818,7 @@
                         <viewLayoutGuide key="safeArea" id="l2b-kI-NW3"/>
                     </view>
                     <navigationItem key="navigationItem" title="About" id="1iY-Pi-V8h">
-                        <barButtonItem key="leftBarButtonItem" title="&lt; Back" id="4VU-fE-GoQ">
+                        <barButtonItem key="leftBarButtonItem" title="◀︎ Back" id="4VU-fE-GoQ">
                             <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <segue destination="TDx-QR-Gcj" kind="unwind" unwindAction="unwindToMenuSegue:" id="dLy-N1-uy0"/>
@@ -1847,6 +1850,72 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OZV-uQ-L2R" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="5010" y="2771"/>
+        </scene>
+        <!--Forgot Password-->
+        <scene sceneID="BDY-f6-HZ6">
+            <objects>
+                <viewController interfaceStyle="dark" id="9Gl-zM-E2J" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Db8-3I-LP4">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="hGK-YK-buG">
+                                <rect key="frame" x="8" y="96" width="398" height="244"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ltv-bp-WWn">
+                                        <rect key="frame" x="0.0" y="0.0" width="398" height="154"/>
+                                        <string key="text">Enter the email associated with your account below  If your email is attached to an existing account a reset password link will be sent to this email</string>
+                                        <fontDescription key="fontDescription" name="DINAlternate-Bold" family="DIN Alternate" pointSize="22"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="0ro-lP-TT0">
+                                        <rect key="frame" x="0.0" y="194" width="398" height="50"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Email" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5qs-Pr-Ptn">
+                                                <rect key="frame" x="0.0" y="0.0" width="55.5" height="50"/>
+                                                <fontDescription key="fontDescription" name="DINAlternate-Bold" family="DIN Alternate" pointSize="23"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="z7u-wB-5gA">
+                                                <rect key="frame" x="65.5" y="0.0" width="332.5" height="50"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="50" id="RFT-4o-AoB"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="emailAddress" keyboardAppearance="alert"/>
+                                            </textField>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="hGK-YK-buG" firstAttribute="leading" secondItem="nKo-gZ-3g8" secondAttribute="leading" constant="8" id="EMY-9D-ge0"/>
+                            <constraint firstItem="nKo-gZ-3g8" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="hGK-YK-buG" secondAttribute="bottom" constant="8" id="LhI-5H-pLF"/>
+                            <constraint firstItem="nKo-gZ-3g8" firstAttribute="trailing" secondItem="hGK-YK-buG" secondAttribute="trailing" constant="8" id="XQR-yR-aGz"/>
+                            <constraint firstItem="hGK-YK-buG" firstAttribute="top" secondItem="nKo-gZ-3g8" secondAttribute="top" constant="8" id="sLO-uq-u00"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="nKo-gZ-3g8"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Forgot Password" id="Yml-bS-OPJ">
+                        <barButtonItem key="leftBarButtonItem" title="◀︎ Back" id="RfM-zt-4fj">
+                            <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <connections>
+                                <segue destination="cOz-cy-uVm" kind="unwind" unwindAction="unwindToLogin:" id="sEP-fO-qXM"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Send ▶︎" id="K4B-tr-TJC">
+                            <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </barButtonItem>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0he-cQ-buc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <exit id="cOz-cy-uVm" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="-1480" y="1124"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="9zL-5P-Nji">
@@ -1884,11 +1953,30 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="a1e-CP-6fK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1963.7681159420292" y="164.73214285714286"/>
+            <point key="canvasLocation" x="2873.913043478261" y="164.73214285714286"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="qab-SJ-wuj">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" interfaceStyle="dark" id="j2x-gx-G2L" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="zso-Hn-UFX">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="9Gl-zM-E2J" kind="relationship" relationship="rootViewController" id="LxU-EA-FhH"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="EDU-IE-qUC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2200" y="1124"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="ugT-5q-Mwz"/>
+        <segue reference="jjf-Qm-49C"/>
         <segue reference="eIn-O2-O5H"/>
     </inferredMetricsTieBreakers>
     <resources>

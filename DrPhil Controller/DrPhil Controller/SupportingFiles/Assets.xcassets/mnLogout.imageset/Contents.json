@@ -1,15 +1,17 @@
 {
   "images" : [
     {
+      "filename" : "icons8-exit-sign-32 2.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "icons8-exit-sign-64 2.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "statsGraph@3x.png",
+      "filename" : "icons8-exit-sign-96 2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

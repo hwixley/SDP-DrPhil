@@ -1,15 +1,17 @@
 {
   "images" : [
     {
+      "filename" : "icons8-help-32 2.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "icons8-help-64 2.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "mapview.png",
+      "filename" : "icons8-help-96 2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
