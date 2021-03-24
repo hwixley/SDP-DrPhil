@@ -9,8 +9,15 @@ title: Home
 			
 						<h1 style="text-align: center;"><u><b>Budget</b></u></h1>
 						
-						<p>Disclaimer: Does not include the technician time which was included for free.</p>
-						
+						<p>Disclaimer: Table does not include the technician time which was included for free.</p>
+						<p>The free technician time can be broken down as follows:
+							<ul>
+								<li><p>x hours: general help with setup</p></li>
+								<li><p>x hours: printing</p></li>
+								<li><p>x hours: assembly</p></li>
+							</ul>
+						</p>
+						<figure>
 						<table class="table table-striped table-light">
 							<thead class="table-dark">
 							  <tr>
@@ -66,7 +73,68 @@ title: Home
 
 							</tbody>
 						  </table>
-			
+						  <figcaption style="text-align: center;"><i>Total cost of project</i></figcaption>
+
+						  <p>Our current prototype is only suitable for interacting with our custom short 50cm doors, as the arm is only has a max reach of 30cm and isn't long enough to reach normal door handles which are 1 metre high. For production, we will have to increase the reach of the arm. 
+							  <br> The <a href="https://www.trossenrobotics.com/widowx-250-mobile-robot-arm-6dof.aspx">WidowX 250 robotic arm</a> has more than double the reach of the pincher x100, and being made by the same company means it should be easily integrated to our existing system. Furthermore, one of our major issues with door opening was the low degrees of freedom (number of rotateable parts) of the pincher x100. The WidowX has 2 more (6 compared to 4), which should make arm movement planning easier. We can make up the rest of the height with a 3D printed base which'll attach to the turtlebot. </p>
+							<p>The turtlebot's original battery only has an estimated battery life of ~30 minutes of continous operation. We propose to change the battery to a <a href="https://www.amazon.co.uk/Zeee-Battery-Helicopter-Quadcopter-Airplane/dp/B089YNM3ZR/ref=sr_1_13?dchild=1&keywords=lipo+battery&qid=1616580061&sr=8-13">6000mAH one</a>, which is easily doable as the turtlebot has a standard Lithium polymer battery connection, and should triple battery life of Dr. Phil.</p>
+							<figure>
+							<table class="table table-striped table-light">
+								<thead class="table-dark">
+								  <tr>
+									<th scope="col">Item</th>
+									<th scope="col">Quantity</th>
+									<th scope="col">Price per unit</th>
+									<th scope="col">Total</th>
+								  </tr>
+								</thead>
+								<tbody>
+								  <tr>
+									<th scope="row">Turtlebot Waffle</th>
+									<td>1</td>
+									<td>£1275.80</td>
+									<td>£1275.80</td>
+								  </tr>
+								  <tr>
+									<th scope="row">6000mAh LiPo battery</th>
+									<td>1</td>
+									<td>£79.99</td>
+									<td>£79.99</td>
+								  </tr>
+								  <tr>
+									<th scope="row">WidowX 250 robotic arm</th>
+									<td>1</td>
+									<td>£2,037.79</td>
+									<td>£2,037.79</td>
+								  </tr>
+								  <tr>
+									<th scope="row">R385 DC Diaphragm Pump</th>
+									<td>1</td>
+									<td>£4.15</td>
+									<td>£4.15</td>
+								  </tr>
+								  <tr>
+									<th scope="row">3D printed water tank</th>
+									<td>1</td>
+									<td>£4.15</td>
+									<td>£4.15</td>
+								  </tr>
+								  <tr>
+									<th scope="row">3D printed height extension base</th>
+									<td>1</td>
+									<td>£30</td>
+									<td>£30</td>
+								  </tr>
+								  <tr>
+									<th scope="row">Total</th>
+									<td>-</td>
+									<td>-</td>
+									<td>£444.15</td>
+								  </tr>
+	
+								</tbody>
+							  </table>
+							  <figcaption style="text-align: center;"><i>Estimated production costs</i></figcaption>
 						</div>	
 			</div>
 

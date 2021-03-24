@@ -6,30 +6,100 @@ title: Home
                 <div id="corps_central"> 
             
                     <h1 style="text-align: center;"><b><u>How does our System Work?</u></b></h1>
-                    <p>Dr. Phil consists of 4 interconnected sections:
+
+                    <figure>
+                        <img class="images" src="images/components.png">
+                        <figcaption style="text-align: center;"><i>Main Dr.Phil components</i></figcaption>
+                    </figure>
+                    
+
+                    <p>Dr. Phil consists of 5 interconnected sections:
                         <ul class="beginInd">
                             <li><a href="#navigation">A navigation stack </a> which maps the environment and moves the robot to it's objectives.</li>
                             <li><a href="#disinfection">A disinfecting stack </a> that pumps disinfectant to a nozzle located at the top of the arm.</li>
                             <li><a href="#armcontrol">An arm movement stack </a>that can grip doors as well as move for maximum spray coverage.</li>
                             <li><a href="#app">An iOS app </a> that allows users to controls the robot at a high level.</li>
+                            <li><a href="#vision">A vision stack</a> which can detect door handles.</li>
                         </ul>
 
                     </p>
                     
+                    <p>A sequence diagram for the basic use case:</p>
+                    <img class="images" src="images/sequence_diagram.png">
+                    <h2 id="behaviour">Behaviour tree</h2>
+                    <p>To tie all the robot tasks, behaviour trees were employed. This is due to the need for modular behaviour composition, and reactivity,
+                        modularity, as well as ease of maintenance and readability. Alternatives considered were finite state machines and their variations - but those were dismissed on account of the vast number of transitions required and the difficulty in maintaining,testing and growing complex behaviours as we go.</p>
+                        <img class="images" style="max-width: 70%;" src="images/create_explore_frontier_and_save_map.png">
+                        <figcaption>Behaviour tree for exploring a room and saving the map</figcaption>
+                        <p>The general structure of the project was designed to promote re-use of sub-trees of various sizes and test-ability of individual components.
+
+                            We used the py_trees and py_trees_ros ROS packages as the basic behaviour tree frameworks, both of which provide excellent documentation, backward compatibility and flexibility for extension.</p>
                     <h2 id="navigation">Navigation</h2>
 
                     <h2 id="disinfection">Disinfection</h2>
-                        <p>The disinfection stack is primarily hardware based. We have a pump which pumps water from the base of the turtlebot  to the nozzle located at the top of the arm. This is necessary because the disinfectant storage solution is heavy and would unbalance the arm. </p>
+                        <figure>
+                            <img class="images" src="images/fixingslabelled(1).jpg">
+                            <figcaption style="text-align: center;"><i>Spray components</i></figcaption>
+                        </figure>
+
+                        
+                        <br>
+                        <p>The disinfection stack is primarily hardware based. We have a pump which pumps water from the base of the turtlebot  to the nozzle located at the top of the arm. This is necessary because the liquid storage tank is heavy and would unbalance the arm if installed on it. As the tank is directly on top of the turtlebot, any spillage would be disastrous. Therefore the tank has a screw cap so it won't spill during normal operation whilst still being easy to remove and refill. </p>
 
                         <i><h4>The Nozzle</h4></i>
-                        <p>To spray the disinfectant onto contact points, we decided to use a full-cone nozzle, which evenly distributes the disinfectant inside it's spray cone. This is important to ensure the spray will cover contact points efficently and accurately.</p>
+                        <img class="images" style="width: 70%" src="images/nozzleCAD.png">
+                        <figcaption><i>Nozzle in CAD</i></figcaption>
+                        <p>To spray the disinfectant onto contact points, we ultimately decided to use a 60 degree full-cone nozzle, which evenly distributes the disinfectant inside it's spray cone. This is important to ensure the spray will cover contact points efficently and accurately as seen in the <a href="./evaluation.html">evaluation</a> section. A further benefit to this is that the spray simulation we created in gazebo has similar properties to the full cone (namely a even and full spread) so we can be sure that it's a good representation of the real functionality. </p>
 
                         <i><h4>Control</h4></i>
-                        <p>Dr. Phil controls the pump via the 12V openCR board which comes with the turtlebot. </p>
-                    <h2 id="armcontrol">Arm control</h2>
-                        
-                    <h2 id="app">App</h2>
+                        <p>Dr. Phil controls the pump via the 12V openCR board on the turtlebot, which is itself connected to a motor board. This is necessary because the pump has to be relatively powerful to be able to lift the water up to door handle height, and the Raspberry Pi's GPIO can output only 3.3V. We also have a LED strip which was used to simulate when spraying was happening, which is useful for informing nearby people about the status of Dr.Phil.</p>
 
+                        <p>As seen in the image, we also had to create fixings to keep everything still, as the robot might accidentally shake things off when moving.</p>
+                    <h2 id="armcontrol">Arm control</h2>
+
+                    <h2 id="app">App</h2>
+                        <p>The iOS app is the preferred method of communicating with Dr.Phil. We decided to develop for iOS first because it has a market majority in the UK. We decided to use firebase, a cloud based noSQL storage solution, to bridge the connection between the two. We chose Firebase primarily as it's easily accessible from any platform, and our immediate goals involve developing an android/web app so Dr. Phil can be controlled on anything. Firebase was integrated into the app via cocoapods, and Dr.Phil via python libraries. The app was built using Swift.</p>
+
+                        <p>For the user to actually communicate, they would first securely login to the app, establishing a connection with firebase.</p>
+                        <div class="container-fluid">
+                            <div class="row">
+                              <div class="col-md-6">
+                                
+                                <figure>
+                                    <img class="images" src="images/appregister.png">    
+                                    <figcaption>Register account</figcaption>
+                                </figure>
+                              </div>
+                              <div class="col-md-6">
+                                <figure>
+                                    <img class="images" src="images/approbotconn.png">
+                                    <figcaption>Connect to robot</figcaption>
+                                </figure>
+                              </div>
+                              
+                            </div>
+                          </div>
+                        
+                        <p>Changing settings in the app would then push those settings to firebase. Dr.Phils regularly reads the relevant settings from firebase and updates itself accordingly. Firebase easily allows an user to connect to to more than one Dr.Phil at a time, and minimises setup necessary to pair up the app and the bot.</p>
+                        <div class="container-fluid">
+                            <div class="row">
+                              <div class="col-md-6">
+                                
+                                <figure>
+                                    <img class="images" src="images/setschedule.png">    
+                                    <figcaption>Sets schedule for Dr.Phil</figcaption>
+                                </figure>
+                              </div>
+                              <div class="col-md-6">
+                                <figure>
+                                    <img class="images" src="images/stats.png">
+                                    <figcaption>Dr.Phil statistics</figcaption>
+                                </figure>
+                              </div>
+                              
+                            </div>
+                          </div>
+                        <p> Dr.Phil also pushes statistics to firebase via it's python library, which is then viewable on the app. </p>
                     <h2><a href="#Methods">Methods</a></h2>
                     <p>Explain the key methods of how you got your system to work      </p>      
                     
