@@ -33,12 +33,17 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
 
         createStack.isHidden = true
+        verifyStack.isHidden = false
         idTextfield.delegate = self
         keyTextfield.delegate = self
         emailTextfield.delegate = self
         passTextfield1.delegate = self
         passTextfield2.delegate = self
         self.tapOutsideKB.isEnabled = false
+    }
+    
+    //MARK: Navigation
+    @IBAction func unwindToRegistration(_ segue: UIStoryboardSegue) {
     }
     
 
