@@ -108,6 +108,7 @@ def move_to_goal(goal : MoveBaseGoal):
         return client.get_result()  
 
 def stop_in_place():
+    print("Stopping in place")
     velocity_publisher = rospy.Publisher('cmd_vel', Twist, queue_size=10)
     vel_msg = Twist()
     vel_msg.linear.x=0
@@ -118,9 +119,6 @@ def stop_in_place():
     vel_msg.angular.z = 0 
     velocity_publisher.publish(vel_msg)
 
-
-
-
 def rotate360():
     #Starts a new node
     #rospy.init_node('ok', anonymous=True)
@@ -129,8 +127,8 @@ def rotate360():
 
     print("Rotating the robot by 360 deg")
     # larger than 360 because rospy.Time.now() has a slight delay
-    angle = 490 #angle in deg
-    speed = 40 #speed in deg/sec
+    angle = 440 #angle in deg
+    speed = 45 #speed in deg/sec
     clockwise = True   
 
     #Converting from angles to radians
@@ -157,9 +155,21 @@ def rotate360():
         velocity_publisher.publish(vel_msg)
         t1 = rospy.Time.now().to_sec()
         current_angle = angular_speed*(t1-t0)
+        if rospy.is_shutdown():
+            print('Aborting rotation')
+            #Forcing our robot to stop on shutdown with ctrl-c
+            vel_msg = Twist()
+            velocity_publisher.publish(vel_msg)
+            break
 
-
-    #Forcing our robot to stop
-    vel_msg.angular.z = 0
+    #Forcing our robot to stop when function completes normally
+    vel_msg = Twist()
     velocity_publisher.publish(vel_msg)
-    #rospy.spin()
+
+# call this on shutdown (ctrl-c)
+def stop_motors():
+    print('Stopping motors')
+    #Forcing our robot to stop
+    velocity_publisher = rospy.Publisher('cmd_vel', Twist, queue_size=10)
+    vel_msg = Twist()
+    velocity_publisher.publish(vel_msg)

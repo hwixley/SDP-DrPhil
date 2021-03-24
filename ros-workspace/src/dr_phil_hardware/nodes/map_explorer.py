@@ -45,10 +45,11 @@ class MapExplorer:
         # #print("goal: {}\n\n robot_pose: {}\n\n".format(goal, self.robot_pose))
         # print(explore.is_location_available(self.robot_pose, tf_goal))
 
+
 if __name__ == "__main__":
     rospy.init_node("map_explorer", anonymous=False)
-    mapExplorer = MapExplorer()
-    
+    rospy.on_shutdown(explore.stop_motors) # make sure the robot stops on ctrl-c
+    mapExplorer = MapExplorer()    
 
     rate = rospy.Rate(10)
 
