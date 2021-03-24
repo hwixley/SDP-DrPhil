@@ -45,7 +45,7 @@ int main(int _argc, char **_argv)
   
   ros::NodeHandle nh;
   
-  ros::Subscriber sub = nh.subscribe("/spray_controller/command", 1000, sprayCallback);
+  ros::Subscriber sub = nh.subscribe("/spray_controller/command", 10, sprayCallback);
   
   ros::spin();
   

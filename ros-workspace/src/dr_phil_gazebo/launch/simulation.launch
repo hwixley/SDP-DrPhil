@@ -5,7 +5,7 @@
   <arg name="x_pos" default="-2.0"/>
   <arg name="y_pos" default="-0.5"/>
   <arg name="z_pos" default="0.0"/>
-  <arg name="world" default="decoratedHouse-wDoors"/>
+  <arg name="world" default="smallRoom-wDoors"/>
   <arg name="launch_rviz" default="false"/>
   <arg name="headless" default="false"/>
   <arg name="gui" default="$(eval not arg('headless'))"/>
@@ -45,7 +45,7 @@
   <node name="battery_level" pkg="dr_phil_gazebo" type="battery_level.py" respawn="false" />
   <node name="spray_controller" pkg="dr_phil_gazebo" type="spray_controller" respawn="true" />
   <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model dr-phil -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description " />
-
+  <node name="coverage_pc_generator" pkg="dr_phil_gazebo" type="coverage_pc_generator" respawn="true" />
 
   <!-- spawn arm controllers -->
 

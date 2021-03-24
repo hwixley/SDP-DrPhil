@@ -1,4 +1,5 @@
 import threading
+from typing import Callable
 from numpy.core.fromnumeric import std
 import py_trees
 from py_trees.common import Status
@@ -16,6 +17,10 @@ from dr_phil_hardware.arm_interface.command_arm import ArmCommander
 import threading
 from moveit_msgs.msg import RobotTrajectory
 from geometry_msgs.msg import PoseArray 
+import dynamic_reconfigure
+import copy
+import tf2_py 
+import tf2_ros 
 
 try:
     from queue import Queue,LifoQueue, Empty
@@ -267,6 +272,7 @@ class PublishTopic(py_trees.behaviour.Behaviour):
         """ 
         Args:
             name: the name of the behaviour
+            msg: the message to publish or callable which retrieves it at update time
             msg_type: the type of message to be published
             topic: the topic on which to publish the message
             queue_size: the publisher queue size
@@ -289,9 +295,10 @@ class PublishTopic(py_trees.behaviour.Behaviour):
         self.feedback_message = "Waiting for data"
         try:
             self.feedback_message = "Published"
-            self.publisher.publish(self.msg)
-        except:
-            self.feedback_message = "Publisher failure"
+                
+            self.publisher.publish(self.msg() if callable(self.msg) else self.msg)
+        except Exception as E:
+            self.feedback_message = "Publisher failure: {}".format(E)
             return py_trees.common.Status.FAILURE
 
         if self.success_on_publish or self.n_target >= 0:
@@ -300,8 +307,8 @@ class PublishTopic(py_trees.behaviour.Behaviour):
                 return py_trees.common.Status.RUNNING
             else:
                 return py_trees.common.Status.SUCCESS
-        else:
-            return py_trees.common.Status.RUNNING       
+
+        return py_trees.common.Status.RUNNING       
 
 class JointTargetSetAndForget(py_trees.behaviour.Behaviour):
     """ behaviour which sets move groups target and leaves it running with SUCCESS """
@@ -457,22 +464,24 @@ class ActionClientConnectOnInit(py_trees_ros.actions.ActionClient):
     def update(self):
        # we change slightly the behaviour on when action client is missing
        # and also setup the action client here in a non blocking way
-        time_left = self.connection_timeout - (rospy.get_time() -  self.time_start)
-        if not self.connected and time_left > 0:
-            if not self.action_client:
-                self.action_client = actionlib.SimpleActionClient(
-                    self.action_namespace,
-                    self.action_spec
-                )
-            if self.action_client.wait_for_server(
-                rospy.Duration(min(time_left,1))): # wait for at most a second each time
-                self.connected = True 
-            else: return py_trees.Status.RUNNING             
-
-        # the super() implementation will expect self.action_client to be non null iff connected
         if not self.connected:
-            self.action_client = None 
-            self.logger.error("{0}.could not connect to the action server at '{1}'".format(self.__class__.__name__, self.action_namespace))
+            time_left = self.connection_timeout - (rospy.get_time() -  self.time_start)
+            if time_left > 0:
+                if not self.action_client:
+                    self.action_client = actionlib.SimpleActionClient(
+                        self.action_namespace,
+                        self.action_spec
+                    )
+
+                self.feedback_message = "Waiting for action server"
+                if self.action_client.wait_for_server(
+                    rospy.Duration(min(time_left,1))): # wait for at a bit of a second each time
+                    self.connected = True 
+                else: return py_trees.Status.RUNNING             
+            else:
+                self.action_client = None 
+                self.logger.error("{0}.could not connect to the action server at '{1}'".format(self.__class__.__name__, self.action_namespace))
+                self.feedback_message = "No action server found"
 
         super_state = super().update()
 
@@ -482,6 +491,9 @@ class ActionClientConnectOnInit(py_trees_ros.actions.ActionClient):
         else:
             return super_state
 
+
+    def terminate(self, new_status):
+        super().terminate(new_status)
 
 
 
@@ -512,41 +524,61 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
         self.trajectory = None
         self.thread = None
         self.planning_complete = False
+        self.waypoints = None 
+        self.waypoints_hash = None 
+        
+        self.ran = False 
 
     def initialise(self):
         self.fraction = None
         self.trajectory = None
         self.planning_complete = False
         self.thread = None
+        self.waypoints = None
+
 
         super().initialise()
 
 
 
     def update(self):
+        if self.ran:
+            waypoints_new = self.blackboard.get(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE)
+            if len(waypoints_new.poses) == self.waypoints_hash:
+                return py_trees.Status.FAILURE
+        
+        
         # if planning hasn't started
         if not self.thread:
             # get waypoints 
-            waypoints : PoseArray = self.blackboard.get(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE)
-            
-            if not waypoints:
+            self.waypoints : PoseArray = copy.deepcopy(self.blackboard.get(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE))
+            self.waypoints_hash = len(self.waypoints.poses)
+
+            if not self.waypoints:
                     self.feedback_message = "No waypoints at {}".format(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE)
+                    self.ran = True
                     return py_trees.Status.FAILURE
-            elif len(waypoints.poses) <= 0:
+            elif len(self.waypoints.poses) <= 0:
                     self.feedback_message = "Empty waypoints list"
+                    self.ran = True
                     return py_trees.Status.FAILURE
-            elif isinstance(waypoints,PoseArray):
+
+
+            if isinstance(self.waypoints,PoseArray):
 
                 if self.include_idxs:
-                    waypoints_new_poses = [waypoints.poses[x] for x in self.include_idxs if len(waypoints.poses) -1 >= x]
-                    waypoints.poses = waypoints_new_poses
-            
+                    waypoints_new_poses = [self.waypoints.poses[x] for x in self.include_idxs if len(self.waypoints.poses) -1 >= x]
+                    self.waypoints.poses = waypoints_new_poses
+
                 # start planning
-                self.thread = threading.Thread(target= self.__blocking_plan,args = (waypoints,))
+
+                self.thread = threading.Thread(target= self.blocking_plan,args = (self.waypoints,))
                 self.thread.start()
+
                 return py_trees.Status.RUNNING
             else:
                 self.feedback_message = "Waypoints is not of the right type"
+                self.ran=True
                 return py_trees.Status.FAILURE
 
         # running planning
@@ -558,12 +590,16 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
         # planning finished
         else:
             # check it's valid
+            assert(self.fraction)
+
             if self.fraction < self.fraction_threshold:
                 self.feedback_message = "Fraction too low"
+                self.ran = True
                 return py_trees.Status.FAILURE
             else:
                 self.feedback_message = "Found valid plan"
                 # success
+                self.ran = True
                 self.blackboard.set(CreateMoveitTrajectoryPlan.PLAN_TARGET,self.trajectory)
                 return py_trees.Status.SUCCESS
 
@@ -574,8 +610,9 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
 
         super().terminate(new_status)
 
-    def __blocking_plan(self,waypoints : PoseArray):
+    def blocking_plan(self,waypoints : PoseArray):
         """ starts planning, and blocks thread """
+    
         #TODO: check for race conditions on terminate, and anotehr startup swiftly after
         assert(isinstance(waypoints,PoseArray))
         ac = ArmCommander()
@@ -583,14 +620,43 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
         ac.set_pose_planning_frame(self.move_group,self.pose_frame)
 
         (self.trajectory,self.fraction) = ac.plan_smooth_path(self.move_group,[x for x in waypoints.poses])
+
         sys.exit()
+
+class CreateMoveItMove(CreateMoveitTrajectoryPlan):
+    """ creates a plan for the given move group to move the current state tothe first joint given on the blackboard under "moveit/pose_targets" as (:obj:`PoseArray`) message, fails if goal is too bad according to tolerance values.
+        saves plan on blackboard at "moveit/plan" 
+    """
+
+    def __init__(self, name, move_group: MoveGroup, pose_frame,goal_tolerance=1e-2):
+
+        self.goal_tolerance = goal_tolerance
+        super().__init__(name, move_group, fraction_threshold=-1, pose_frame=pose_frame,pose_target_include_only_idxs=[0])
+
+    def blocking_plan(self, waypoints: PoseArray):
+        ac = ArmCommander()
+        ac.clear_state(self.move_group)
+        ac.set_pose_planning_frame(self.move_group,self.pose_frame)
+        ac.set_pose_target(self.move_group,waypoints.poses[0])
+        ac.set_curr_state_as_start_state(self.move_group)
+        # ac.set_goal_tolerance(self.move_group,self.goal_tolerance)
+        (success,plan,planning_time,errorCode) = ac.plan(self.move_group)
+        if success:
+            self.trajectory = plan
+            self.fraction = 1 # always successfull value
+            rospy.logerr("Successfull plan fraction 1")
+        else:
+            self.fraction = -100 # impossible value
+            self.trajectory = None
+            rospy.logerr("No plan fraction -100")
+        sys.exit(0)
 
 class ExecuteMoveItPlan(py_trees.Behaviour):
     """ Executes plan at moveit/plan on the blackboard, returns true once succeeded, fails if some point is not reached
     """
     PLAN_SOURCE=CreateMoveitTrajectoryPlan.PLAN_TARGET
 
-    def __init__(self, name,move_group : MoveGroup, distance_waypoint_threshold = 0.02,time_threshold_mult=0.1):
+    def __init__(self, name,move_group : MoveGroup, distance_waypoint_threshold = 0.02,time_threshold_mult=0.1,success_on_no_plan=False):
         """[summary]
 
         Args:
@@ -608,6 +674,7 @@ class ExecuteMoveItPlan(py_trees.Behaviour):
         self.move_group = move_group
         self.distance_waypoint_threshold = distance_waypoint_threshold
         self.time_threshold_mult = time_threshold_mult
+        self.success_on_no_plan = success_on_no_plan
 
     def initialise(self):
 
@@ -685,6 +752,10 @@ class ExecuteMoveItPlan(py_trees.Behaviour):
             return py_trees.Status.RUNNING
         else:
             if self.plan is None:
+                if self.success_on_no_plan:
+                    self.feedback_message = "No plan, so easy win"
+                    return py_trees.Status.SUCCESS
+                    
                 self.feedback_message = "Plan at {} is None".format(ExecuteMoveItPlan.PLAN_SOURCE)
                 return py_trees.Status.FAILURE
             elif len(self.plan.joint_trajectory.points) == 0:
@@ -696,8 +767,208 @@ class ExecuteMoveItPlan(py_trees.Behaviour):
             # start off the plan
             self.feedback_message = "Executing plan..."
             ac.execute_plan(self.move_group,self.plan,blocking=False)
+            py_trees.Blackboard().set(ExecuteMoveItPlan.PLAN_SOURCE,None)
             return py_trees.Status.RUNNING
 
     def terminate(self, new_status):
         # TODO: halt arm commander
         return super().terminate(new_status)
+
+
+class CallService(py_trees.Behaviour):
+    """ calls a service and returns success if call was successfull """
+    def __init__(self, name,service_topic,service_type,service_content,blackboard_target,pre_process_callable : Callable[[object],object]=None, callable_none_is_failure=False):
+        """[summary]
+
+        Args:
+            name ([type]): [description]
+            service_topic ([type]): [description]
+            service_type ([type]): [description]
+            service_content ([type]): [description]
+            blackboard_target ([type]): [description]
+            pre_process_callable ([type], optional): [description]. Defaults to None. optional function to process the response before putting it on the blackboard, returning None here will be interpreted as Failure if none is failure is set. exceptions are failures by default
+        """
+        self.service_topic = service_topic
+        self.service_type = service_type    
+        self.service_content = service_content
+        self.blackboard_target = blackboard_target 
+        self.pre_process_callable = pre_process_callable
+        self.callable_none_is_failure = callable_none_is_failure
+        self.proxy = rospy.ServiceProxy(self.service_topic,self.service_type)
+        self.return_value = None
+        self.failed = False
+        self.thread = None
+        self.processing = False
+        self.exception = None
+        super().__init__(name=name)
+
+    def initialise(self):
+        self.return_value = None 
+        self.failed = False
+        self.thread = None 
+        self.processing = False 
+        self.exception = None
+        self.fail_exception = None
+
+        return super().initialise()
+
+    def __blocking_call(self,argument): 
+        # TODO: Race conditions on terminate on preempt followed by new initialize
+        try:
+            self.return_value = self.proxy.call(argument)
+        except Exception as E:
+            self.failed = True
+            self.exception = E
+            rospy.logfatal("ASDSDADSA\n|ASDASDASDSDA")
+            sys.exit(1)
+        sys.exit(0)
+
+    def update(self):
+        self.feedback_message = "Calling proxy.."
+
+        if not self.processing and self.return_value is None:
+
+            self.thread = threading.Thread(target=self.__blocking_call,args=(self.service_content,))
+            
+            self.thread.start()
+            self.processing = True 
+            return py_trees.Status.RUNNING
+
+        elif self.processing and self.return_value is None and self.failed == False:
+            return py_trees.Status.RUNNING
+        elif self.failed == True:
+            self.feedback_message = "Failed: {}".format(self.exception)
+            return py_trees.Status.FAILURE
+        else:
+
+            value = self.return_value
+            if callable(self.pre_process_callable):
+                try:
+                    value = self.pre_process_callable(value)
+                except Exception as E:
+                    self.feedback_message = "{}".format(E)
+                    return py_trees.Status.FAILURE
+     
+
+            if value is None and self.callable_none_is_failure:
+                return py_trees.Status.FAILURE
+            py_trees.Blackboard().set(self.blackboard_target,self.return_value)
+
+            return py_trees.Status.SUCCESS
+
+class DynamicReconfigure(py_trees.Behaviour):
+
+    def __init__(self, name,topic,update_dict):
+
+        self.topic = topic
+        self.update_dict = update_dict
+        super().__init__(name=name)
+
+
+    def callback(self,config):
+        self.feedback_message = str(config)
+    
+
+    def initialise(self):
+
+        return super().initialise()
+    
+    def update(self):
+        self.client = dynamic_reconfigure.client.Client(self.topic,timeout=10,config_callback=self.callback)
+        self.feedback_message = "updating configuration.."
+        if self.client is not None:
+            self.client.update_configuration(self.update_dict)
+            return py_trees.Status.SUCCESS
+        else:
+            self.feedback_message = "No client available"
+            return py_trees.Status.FAILURE
+
+
+class TransformToBlackboard(py_trees.behaviour.Behaviour):
+    """
+    Blocking behaviour that looks for a transform and writes
+    it to a variable on the blackboard.
+    If it fails to find a transform immediately, it will update
+    with status :attr:`~py_trees.common.Status.RUNNING` and write
+    'None' to the blackboard.
+    .. tip::
+       To ensure consistent decision making, use this behaviour
+       up-front in your tree's tick to record a transform that
+       can be locked in for the remainder of the tree tick.
+    **Usage Patterns**
+    * clearing_policy == :attr:`~py_trees.common.ClearingPolicy.ON_INTIALISE`
+    Use if you have subsequent behaviours that need to make decisions on
+    whether the transform was received or not.
+    * clearing_policy == :attr:`~py_trees.common.ClearingPolicy.NEVER`
+    Never clear the result. Useful for static transforms or if you are doing
+    your own lookup on the timestamps for any relevant decision making.
+    Args:
+        variable_name: name of the key to write to on the blackboard
+        target_frame: name of the frame to transform into
+        source_frame: name of the input frame
+        qos_profile: qos profile for the non-static subscriber
+        static_qos_profile: qos profile for the static subscriber (default: use tf2_ros' defaults)
+        name: name of the behaviour
+    Raises:
+        TypeError: if the clearing policy is neither
+           :attr:`~py_trees.common.ClearingPolicy.ON_INITIALISE`
+           or :attr:`~py_trees.common.ClearingPolicy.NEVER`
+    """
+    def __init__(
+        self,
+        variable_name,
+        target_frame: str,
+        source_frame: str,
+        clearing_policy: py_trees.common.ClearingPolicy=py_trees.common.ClearingPolicy.ON_INITIALISE,
+        name: str=py_trees.common.Name.AUTO_GENERATED,
+    ):
+        super().__init__(name=name)
+        self.variable_name = variable_name
+
+        self.target_frame = target_frame
+        self.source_frame = source_frame
+        self.clearing_policy = clearing_policy
+        if self.clearing_policy == py_trees.common.ClearingPolicy.ON_SUCCESS:
+            raise TypeError("ON_SUCCESS is not a valid policy for transforms.ToBlackboard")
+        self.buffer = tf2_ros.Buffer()
+        # initialise the blackboard
+        py_trees.Blackboard().set(self.variable_name, None)
+
+        self.listener = tf2_ros.TransformListener(
+            buffer=self.buffer,
+        )
+
+
+    def initialise(self):
+        """
+        Clear the blackboard variable (set to 'None') if using the
+        :attr:`~py_trees.common.ClearingPolicy.ON_INTIALISE` policy.
+        """
+        if self.clearing_policy == py_trees.common.ClearingPolicy.ON_INITIALISE:
+            py_trees.Blackboard().set(self.variable_name, None)
+
+    def update(self):
+        """
+        Checks for the latest transform and posts it to the blackboard
+        if available.
+        """
+
+        if self.buffer.can_transform(
+            target_frame=self.target_frame,
+            source_frame=self.source_frame,
+            time=rospy.Time(0),
+        ):
+            stamped_transform = self.buffer.lookup_transform(
+                target_frame=self.target_frame,
+                source_frame=self.source_frame,
+                time=rospy.Time(0),
+            )
+            py_trees.Blackboard().set(self.variable_name, stamped_transform)
+            self.feedback_message = "transform saved to {} at {}m".format(self.variable_name,rospy.Time.now().to_sec() / 60)
+            return py_trees.common.Status.SUCCESS
+        else:
+            self.feedback_message = "waiting for transform {} <- {}".format(
+                self.target_frame,
+                self.source_frame
+            )
+            return py_trees.common.Status.RUNNING

@@ -98,6 +98,7 @@ TargetGenerator::generateTargetService(
   std::uniform_int_distribution<> grid_x(50, map_size_x_ - 50);
   std::uniform_int_distribution<> grid_y(50, map_size_y_ - 50);
 
+
   double world_x, world_y;
   uint32_t idx;
   bool thresh;
@@ -120,6 +121,7 @@ TargetGenerator::generateTargetService(
     //   count_iterations=0
     //   _DISTANCE_THRESHOLD+=1;
     // }
+
     uint32_t map_x = grid_x(gen);
     uint32_t map_y = grid_y(gen);
 
@@ -130,10 +132,7 @@ TargetGenerator::generateTargetService(
                     world_x,
                     world_y);
 
-
   } while (!((map_data_[idx] == 0) && (thresh == 1)));
-  //Reset threshold
-  // _DISTANCE_THRESHOLD = original_threshold;
 
   double radians = theta_ * (PI_ / 180.0);
   tf::Quaternion quaternion;

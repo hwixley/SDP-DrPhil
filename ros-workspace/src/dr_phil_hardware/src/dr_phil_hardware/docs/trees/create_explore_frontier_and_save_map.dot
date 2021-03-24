@@ -17,12 +17,12 @@ runExplorationNodes [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse
 Parallel -> runExplorationNodes;
 "Sequence*" [fillcolor=orange, fontcolor=black, fontsize=11, shape=box, style=filled];
 Parallel -> "Sequence*";
-"FailureIsRunning\n[HoldRunning]" [fillcolor=ghostwhite, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
-"Sequence*" -> "FailureIsRunning\n[HoldRunning]";
-HoldRunning [fillcolor=ghostwhite, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
-"FailureIsRunning\n[HoldRunning]" -> HoldRunning;
-"NewFrontiersReceived?" [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
-HoldRunning -> "NewFrontiersReceived?";
+"FailureIsRunning\n[HoldFailureIgnoreRunning]" [fillcolor=ghostwhite, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+"Sequence*" -> "FailureIsRunning\n[HoldFailureIgnoreRunning]";
+HoldFailureIgnoreRunning [fillcolor=ghostwhite, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+"FailureIsRunning\n[HoldFailureIgnoreRunning]" -> HoldFailureIgnoreRunning;
+"CmdVelChanged?" [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
+HoldFailureIgnoreRunning -> "CmdVelChanged?";
 runSaveMap [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];
 "Sequence*" -> runSaveMap;
 SetKillTrigger [fillcolor=gray, fontcolor=black, fontsize=11, shape=ellipse, style=filled];

@@ -8,7 +8,11 @@ from sensor_msgs.msg import LaserScan
 import numpy as np
 import math 
 
-def localize_pixel(img_pos,camera : Camera,lidar : Lidar, scan : LaserScan) -> tuple:
+from typing import Tuple 
+
+HANDLE_DOOR_DEPTH = 0.07
+
+def localize_pixel(img_pos,camera : Camera,lidar : Lidar, scan : LaserScan) -> Tuple[np.array,Ray]:
     """ given 2d image, lidar and camera as well as the current scan message, localizes the pixel against the lidar data 
 
         Args:
@@ -62,7 +66,10 @@ def localize_pixel(img_pos,camera : Camera,lidar : Lidar, scan : LaserScan) -> t
     cam_to_lidar_flat = Ray(lidar_to_cam_vec,-lidar_to_cam_vec,np.linalg.norm(lidar_to_cam_vec))
     
     # now workout the lidar to object ray, i.e. interpolate between ray1's and ray2's tips
-    lidar_to_object_flat = interpolated_ray(ray1,ray2,0.5,lidar_to_target_length)
+    # we need to make sure we incorporate the "depth" of the handle
+    lidar_to_object_flat_interp = interpolated_ray(ray1,ray2,0.5,lidar_to_target_length)
+    lidar_to_object_flat_endpoint =lidar_to_object_flat_interp.get_point() + intersection_normal.get_vec() * HANDLE_DOOR_DEPTH
+    lidar_to_object_flat = Ray(np.array([[0],[0],[0]]),lidar_to_object_flat_endpoint,length=lidar_to_object_flat_interp.length - HANDLE_DOOR_DEPTH)
 
     # now finally workout the vector from camera to object (flattened)
     # this lets us access the true z-distance in the camera
@@ -71,7 +78,7 @@ def localize_pixel(img_pos,camera : Camera,lidar : Lidar, scan : LaserScan) -> t
     cam_to_object_flat_length = np.linalg.norm(cam_to_object_flat)
 
     # angle from horizontal on camera ray
-    cam_ray_theta = angle_between_pi(cam_ray_lidar.get_vec(),cam_to_object_flat)
+    cam_ray_theta = angle_between_pi(cam_ray_lidar.get_vec(),cam_to_object_flat,plane_normal=np.array([[0],[0],[1]]))
 
     # length of original camera ray (knowing the length of its projection)
     # will fail if ray is pointing straight up or down

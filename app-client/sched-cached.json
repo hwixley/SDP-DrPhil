@@ -1,0 +1,47 @@
+{
+    "name": "projects/drphil-bdadb/databases/(default)/documents/robots/test1",
+    "fields": {
+        "rid": {
+            "stringValue": "test1"
+        },
+        "uid": {
+            "stringValue": "IEfVYq4ArDSTyBJ6up4BOrsv9uD2"
+        },
+        "returnTime": {
+            "stringValue": "ASAP"
+        },
+        "weekends": {
+            "arrayValue": {
+                "values": [
+                    {
+                        "stringValue": "12:45"
+                    },
+                    {
+                    "stringValue": "15:43"
+                    },
+                    {
+                        "stringValue": "1"
+                    }
+                ]
+            }
+        },
+        "weekdays": {
+            "arrayValue": {
+                "values": [
+                    {
+                        "stringValue": "12:45"
+                    },
+                    {
+                        "stringValue": "15:10"
+                    },
+                    {
+                        "stringValue": "1"
+                    }
+                ]
+            }
+        }
+    },
+    "createTime": "2021-03-19T19:57:52.155052Z",
+    "updateTime": "2021-03-19T19:58:32.262655Z",
+    "hash": 54649410589409190
+}

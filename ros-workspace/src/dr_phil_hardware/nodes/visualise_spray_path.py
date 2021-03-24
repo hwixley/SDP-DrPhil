@@ -10,8 +10,8 @@ import rospy
 import sys
 
 #Library to calculate points around handle To move Arm to to spray the handle from all sides
-from spray_path import get_position_and_orientation_of_spray_points
-from spray_path import Coord
+from dr_phil_hardware.disinfection.spray_path import get_position_and_orientation_of_spray_points
+from dr_phil_hardware.disinfection.spray_path import Coord
 
 from dr_phil_hardware.vision.localisation import *
 from dr_phil_hardware.vision.vision_handle_axis_algorithm import define_handle_features_heursitic
@@ -71,15 +71,16 @@ class SprayPathVisualiser:
    
 
         if self.spray_origin_poses and self.spray_endpoints_poses:
+            pass
             #Visualise markers and publish them for rviz to view them
-            points = self.show_path_points(self.spray_origin_poses)
-            self.vis_pub.publish(points)
+            # points = self.show_path_points(self.spray_origin_poses)
+            # self.vis_pub.publish(points)
 
-            path_direction = self.visualise_spray_direction(self.spray_origin_poses,self.spray_endpoints_poses)
-            self.vis_arrow_pub.publish(path_direction)
+            # path_direction = self.visualise_spray_direction(self.spray_origin_poses,self.spray_endpoints_poses)
+            # self.vis_arrow_pub.publish(path_direction)
 
-            door_marker = self.display_door_and_handle(2)
-            self.door_pub.publish(door_marker)
+            # door_marker = self.display_door_and_handle(2)
+            # self.door_pub.publish(door_marker)
 
 
 

@@ -6,6 +6,13 @@ from shapely.geometry import LineString
 import math 
 from tf import transformations as t
 
+
+
+
+def quat_from_yaw(yaw):
+    """ finds and returns the quaternion corresponding to rotation of vector (1,0,0) by the given yaw around the z axis"""
+    return t.quaternion_from_matrix(t.rotation_matrix(yaw,np.array([0,0,1])))
+
 def invert_homog_mat(hm):
     """ inverts homogenous matrix expressing rotation and translation in 3D or 2D """  
     
@@ -54,8 +61,8 @@ def interpolated_ray(ray1: Ray,ray2: Ray,r, newL):
     return Ray(ray1.origin,new_dir,newL)
 
 
-def angle_between_pi(v1, v2):
-    """ Returns the angle in radians between vectors 'v1' and 'v2'::
+def angle_between(v1, v2):
+    """ Returns the angle in radians between vectors 'v1' and 'v2' in 0 to pi range::
             >>> angle_between([[1], [0], [0]], [[0], [1], [0]])
             1.5707963267948966
             >>> angle_between([[1], [0], [0]], [[1], [0], [0]])
@@ -65,8 +72,8 @@ def angle_between_pi(v1, v2):
     angle = float(np.arccos((v1.T @ v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))))
     return angle if angle < math.pi else (math.pi * 2) - angle
 
-def angle_between_pi(v1, v2):
-    """ Returns the angle in radians between vectors 'v1' and 'v2'::
+def angle_between_pi(v1, v2,plane_normal):
+    """ Returns the angle in radians between vectors 'v1' and 'v2' but in full 0 to 2pi range::
 
             >>> angle_between([[1], [0], [0]], [[0], [1], [0]])
             1.5707963267948966
@@ -74,5 +81,14 @@ def angle_between_pi(v1, v2):
             0.0
 
     """
+
+    dot = v1.T @ v2 
     angle = float(np.arccos((v1.T @ v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))))
-    return angle
+
+    cross = np.cross(v1[:,0],v2[:,0])
+
+    if np.dot(cross,plane_normal) < 0:
+        angle *= -1 
+
+    return angle % (math.pi * 2)
+        

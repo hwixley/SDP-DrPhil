@@ -193,7 +193,7 @@ class HandleLocalizer:
             normal3dmrkr = self.create_arrow_from_ray(normal,3)
             markers.markers = [camera_mrkr,camera_lidar_mrkr,point3dmrkr,normal3dmrkr]
             
-            thetaGripper = math.pi + -angle_between_pi(normal.get_vec(),np.array([[1],[0],[0]]))
+            thetaGripper = math.pi + -angle_between_pi(normal.get_vec(),np.array([[1],[0],[0]]),plane_normal=np.array([[0],[0],[1]]))
             thetaHandle = thetaGripper - math.pi 
             orientationHandle = t.quaternion_from_matrix(t.rotation_matrix(thetaHandle,np.array([0,0,1])))
             orientationGripper = t.quaternion_from_matrix(t.rotation_matrix(thetaGripper,np.array([0,0,1])))

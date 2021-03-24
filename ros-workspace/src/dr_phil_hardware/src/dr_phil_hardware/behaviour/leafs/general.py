@@ -92,11 +92,17 @@ class CheckFileExists(py_trees.behaviour.Behaviour):
 
 class Lambda(py_trees.behaviour.Behaviour):
     """ Wraps a simple lambda method in a behaviour """
-    def __init__(self, name, func : typing.Callable[[],py_trees.common.Status]):
+    def __init__(self, name, func : typing.Callable[[],py_trees.common.Status], init : typing.Callable[[],None] = None):
 
         self.func = func
+        self.init = init
         super().__init__(name=name)
 
+    def initialise(self):
+        if self.init is not None:
+            self.init()
+
+        return super().initialise()
     def update(self):
         return self.func()
 

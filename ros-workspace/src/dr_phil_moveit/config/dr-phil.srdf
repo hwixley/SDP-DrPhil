@@ -15,8 +15,8 @@
         <joint name="joint3"/>
         <joint name="joint4"/>
         <joint name="ee_arm"/>
-        <group name="ee"/>
     </group>
+    
     <group name="ee">
         <link name="px100/ee_arm_link"/>
     </group>

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import numpy as np
 from dr_phil_hardware.vision.camera import Camera
@@ -10,8 +10,9 @@ import math
 import rospy 
 from sensor_msgs.msg import LaserScan
 from tf.transformations import projection_matrix
+norm=[]
 class Lidar:
-
+    
     def __init__(self):
         pass
     
@@ -90,7 +91,7 @@ class Lidar:
             return (lidar_ray1.length + lidar_ray2.length) / 2
         else:
             return None
-
+    
     def get_normal_to_plane(self, l_ray1 : Ray, l_ray2 : Ray):
         """ returns the normal to the plane formed by the 2 lidar rays 
             endpoints with the normal to the ground. origin of the normal
@@ -99,21 +100,24 @@ class Lidar:
                 l_ray1: lidar ray
                 l_ray2: lidar ray
         """
-
+        
+        global norm
         subtr = utils.subtract(l_ray1, l_ray2)
         halved_subtr_origin = subtr.origin + 0.5*subtr.length*subtr.dir 
 
         normal_dir = np.cross(subtr.get_vec(), np.array([[0], [0], [1]]),axisa=0,axisb=0,axisc=0)
-
+        norm.append(normal_dir)
+        if (len(norm)>15):
+            norm.pop(0)
+        normal_dir = np.mean(norm, axis=0)
+	 
         # normal_dir might need to be * -1 
         scalar_proj_of_normal_on_ray = normal_dir.T @ l_ray2.get_vec() / l_ray2.length
         if scalar_proj_of_normal_on_ray > 0:
             normal_dir *= -1
 
         return Ray(halved_subtr_origin, normal_dir, 1)
-
-
-
+        
     def get_unit_vec_from_dir(self, angle):
         """ return unit vector given an angle in rad, counterclockwise from x-axis """
         origin = np.array([[0], [0], [0]])

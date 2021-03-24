@@ -6,5 +6,6 @@
     <!-- launch localization nodes -->
     <include file="$(find dr_phil_hardware)/launch/localization_stack/amcl.launch" />
     <include file="$(find dr_phil_hardware)/launch/localization_stack/handle_features.launch" />
+    <include file="$(find dr_phil_hardware)/launch/localization_stack/random_target.launch" />
 
 </launch>

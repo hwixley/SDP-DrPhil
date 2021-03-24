@@ -37,11 +37,19 @@ class ArmCommander():
             self.move_groups = {}
 
             for mg in self.robot.get_group_names():
-                new_mg = moveit_commander.MoveGroupCommander(mg)
+                new_mg:MoveGroupCommander = moveit_commander.MoveGroupCommander(mg)
                 self.move_groups[mg] = new_mg
                 self.set_workspace(mg,[-1,-1,1,1])
                 self.set_planner_id(mg,"SPARS")
-                    
+                new_mg.set_max_velocity_scaling_factor(1)
+                new_mg.set_num_planning_attempts(10)
+                new_mg.set_planning_time(10)
+                new_mg.set_start_state_to_current_state()
+                new_mg.allow_replanning(True)
+                new_mg.set_goal_orientation_tolerance(1.3)
+                new_mg.set_goal_joint_tolerance(0.5)
+                new_mg.set_goal_position_tolerance(0.05)
+                
             self.display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path',
                                                         DisplayTrajectory,
                                                         queue_size=20)
