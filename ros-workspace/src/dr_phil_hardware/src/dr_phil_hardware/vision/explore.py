@@ -119,52 +119,33 @@ def stop_in_place():
     vel_msg.angular.z = 0 
     velocity_publisher.publish(vel_msg)
 
-def rotate360():
-    #Starts a new node
-    #rospy.init_node('ok', anonymous=True)
+def angles_close(a, b, tolerance : float) -> bool:
+    """
+        a, b: angles in radians
+        tolerance: tolerance of the check in degrees for simplicity
+        returns True is a, b and within the tolerance range to eachother
+    """
+    tolerance_tf = np.deg2rad(tolerance)
+    if abs(a - b) <= tolerance_tf:
+        return True
+    else:
+        return False
+
+def initiate_rotation():
     velocity_publisher = rospy.Publisher('cmd_vel', Twist, queue_size=10)
-    vel_msg = Twist()
-
-    print("Rotating the robot by 360 deg")
-    # larger than 360 because rospy.Time.now() has a slight delay
-    angle = 440 #angle in deg
     speed = 45 #speed in deg/sec
-    clockwise = True   
-
-    #Converting from angles to radians
-    relative_angle = np.deg2rad(angle)
     angular_speed = np.deg2rad(speed)
 
+    vel_msg = Twist()
     #We wont use linear components
-    vel_msg.linear.x=0
-    vel_msg.linear.y=0
-    vel_msg.linear.z=0
+    vel_msg.linear.x = 0
+    vel_msg.linear.y = 0
+    vel_msg.linear.z = 0
     vel_msg.angular.x = 0
     vel_msg.angular.y = 0
-
-    # Checking if our movement is CW or CCW
-    if clockwise:
-        vel_msg.angular.z = -abs(angular_speed)
-    else:
-        vel_msg.angular.z = abs(angular_speed)
-    # Setting the current time for distance calculus
-    t0 = rospy.Time.now().to_sec()
-    current_angle = 0
-
-    while(current_angle < relative_angle):
-        velocity_publisher.publish(vel_msg)
-        t1 = rospy.Time.now().to_sec()
-        current_angle = angular_speed*(t1-t0)
-        if rospy.is_shutdown():
-            print('Aborting rotation')
-            #Forcing our robot to stop on shutdown with ctrl-c
-            vel_msg = Twist()
-            velocity_publisher.publish(vel_msg)
-            break
-
-    #Forcing our robot to stop when function completes normally
-    vel_msg = Twist()
+    vel_msg.angular.z = -abs(angular_speed)
     velocity_publisher.publish(vel_msg)
+
 
 # call this on shutdown (ctrl-c)
 def stop_motors():
