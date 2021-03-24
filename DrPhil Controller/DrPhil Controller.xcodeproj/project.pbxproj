@@ -26,6 +26,9 @@
 		C041253125FA52B000BF0872 /* MyFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C041253025FA52B000BF0872 /* MyFunctions.swift */; };
 		C041253325FA66E500BF0872 /* RegistrationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C041253225FA66E500BF0872 /* RegistrationViewController.swift */; };
 		C041253525FB9E0100BF0872 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C041253425FB9E0100BF0872 /* LoginViewController.swift */; };
+		C0412537260AC6D200BF0872 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0412536260AC6D200BF0872 /* ForgotPasswordViewController.swift */; };
+		C0412539260AC6EF00BF0872 /* StartupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0412538260AC6EF00BF0872 /* StartupViewController.swift */; };
+		C041253B260AC8C900BF0872 /* ResetPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C041253A260AC8C900BF0872 /* ResetPasswordViewController.swift */; };
 		C06B434525BF5C090017D14B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434425BF5C090017D14B /* AppDelegate.swift */; };
 		C06B434725BF5C090017D14B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434625BF5C090017D14B /* SceneDelegate.swift */; };
 		C06B434C25BF5C090017D14B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C06B434A25BF5C090017D14B /* Main.storyboard */; };
@@ -77,6 +80,9 @@
 		C041253025FA52B000BF0872 /* MyFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFunctions.swift; sourceTree = "<group>"; };
 		C041253225FA66E500BF0872 /* RegistrationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationViewController.swift; sourceTree = "<group>"; };
 		C041253425FB9E0100BF0872 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		C0412536260AC6D200BF0872 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewController.swift; sourceTree = "<group>"; };
+		C0412538260AC6EF00BF0872 /* StartupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupViewController.swift; sourceTree = "<group>"; };
+		C041253A260AC8C900BF0872 /* ResetPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordViewController.swift; sourceTree = "<group>"; };
 		C06B434125BF5C090017D14B /* DrPhil.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DrPhil.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C06B434425BF5C090017D14B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C06B434625BF5C090017D14B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -132,6 +138,9 @@
 				C03A669125F95F1C00FC15CE /* ctrlReturnViewController.swift */,
 				C03A669225F95F1C00FC15CE /* ctrlScheduleCleaningViewController.swift */,
 				C03A669325F95F1C00FC15CE /* MenuViewController.swift */,
+				C0412536260AC6D200BF0872 /* ForgotPasswordViewController.swift */,
+				C0412538260AC6EF00BF0872 /* StartupViewController.swift */,
+				C041253A260AC8C900BF0872 /* ResetPasswordViewController.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -487,13 +496,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C0412537260AC6D200BF0872 /* ForgotPasswordViewController.swift in Sources */,
 				C03A669E25F95F3600FC15CE /* CleanSchedule.swift in Sources */,
 				C03A66A025F95F3600FC15CE /* DailyStats.swift in Sources */,
 				C03A669925F95F1C00FC15CE /* MenuViewController.swift in Sources */,
 				C041253525FB9E0100BF0872 /* LoginViewController.swift in Sources */,
 				C0B1AA3A25C5983B0072D124 /* ContentView.swift in Sources */,
 				C03A669F25F95F3600FC15CE /* GlobalVars.swift in Sources */,
+				C0412539260AC6EF00BF0872 /* StartupViewController.swift in Sources */,
 				C06B434525BF5C090017D14B /* AppDelegate.swift in Sources */,
+				C041253B260AC8C900BF0872 /* ResetPasswordViewController.swift in Sources */,
 				C03A669425F95F1C00FC15CE /* StatsViewController.swift in Sources */,
 				C03A669525F95F1C00FC15CE /* ControlViewController.swift in Sources */,
 				C041253325FA66E500BF0872 /* RegistrationViewController.swift in Sources */,

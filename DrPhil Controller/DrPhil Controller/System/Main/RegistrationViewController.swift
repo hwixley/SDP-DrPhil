@@ -51,7 +51,7 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
                 
                 if err != nil {
                     print(err!.localizedDescription)
-                    self.navigationItem.prompt = "This"
+                    self.navigationItem.prompt = "Error verifying credentials"
                 } else if docSnapshot != nil && docSnapshot!.exists {
                     let key = docSnapshot!.data()!["key"] as! String
                     

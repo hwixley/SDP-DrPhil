@@ -8,10 +8,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Start View Controller-->
+        <!--Startup View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController interfaceStyle="dark" id="BYZ-38-t0r" customClass="StartViewController" sceneMemberID="viewController">
+                <viewController interfaceStyle="dark" id="BYZ-38-t0r" customClass="StartupViewController" customModule="DrPhil" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -80,7 +80,7 @@
             </objects>
             <point key="canvasLocation" x="314" y="96"/>
         </scene>
-        <!--Log in-->
+        <!--Log In-->
         <scene sceneID="qfw-0i-33n">
             <objects>
                 <viewController interfaceStyle="dark" id="DI9-45-x68" customClass="LoginViewController" customModule="DrPhil" customModuleProvider="target" sceneMemberID="viewController">
@@ -164,14 +164,14 @@
                             <outletCollection property="gestureRecognizers" destination="vKT-Yw-kxF" appends="YES" id="U2C-2B-Yow"/>
                         </connections>
                     </view>
-                    <navigationItem key="navigationItem" title="Log in" largeTitleDisplayMode="always" id="gLe-e0-kYd">
+                    <navigationItem key="navigationItem" title="Log In" largeTitleDisplayMode="always" id="gLe-e0-kYd">
                         <barButtonItem key="leftBarButtonItem" title="◀︎ Back" id="gin-Mt-293">
                             <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
-                                <segue destination="BYZ-38-t0r" kind="presentation" modalPresentationStyle="fullScreen" id="eIn-O2-O5H"/>
+                                <segue destination="hkq-FC-8Vb" kind="unwind" unwindAction="unwindToStartup:" id="8BN-4h-57c"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="Log in" id="BaG-eF-Zfu">
+                        <barButtonItem key="rightBarButtonItem" title="Log In ▶︎" id="BaG-eF-Zfu">
                             <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
                                 <action selector="clickLogin:" destination="DI9-45-x68" id="7O9-TW-Y21"/>
@@ -186,13 +186,14 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Dpy-sR-ybt" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <exit id="hkq-FC-8Vb" userLabel="Exit" sceneMemberID="exit"/>
                 <tapGestureRecognizer id="vKT-Yw-kxF">
                     <connections>
                         <action selector="tapOutsideKB:" destination="DI9-45-x68" id="r6F-MK-RZl"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="850.72463768115949" y="874.55357142857144"/>
+            <point key="canvasLocation" x="1760.8695652173915" y="874.55357142857144"/>
         </scene>
         <!--Register my robot-->
         <scene sceneID="HPU-8B-zQE">
@@ -428,7 +429,7 @@
                         <barButtonItem key="leftBarButtonItem" title="◀︎ Back" id="dRc-si-fQW">
                             <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <connections>
-                                <segue destination="BYZ-38-t0r" kind="presentation" modalPresentationStyle="fullScreen" id="q8k-8q-zkt"/>
+                                <segue destination="CIU-ZI-jbQ" kind="unwind" unwindAction="unwindToStartup:" id="dhA-h9-Qv6"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -448,6 +449,7 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9R6-9Q-jUz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <exit id="CIU-ZI-jbQ" userLabel="Exit" sceneMemberID="exit"/>
                 <tapGestureRecognizer id="3fe-Rg-5Hp">
                     <connections>
                         <action selector="tapOutsideKB:" destination="dau-b3-YOf" id="05T-fn-POm"/>
@@ -1854,7 +1856,7 @@
         <!--Forgot Password-->
         <scene sceneID="BDY-f6-HZ6">
             <objects>
-                <viewController interfaceStyle="dark" id="9Gl-zM-E2J" sceneMemberID="viewController">
+                <viewController interfaceStyle="dark" id="9Gl-zM-E2J" customClass="ForgotPasswordViewController" customModule="DrPhil" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Db8-3I-LP4">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1885,6 +1887,9 @@
                                                 </constraints>
                                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                                 <textInputTraits key="textInputTraits" keyboardType="emailAddress" keyboardAppearance="alert"/>
+                                                <connections>
+                                                    <action selector="emailTextfield:" destination="cOz-cy-uVm" eventType="editingDidEnd" id="SLi-mX-5Ml"/>
+                                                </connections>
                                             </textField>
                                         </subviews>
                                     </stackView>
@@ -1892,6 +1897,7 @@
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="hGK-YK-buG" firstAttribute="leading" secondItem="nKo-gZ-3g8" secondAttribute="leading" constant="8" id="EMY-9D-ge0"/>
                             <constraint firstItem="nKo-gZ-3g8" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="hGK-YK-buG" secondAttribute="bottom" constant="8" id="LhI-5H-pLF"/>
@@ -1909,13 +1915,21 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Send ▶︎" id="K4B-tr-TJC">
                             <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <connections>
+                                <action selector="sendCodeButton:" destination="9Gl-zM-E2J" id="c0b-Sk-hbF"/>
+                            </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="emailLabel" destination="5qs-Pr-Ptn" id="uj0-sU-9sW"/>
+                        <outlet property="emailTextfield" destination="z7u-wB-5gA" id="AaE-Pf-XSU"/>
+                        <segue destination="Jzu-lJ-p8U" kind="presentation" identifier="resetPassSegue" modalPresentationStyle="fullScreen" id="V5W-ij-fjl"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0he-cQ-buc" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <exit id="cOz-cy-uVm" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="-1480" y="1124"/>
+            <point key="canvasLocation" x="-571.01449275362324" y="1123.6607142857142"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="9zL-5P-Nji">
@@ -1934,7 +1948,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PFq-Jf-mmw" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-59.420289855072468" y="874.55357142857144"/>
+            <point key="canvasLocation" x="850.72463768115949" y="874.55357142857144"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="zJa-qX-tFc">
@@ -1955,6 +1969,62 @@
             </objects>
             <point key="canvasLocation" x="2873.913043478261" y="164.73214285714286"/>
         </scene>
+        <!--Reset Password-->
+        <scene sceneID="niC-DE-XjT">
+            <objects>
+                <viewController id="I1S-Eo-252" customClass="ResetPasswordViewController" customModule="DrPhil" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="By5-SC-GlY">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="100" translatesAutoresizingMaskIntoConstraints="NO" id="UvZ-U9-imP">
+                                <rect key="frame" x="8" y="96" width="398" height="232.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="A password reset link has been sent to your email:  You must open it to reset your password!" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kNR-Vj-Bwr">
+                                        <rect key="frame" x="0.0" y="0.0" width="398" height="93.5"/>
+                                        <fontDescription key="fontDescription" name="DINAlternate-Bold" family="DIN Alternate" pointSize="20"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NUx-uU-fYg">
+                                        <rect key="frame" x="0.0" y="193.5" width="398" height="39"/>
+                                        <fontDescription key="fontDescription" name="DINAlternate-Bold" family="DIN Alternate" pointSize="23"/>
+                                        <state key="normal" title="Send another link">
+                                            <color key="titleColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="sendLinkButton:" destination="I1S-Eo-252" eventType="touchUpInside" id="7zu-RK-cz1"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="Ici-Oc-n9d" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="UvZ-U9-imP" secondAttribute="bottom" constant="8" id="FuK-4t-8uC"/>
+                            <constraint firstItem="UvZ-U9-imP" firstAttribute="leading" secondItem="Ici-Oc-n9d" secondAttribute="leading" constant="8" id="G2U-Ea-3z8"/>
+                            <constraint firstItem="UvZ-U9-imP" firstAttribute="top" secondItem="Ici-Oc-n9d" secondAttribute="top" constant="8" id="bFP-R0-kdD"/>
+                            <constraint firstItem="Ici-Oc-n9d" firstAttribute="trailing" secondItem="UvZ-U9-imP" secondAttribute="trailing" constant="8" id="e66-94-LZs"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="Ici-Oc-n9d"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Reset Password" id="mjn-Mh-Cfx">
+                        <barButtonItem key="rightBarButtonItem" title="Log In ▶︎" id="nmY-qq-5NM">
+                            <color key="tintColor" red="1" green="0.9982665181" blue="0.240922302" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <connections>
+                                <segue destination="C9o-18-BQd" kind="unwind" unwindAction="unwindToLogin:" id="D7O-YZ-jng"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="codeTitleLabel" destination="kNR-Vj-Bwr" id="ddC-96-fru"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ZvL-GI-mSh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <exit id="C9o-18-BQd" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="-2387" y="1124"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="qab-SJ-wuj">
             <objects>
@@ -1972,12 +2042,30 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="EDU-IE-qUC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2200" y="1124"/>
+            <point key="canvasLocation" x="-1289.8550724637682" y="1123.6607142857142"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="I27-Ce-E2d">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" interfaceStyle="dark" id="Jzu-lJ-p8U" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="93l-Pl-jqw">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="I1S-Eo-252" kind="relationship" relationship="rootViewController" id="JGn-p4-CFi"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DSr-dW-Myk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-3296" y="1124"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="jjf-Qm-49C"/>
-        <segue reference="eIn-O2-O5H"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="ControlTab" width="25" height="25"/>
