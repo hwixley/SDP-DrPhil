@@ -19,6 +19,6 @@ struct DailyStats {
 }
 
 struct ResourceMetrics {
-    var battery : Double
-    var disinfectant : Double
+    var battery : Float
+    var disinfectant : Float
 }

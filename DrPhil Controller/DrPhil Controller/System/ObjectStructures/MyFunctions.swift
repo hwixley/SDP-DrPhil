@@ -28,11 +28,11 @@ func initRobot(docData: [String : Any]?) -> Robot? {
 
 func initStatusInfo(docData: [String : Any]?) -> StatusInfo {
     var dayStats: DailyStats? = nil
-    var resources: ResourceMetrics? = nil
+    let resources = ResourceMetrics(battery: (docData!["battery"] as! NSNumber).floatValue, disinfectant: (docData!["disinfectant"] as! NSNumber).floatValue)
     
     
     
-    return StatusInfo(status: docData!["status"] as! Int, dayStats: nil, resources: nil, map: nil)
+    return StatusInfo(status: docData!["status"] as! Int, dayStats: nil, resources: resources, map: nil)
 }
 
 func initTaskStack(docData: QueryDocumentSnapshot) -> [Task] {

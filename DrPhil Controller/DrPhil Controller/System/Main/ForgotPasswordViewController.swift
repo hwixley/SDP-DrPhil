@@ -23,7 +23,7 @@ class ForgotPasswordViewController: UIViewController, UITextFieldDelegate {
     }
     
     //MARK: Actions
-     @IBAction func sendCodeButton(_ sender: UIBarButtonItem) {
+     @IBAction func sendCodeButton(_ sender: UIButton) {
          //Validate Input
          
          if isValidEmail(emailTextfield.text!) {

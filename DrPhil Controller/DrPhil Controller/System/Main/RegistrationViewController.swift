@@ -92,6 +92,8 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
                     
                     db.collection("unregistered-models").document(self.idTextfield.text!).delete()
                     
+                    db.collection("statuses").document(self.idTextfield.text!).setData(["uid": authResult!.user.uid, "status": -1, "battery": -1, "disinfectant": -1])
+                    
                     MyUser.robot = Robot(UID: authResult!.user.uid, robotID: self.idTextfield.text!)
                     self.performSegue(withIdentifier: "registrationSuccess", sender: self)
                 }

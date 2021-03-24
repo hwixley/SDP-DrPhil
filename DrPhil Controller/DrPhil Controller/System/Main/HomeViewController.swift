@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class HomeViewController: UIViewController {
 
@@ -20,8 +21,10 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var disinfectantLabel: UILabel!
     @IBOutlet weak var statusStack: UIStackView!
     @IBOutlet weak var taskStack: UIStackView!
-    @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var taskStatusLabel: UILabel!
+    @IBOutlet weak var shiftView: UIView!
+    @IBOutlet weak var statusView: UIView!
+    @IBOutlet weak var taskView: UIView!
     
     
     override func viewDidLoad() {
@@ -37,14 +40,14 @@ class HomeViewController: UIViewController {
     
     //MARK: Private methods
     func setupUI() {
-        shiftStack.isHidden = false
-        taskStack.isHidden = false
+        shiftView.isHidden = false
+        taskView.isHidden = false
         
         roundsTextLabel.text = "Interval between cleaning rounds (mins):"
         
         if MyUser.robot != nil {
             self.taskStatusLabel.isHidden = false
-            self.tableView.isHidden = true
+            self.loadStats()
             
             if MyUser.robot!.returnTime != "" && MyUser.robot!.returnDuration != "" {
                 var status = ""
@@ -90,11 +93,35 @@ class HomeViewController: UIViewController {
                 }
             }
         }
-        shiftStack.isHidden = true
-        statusStack.isHidden = true
-        taskStack.isHidden = true
+        shiftView.isHidden = true
+        statusView.isHidden = true
+        taskView.isHidden = true
         roundsTextLabel.text = "No shift today"
         roundsLabel.text = ""
-        statusLabel.text = "idle at charging station"
+        statusLabel.text = "Dr Phil is idle at it's charging station."
+    }
+    
+    func loadStats() {
+        let db = Firestore.firestore()
+        
+        db.collection("statuses").document(MyUser.robot!.robotID).addSnapshotListener { (docSnapshot, err) in
+            
+            if err != nil {
+                
+            } else if docSnapshot != nil && docSnapshot!.exists {
+                let status = initStatusInfo(docData: docSnapshot!.data())
+                
+                self.statusLabel.text = status.getStatus()
+                if status.resources != nil {
+                    if status.resources!.battery != -1 {
+                        self.batteryLabel.text = String(status.resources!.battery)
+                    }
+                    if status.resources!.disinfectant != -1 {
+                        self.disinfectantLabel.text = String(status.resources!.disinfectant)
+                    }
+                }
+                MyUser.statusInfo = status
+            }
+        }
     }
 }

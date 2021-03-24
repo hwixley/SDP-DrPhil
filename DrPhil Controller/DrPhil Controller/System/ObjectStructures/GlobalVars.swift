@@ -30,16 +30,18 @@ struct StatusInfo {
     var map : UIImage? = nil
     
     func getStatus() -> String {
-        if status == 0 {
-            return "idle at charging station"
+        if status == -1 {
+            return "NA"
+        } else if status == 0 {
+            return "Dr Phil is idle at it's charging station."
         } else if status == 1 {
-            return "cleaning"
+            return "Dr Phil is cleaning."
         } else if status == 2 {
-            return "returning to charging station"
+            return "Dr Phil is returning to it's charging station."
         } else if status == 3 {
-            return "Dr Phil is stuck"
+            return "Dr Phil is stuck."
         } else if status == 4 {
-            return "emergency halt procedure"
+            return "Dr Phil is doing an emergency halt procedure."
         }
         return ""
     }

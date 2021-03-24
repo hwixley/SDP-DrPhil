@@ -36,7 +36,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         self.tapOutsideKB.isEnabled = false
     }
 
-    @IBAction func clickLogin(_ sender: UIBarButtonItem) {
+    @IBAction func clickLogin(_ sender: UIButton) {
         if idTextfield.text != nil && passTextfield.text != nil && idTextfield.text != "" && passTextfield.text != "" {
             
             FirebaseAuth.Auth.auth().signIn(withEmail: idTextfield.text!, password: passTextfield.text!) { (authResult, err) in
