@@ -54,9 +54,14 @@ title: Home
                         <i><h4>Control</h4></i>
                         <p>Dr. Phil controls the pump via the 12V openCR board on the turtlebot, which is itself connected to a motor board. This is necessary because the pump has to be relatively powerful to be able to lift the water up to door handle height, and the Raspberry Pi's GPIO can output only 3.3V. We also have a LED strip which was used to simulate when spraying was happening, which is useful for informing nearby people about the status of Dr.Phil.</p>
 
-                        <p>As seen in the image, we also had to create fixings to keep everything still, as the robot might accidentally shake things off when moving.</p>
+                        <p>As seen in the image, we also had to create fixings to keep everything still, as the robot might accidentally dislodge components when moving.</p>
                     <h2 id="armcontrol">Arm control</h2>
-
+                        
+                    <h2 id="vision">Vision</h2>
+                      <video class="images" controls>
+                        <source src="images/doorvision.mp4">
+                      </video>
+                      <figcaption>Door & handle detection</figcaption>
                     <h2 id="app">App</h2>
                         <p>The iOS app is the preferred method of communicating with Dr.Phil. We decided to develop for iOS first because it has a market majority in the UK. We decided to use firebase, a cloud based noSQL storage solution, to bridge the connection between the two. We chose Firebase primarily as it's easily accessible from any platform, and our immediate goals involve developing an android/web app so Dr. Phil can be controlled on anything. Firebase was integrated into the app via cocoapods, and Dr.Phil via python libraries. The app was built using Swift.</p>
 
@@ -80,7 +85,7 @@ title: Home
                             </div>
                           </div>
                         
-                        <p>Changing settings in the app would then push those settings to firebase. Dr.Phils regularly reads the relevant settings from firebase and updates itself accordingly. Firebase easily allows an user to connect to to more than one Dr.Phil at a time, and minimises setup necessary to pair up the app and the bot.</p>
+                        <p>Changing settings in the app would then push those settings to firebase. A local server regularly reads the firebase settings and sends those to Dr.Phil, which then updates itself accordingly. Firebase would easily allow an user to connect to to more than one Dr.Phil at a time, and minimises setup necessary to pair up the app and the bot.</p>
                         <div class="container-fluid">
                             <div class="row">
                               <div class="col-md-6">
@@ -100,28 +105,7 @@ title: Home
                             </div>
                           </div>
                         <p> Dr.Phil also pushes statistics to firebase via it's python library, which is then viewable on the app. </p>
-                    <h2><a href="#Methods">Methods</a></h2>
-                    <p>Explain the key methods of how you got your system to work      </p>      
-                    
-                    <h2><a href="#Diagrams">System Diagrams</a></h2>		
-                    <p>You should include images (where available) which illustrate the methods you used, how the system works etc.
-                    This can include system diagrams, images of your system in certain states etc.</p>
-                    
-                    <h3>Machine vision</h3>
-                    Uses a Raspberry Pi camera x algorithm to detect door handles
 
-                    <h3>SLAM</h3>
-                    route planning using x algorithm to build a map of its environment and travel within it.
-
-                    <h3>Raspberry pi</h3>
-                    Main processor, handles communications between the various sensors and the app.
-                    Can handle the vision algorithm
-                    <h3>Ios app</h3>
-                    We've created an IOS app which allows users to select the time for the robot to start/stop cleaning.
-
-                    <h3>system diagrams/application flows</h3>
-
-                    <H3>Videos</H3>
 
                 </div>	
             </div>
