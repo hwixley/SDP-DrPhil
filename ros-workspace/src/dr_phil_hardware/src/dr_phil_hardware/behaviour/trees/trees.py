@@ -1,97 +1,166 @@
 #!/usr/bin/env python3
 
-from py_trees import blackboard
-import py_trees_ros
-from py_trees.blackboard import Blackboard
-from dr_phil_hardware.arm_interface.command_arm import ArmCommander, MoveGroup
+from py_trees.blackboard import Blackboard, SetBlackboardVariable
+from dr_phil_hardware.arm_interface.command_arm import  MoveGroup
 import py_trees
 from dr_phil_hardware.behaviour.leafs.ros import CallService, CreateMoveItMove, DynamicReconfigure, PublishTopic,RunRos,MessageChanged,ActionClientConnectOnInit,CreateMoveitTrajectoryPlan,ExecuteMoveItPlan
-from dr_phil_hardware.behaviour.leafs.general import ClosestObstacle,Lambda,SetBlackboardVariableCustom
+from dr_phil_hardware.behaviour.leafs.general import CheckIsOnSchedule, ClosestObstacle,Lambda,SetBlackboardVariableCustom, ShouldPreemptAndGoBase, WaitForNextClean
 from dr_phil_hardware.behaviour.decorators import HoldStateForDuration
 import operator
-from geometry_msgs.msg import Twist, PoseArray, Pose, PoseStamped
+from geometry_msgs.msg import Twist, PoseArray, Pose, PoseStamped,PoseWithCovarianceStamped
 import os
 from std_msgs.msg import Float64MultiArray
 from py_trees.common import BlackBoxLevel, Status
 import rospy 
 from move_base_msgs.msg import MoveBaseAction,MoveBaseGoal
 from std_srvs.srv import Empty,EmptyRequest
-import tf.transformations as t 
-from dr_phil_hardware.utils import rotate_pose_by_yaw, quat_to_vec, quat_from_yaw
+from dr_phil_hardware.utils import rotate_pose_by_yaw, quat_to_vec
 import numpy as np
 import math 
-from dr_phil_hardware.msg import CleaningTime,CleaningSchedule
-import datetime
-import time
 import copy
+from dr_phil_hardware.srv import SetRobotStatus,SetRobotStatusRequest
+from sensor_msgs.msg import BatteryState
+from enum import IntEnum
 
-def create_check_on_according_to_schedule(schedule_src):
-    """creates subtree which returns failure if we are not on schedule or schedule does not exist,
-    and succeeds if we are on schedule and should be cleaning
+ROBOT_STATE_TARGET = "robot/state"
+APP_RESET_RETURN_TOPIC = "app/reset_return"
+
+
+
+class DrPhilStatus(IntEnum):
+    IDLE_CHARGING = 0,
+    CLEANING = 1,
+    RETURNING_TO_BASE = 2,
+    STUCK = 3,
+    EXECUTING_HALT_PROCEDURE = 4,
+
+def create_update_app_state(battery_src,name="updateAppState"):
+    """Updates robot state from the given sources, communicates with app
+
+    Args:
+        battery_src ([type]): [description]
+        robot_state_src ([type]): [description]
+        name (str, optional): [description]. Defaults to "updateAppState".
+    """
+    APP_STATUS_SET_TOPIC = "/app/set_status"
+
+    def get_data():
+        battery : BatteryState = Blackboard().get(battery_src)
+        robot_state : int = Blackboard().get(ROBOT_STATE_TARGET)
+
+        req = SetRobotStatusRequest()
+        
+        if battery is not None:
+            req.battery_level = battery.voltage
+        if robot_state is not None:
+            req.status = robot_state
+        
+
+        return req 
+
+    return CallService("callAppStateUpdate",APP_STATUS_SET_TOPIC,SetRobotStatus,get_data,"//trash")
+
+
+def create_set_robot_status(new_status : DrPhilStatus):
+    """ Set the blackboard variable corresponding to robot status
+
+    Args:
+        new_status (DrPhilStatus): [description]
+    """
+    return SetBlackboardVariable(name="setStatus[{}]".format(new_status),variable_name=ROBOT_STATE_TARGET,variable_value=new_status.value)
+
+def create_return_base(pose_src,name="returnHome"):
+    """Creates behaviour which returns the robot to base if it's not already there,
+    succeeds if this is done successfully, fails if cannot reach home position
+
+    Args:
+        pose_src ([type]): [description]
+        name (str, optional): [description]. Defaults to "returnHome".
+
+    Returns:
+        [type]: [description]
+    """
+    HOME = np.array([0,0])
+    TARGET_POSE_SRC = "home/pose"
+    def check_home():
+        pose : PoseWithCovarianceStamped = Blackboard().get(pose_src)
+        
+        if pose is None:
+            return Status.SUCCESS
+
+        pose_np = np.array([pose.pose.pose.position.x,
+                            pose.pose.pose.position.y])
+        
+        if np.linalg.norm(pose_np - HOME) < 0.1:
+            return Status.FAILURE
+        else:
+            return Status.SUCCESS
+
+
+    home_sequence = py_trees.composites.Sequence()
+    check_is_home = Lambda("check_home",check_home)
+    reset_return_request = CallService("resetAppReturn",APP_RESET_RETURN_TOPIC,Empty,EmptyRequest(),blackboard_target="//trash")
+    home_sequence.add_children([check_is_home,reset_return_request])
+
+    set_return_home = create_set_robot_status(DrPhilStatus.RETURNING_TO_BASE)
+
+    home = PoseStamped()
+    home.header.stamp = rospy.Time.now()
+    home.header.frame_id = "map"
+    home.pose = Pose()
+    home.pose.position.x = HOME[0]
+    home.pose.position.y = HOME[1]
+    home.pose.orientation.w = 1
+
+    sequence = py_trees.composites.Sequence()
+    set_goal = SetBlackboardVariable("setHomeGoal",variable_name=TARGET_POSE_SRC,variable_value=home)
+    move_home = create_move_base_to_reach_pose(TARGET_POSE_SRC,name="reachHome")
+    # while this will not be reached if we didnt have to move to home
+    # that situation will only occur after we reached home at least once, or started at home
+    set_home = create_set_robot_status(DrPhilStatus.IDLE_CHARGING) 
+    sequence.add_children([set_goal,move_home,set_home])
+
+    return py_trees.composites.Selector(children=[home_sequence,set_return_home,sequence])
+
+def create_preempt_return_base(schedule_src,pose_src,name="preemptCheck"):
+    """Creates a check which succeeds if the robot needs to now preempt what it's doing and return to base, and fails otherwise
 
     Args:
         schedule_src ([type]): [description]
+        pose_src ([type]): [description]
+        name (str, optional): [description]. Defaults to "preemptCheck".
+
+    Returns:
+        [type]: [description]
     """
-    def in_cleaning_interval(time: datetime.datetime,cleaningTime : CleaningTime):
-        time_now_seconds = time.hour * 60 * 60 + time.minute * 60
-        cleaning_time_on_seconds = cleaningTime.hour_on * 60 * 60 + cleaningTime.minute_on * 60
-        cleaning_time_off_seconds = cleaningTime.hour_off * 60 * 60 + cleaningTime.minute_off * 60
-        return time_now_seconds >= cleaning_time_on_seconds and time_now_seconds < cleaning_time_off_seconds
+    sequence = py_trees.composites.Sequence()
+    check = ShouldPreemptAndGoBase("checkPreemptRequired",schedule_src)
+    return_home = create_return_base(pose_src)
+    sequence.add_children([check,return_home])
 
-    def check_schedule():
-        schedule : CleaningSchedule= Blackboard().get(schedule_src)
-        now = datetime.datetime.now()
-        is_weekend = now.weekday() >= 5
-
-        if schedule is None:
-            return Status.FAILURE
-        
-        on_schedule_weekday = not is_weekend and in_cleaning_interval(now,schedule.weekdays)
-        on_schedule_weekend = is_weekend and in_cleaning_interval(now,schedule.weekends)
+    return sequence 
     
-        if on_schedule_weekend or on_schedule_weekday:
-            return Status.SUCCESS
-        else:
-            return Status.FAILURE
 
-    return Lambda("checkOnSchedule",check_schedule)
 
-def create_wait_for_next_clean(schedule_src):
+def create_check_on_according_to_schedule(schedule_src,name="isOnSchedule"):
     """creates subtree which returns failure if we are not on schedule or schedule does not exist,
     and succeeds if we are on schedule and should be cleaning
 
     Args:
         schedule_src ([type]): [description]
     """
-    def check_schedule():
+    
+    return CheckIsOnSchedule(name,schedule_src)
 
-        last_clean = Blackboard().get("clean/ended")
+def create_wait_for_next_clean(schedule_src,name="waitForNextClean"):
+    """creates subtree which returns failure if we are not on schedule or schedule does not exist,
+    and succeeds if we are on schedule and should be cleaning
 
-        if last_clean is None:
-            last_clean = time.time()
-            Blackboard().set("clean/ended",last_clean)
+    Args:
+        schedule_src ([type]): [description]
+    """
 
-        schedule : CleaningSchedule = Blackboard().get(schedule_src)
-        now = datetime.datetime.now()
-        is_weekend = now.weekday() >= 5
-
-        if schedule is None:
-            return Status.FAILURE
-        
-        interval = 0
-        if is_weekend:
-            interval = schedule.weekends.interval
-        else:
-            interval = schedule.weekdays.interval 
-
-        if time.time() >= interval * 60 + last_clean:
-            return Status.SUCCESS
-
-        return Status.RUNNING
-    def reset():
-        Blackboard().set("clean/ended",None)
-
-    return Lambda("waitForNextClean",check_schedule,reset)
+    return WaitForNextClean(name,schedule_src)
 
 
 def create_exploration_completed_check(duration=60):
@@ -240,6 +309,8 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,pose_frame="map
     sequence.blackbox_level = BlackBoxLevel.BIG_PICTURE
 
 
+    set_disinfect = create_set_robot_status(DrPhilStatus.CLEANING)
+
     reset_arm = create_set_positions_arm([0,0,-1.5,1.5,-1.5,0],name="resetArm")
 
     localize = create_localize_robot()
@@ -264,8 +335,13 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,pose_frame="map
     
     wait_2 = py_trees.timers.Timer(name="wait",duration=8)
 
-    snapshot_target = Lambda("snapshotTargets",lambda:snapshot_targets(snapshot=True))
+    # note we use the pose directly from the blackboard sent in not the buffer
+    # since we didnt snapshot yet
+    move_to_door = create_move_in_front_of_door(handle_pose_src,1)
 
+    wait_3 = py_trees.timers.Timer(name="wait",duration=2)
+
+    snapshot_target = Lambda("snapshotTargets",lambda:snapshot_targets(snapshot=True))
 
     def get_spray():
         s :PoseArray= Blackboard().get(bb2bufferSpray)
@@ -279,7 +355,7 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,pose_frame="map
 
     kill_nodes = py_trees.blackboard.SetBlackboardVariable(name="killNodes",variable_name=killkey)
     
-    sequence.add_children([wait,reset_arm,localize,await_targets,wait_2,snapshot_target,publish_vis_s,execute_spray_sequence,kill_nodes])
+    sequence.add_children([set_disinfect,wait,reset_arm,localize,await_targets,wait_2,move_to_door,wait_3,snapshot_target,publish_vis_s,execute_spray_sequence,kill_nodes])
 
     parallel.add_children([load_map,start_disinfection_nodes,sequence])
 
@@ -438,31 +514,31 @@ def create_move_base_to_reach_pose(target_pose_src,name="reachTargetPos"):
 def create_try_various_arm_plans(pose_frame):
     plan = py_trees.composites.Selector()
 
-    create_trajectory_plan = CreateMoveitTrajectoryPlan("planTrajectory",
-        MoveGroup.ARM,0.9,
-        pose_frame=pose_frame,
-        pose_target_include_only_idxs=[0],
-        )
+    # create_trajectory_plan = CreateMoveitTrajectoryPlan("planTrajectory",
+    #     MoveGroup.ARM,0.9,
+    #     pose_frame=pose_frame,
+    #     pose_target_include_only_idxs=[0],
+    #     )
 
-    create_lenient_trajectory_plan = CreateMoveitTrajectoryPlan("planTrajectoryLenient",
-        MoveGroup.ARM,0.5,
-        pose_frame=pose_frame,
-        pose_target_include_only_idxs=[0],
-        )
+    # create_lenient_trajectory_plan = CreateMoveitTrajectoryPlan("planTrajectoryLenient",
+    #     MoveGroup.ARM,0.5,
+    #     pose_frame=pose_frame,
+    #     pose_target_include_only_idxs=[0],
+    #     )
 
-    create_p2p_plan = CreateMoveItMove("planP2PMove",
+    # create_p2p_plan = CreateMoveItMove("planP2PMove",
+    #     MoveGroup.ARM,
+    #     pose_frame=pose_frame,
+    #     goal_tolerance=0.01,
+    #     )
+
+    create_p2p_plan_lenient = CreateMoveItMove("planP2PMove",
         MoveGroup.ARM,
         pose_frame=pose_frame,
-        goal_tolerance=0.01,
-        )
+        goal_tolerance_orient=0.25,
+        goal_tolerance_pos=0.03)
 
-    create_p2p_plan_lenient = CreateMoveItMove("planP2PMoveLenient",
-        MoveGroup.ARM,
-        pose_frame=pose_frame,
-        goal_tolerance=0.5,
-        )
-
-    plan.add_children([create_trajectory_plan,create_lenient_trajectory_plan,create_p2p_plan,create_p2p_plan_lenient])
+    plan.add_children([create_p2p_plan_lenient])
     return plan
 
 def create_execute_spray_trajectory(target_pose_src,planning_frame,distance_from_pose=0.1):
@@ -486,10 +562,10 @@ def create_execute_spray_trajectory(target_pose_src,planning_frame,distance_from
         else: # not completed
             return py_trees.Status.FAILURE 
 
-    check_not_completed = Lambda("check_not_completed",check)
+    check_not_completed = Lambda("checkNotCompleted",check)
 
     move_in_front = create_move_in_front_of_current_spray_pose(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE,distance_from_pose)
-
+    move_in_front = py_trees.decorators.FailureIsSuccess(move_in_front)
 
     def get_spray():
         s = Blackboard().get(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE)
@@ -599,12 +675,11 @@ def create_move_in_front_of_current_spray_pose(spray_poses_src,distance_from_pos
     return door_open
 
 
-def create_move_in_front_of_door(handle_pose_src,spray_path_src,distance_from_door=0.1,name="moveToDoor"):
+def create_move_in_front_of_door(handle_pose_src,distance_from_door=0.1,name="moveToDoor"):
     """ positions the robot perpendicular to the door at specified distance from the normal in the direction of it 
     
         Args:
             handle_pose_src (`str->PoseStamped`): 
-            spray_path_src (`str->PoseArray`): 
     """
 
     def process_pose():

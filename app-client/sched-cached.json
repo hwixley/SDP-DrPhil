@@ -1,47 +1,50 @@
 {
     "name": "projects/drphil-bdadb/databases/(default)/documents/robots/test1",
     "fields": {
-        "rid": {
-            "stringValue": "test1"
-        },
-        "uid": {
-            "stringValue": "IEfVYq4ArDSTyBJ6up4BOrsv9uD2"
-        },
-        "returnTime": {
-            "stringValue": "ASAP"
-        },
-        "weekends": {
-            "arrayValue": {
-                "values": [
-                    {
-                        "stringValue": "12:45"
-                    },
-                    {
-                    "stringValue": "15:43"
-                    },
-                    {
-                        "stringValue": "1"
-                    }
-                ]
-            }
+        "returnDuration": {
+            "stringValue": ""
         },
         "weekdays": {
             "arrayValue": {
                 "values": [
                     {
-                        "stringValue": "12:45"
+                        "stringValue": "07:45"
                     },
                     {
-                        "stringValue": "15:10"
+                        "stringValue": "23:45"
                     },
                     {
-                        "stringValue": "1"
+                        "stringValue": "50"
                     }
                 ]
             }
+        },
+        "uid": {
+            "stringValue": "IEfVYq4ArDSTyBJ6up4BOrsv9uD2"
+        },
+        "weekends": {
+            "arrayValue": {
+                "values": [
+                    {
+                        "stringValue": "08:00"
+                    },
+                    {
+                        "stringValue": "21:00"
+                    },
+                    {
+                        "stringValue": "30"
+                    }
+                ]
+            }
+        },
+        "rid": {
+            "stringValue": "test1"
+        },
+        "returnTime": {
+            "stringValue": ""
         }
     },
     "createTime": "2021-03-19T19:57:52.155052Z",
-    "updateTime": "2021-03-19T19:58:32.262655Z",
-    "hash": 54649410589409190
+    "updateTime": "2021-03-26T00:15:33.089645Z",
+    "hash": 8006098616476353077
 }

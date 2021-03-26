@@ -120,7 +120,28 @@ class LidarTest(unittest.TestCase):
             angle1 = self.lidar.get_angle_from_unit_vec(ray1)
             angle2 = self.lidar.get_angle_from_unit_vec(ray2)
             #print("\n\nCorresponding lidar rays found at angles:\nlray1 angle: {}\nlray2 angle: {}\ncamera_ray_angle: {}\n<------>\n".format(angle1, angle2, angles[i]))
-            self.assertTrue(angle1 in range(angles[i] - 1, angles[i] + 1) and angle2 in range(angles[i], angles[i] + 2))
+            range_angle1 = [angles[i],(angles[i] - 1) % 360, (angles[i] + 1) % 360]
+            range_angle2 = [angles[i],(angles[i] + 1) % 360, (angles[i] + 2) % 360]
+
+            self.assertTrue(angle1 in  range_angle1 and angle2 in range_angle2,
+                "Got rays with angles:{},{},  but expected angle in ranges: {}, and {}".format(angle1,angle2,range_angle1,range_angle2))
+    
+    def test_get_corresponding_lidar_rays_smoothed(self):
+        # note: should be exactly the same, but different length rays
+        origin = [0, 0, 0]
+        dirs = [[1, 0, 0], [1, 1, 0], [0, 1, 0], [-1, 1, 0], [-1, 0, 0], [-1, -1, 0], [0, -1, 0], [1, -1, 0], [math.sqrt(3)/2, -1/2, 0]]
+        angles = [0, 45, 90, 135, 180, 225, 270, 315, 330]
+        for i, dir in enumerate(dirs):
+            camera_ray = Ray(np.array(origin), np.array(dir), length=1)
+            ray1, ray2 = self.lidar.get_corresponding_lidar_rays(camera_ray, self.lidar_data,n=2)
+            angle1 = self.lidar.get_angle_from_unit_vec(ray1)
+            angle2 = self.lidar.get_angle_from_unit_vec(ray2)
+            #print("\n\nCorresponding lidar rays found at angles:\nlray1 angle: {}\nlray2 angle: {}\ncamera_ray_angle: {}\n<------>\n".format(angle1, angle2, angles[i]))
+            range_angle1 = [angles[i],(angles[i] - 1) % 360, (angles[i] + 1) % 360]
+            range_angle2 = [angles[i],(angles[i] + 1) % 360, (angles[i] + 2) % 360]
+
+            self.assertTrue(angle1 in  range_angle1 and angle2 in range_angle2,
+                "Got rays with angles:{},{},  but expected angle in ranges: {}, and {}".format(angle1,angle2,range_angle1,range_angle2))
 
     def test_get_unit_vec_from_dir(self):
         for angle in [0, 45, 90, 135, 180, 225, 270, 315]:

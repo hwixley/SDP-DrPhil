@@ -15,12 +15,12 @@ Note: Current implementation is in regards to Pull door handles only. Further ex
 or the possibility of implementing a dynamic solution
 """
 # CONSTANTS
-DISTANCE_FROM_HANDLE = 100  # (mm)
+DISTANCE_FROM_HANDLE = 100 #100  # (mm)
 HANDLE_DIMENSIONS = [19, 130, 37]  # width, height, depth (mm)
 SPRAY_ANGLE = 30  # (degrees)
 SPRAY_RADIUS = DISTANCE_FROM_HANDLE * math.tan(math.radians(SPRAY_ANGLE))  # (mm)
 CIRCLE_EDGE = math.sqrt(2 * SPRAY_RADIUS * SPRAY_RADIUS) / 2  # (mm)
-SPRAY_CONFIDENCE = 0#10  # (mm)
+SPRAY_CONFIDENCE = CIRCLE_EDGE *1.5  # (mm)
         
     
 class Coord:
@@ -91,7 +91,7 @@ def transform_points(points, handle_center, vector):
 def calc_z_spray_centroids(center_z):
     top = (center_z + HANDLE_DIMENSIONS[1]/2) + SPRAY_CONFIDENCE
     bottom = (center_z - HANDLE_DIMENSIONS[1]/2) - SPRAY_CONFIDENCE
-    num_sprays = int(math.ceil(HANDLE_DIMENSIONS[1]/(2*CIRCLE_EDGE)))
+    num_sprays = int(math.ceil(HANDLE_DIMENSIONS[1]/(2*CIRCLE_EDGE))) + int(SPRAY_CONFIDENCE/CIRCLE_EDGE) * 2
 
     spray_centroids = np.zeros(num_sprays)
     index = 0
@@ -99,23 +99,28 @@ def calc_z_spray_centroids(center_z):
     current_z = center_z + CIRCLE_EDGE
     while current_z < top and index < num_sprays:
         spray_centroids[index] = current_z
-        current_z += CIRCLE_EDGE * 2
+        current_z += CIRCLE_EDGE  *2
         index += 1
 
     current_z = center_z - CIRCLE_EDGE
     while current_z > bottom and index < num_sprays:
         spray_centroids[index] = current_z
-        current_z -= CIRCLE_EDGE * 2
+        current_z -= CIRCLE_EDGE *2
         index += 1
 
     return spray_centroids
 
 
 def calc_xy_spray_centroids(handle_center, vector):
+    # ratio of each side to the hypotenus at 45 degrees
+    theta_sides = math.radians(70)
+    x_offset = DISTANCE_FROM_HANDLE * math.cos(theta_sides)
+    y_offset = DISTANCE_FROM_HANDLE * math.sin(theta_sides)
+
     xy_coords = np.empty((2, 3))
     xy_coords[:, 0] = [handle_center.x, handle_center.y - DISTANCE_FROM_HANDLE]
-    xy_coords[:, 1] = [handle_center.x - DISTANCE_FROM_HANDLE, handle_center.y]
-    xy_coords[:, 2] = [handle_center.x + DISTANCE_FROM_HANDLE, handle_center.y]
+    xy_coords[:, 1] = [handle_center.x - x_offset, handle_center.y - y_offset]
+    xy_coords[:, 2] = [handle_center.x + x_offset, handle_center.y - y_offset]
 
     new_points = transform_points(xy_coords, handle_center, vector)
 

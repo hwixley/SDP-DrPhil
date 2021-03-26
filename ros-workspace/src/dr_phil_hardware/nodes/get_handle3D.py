@@ -308,15 +308,21 @@ class Handle3DTransformation:
 
         if self.camera and self.handle_box and self.scan and self.rob2map is not None:
             point_handle = np.array([[self.handle_box.x + (self.handle_box.width/2)],[self.handle_box.y + (self.handle_box.height/2)]])
-            (point3d,normal) = localize_pixel(point_handle,self.camera,self.lidar,self.scan)
-            
             try:
+                (point3d,normal) = localize_pixel(point_handle,
+                    self.camera,
+                    self.lidar,
+                    self.scan,
+                    smoothing_neighbours=5)
+
                 point3d_map = self.rob2map @ np.append(point3d,[[1]],axis=0)
                 normal_map = normal.get_transformed(self.rob2map)
                 self.publish(point3d_map,normal_map)
                 self.visualise(point_handle,point3d_map,normal_map)
             except Exception as e:
-                rospy.logerr(e)
+                import traceback
+                
+                rospy.logerr(traceback.format_exc())
        
 
 

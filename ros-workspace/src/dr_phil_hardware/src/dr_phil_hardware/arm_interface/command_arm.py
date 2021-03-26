@@ -89,7 +89,6 @@ class ArmCommander():
             mg = self.__get_move_group(group)
             (b,rt,pt,err) = mg.plan()
             rt.joint_trajectory.header.stamp = rospy.Time.now()
-
             return (b,rt,pt,err)
         
         def go(self,group : MoveGroup,blocking=False):
@@ -158,6 +157,18 @@ class ArmCommander():
         def set_goal_tolerance(self,group:MoveGroup,v) -> None:
             mg = self.__get_move_group(group)
             mg.set_goal_tolerance(v)
+        
+        def set_orientation_goal_tolerance(self,group:MoveGroup,v) -> None:
+            mg = self.__get_move_group(group)
+            mg.set_goal_orientation_tolerance(v)
+        
+        def set_joint_goal_tolerance(self,group:MoveGroup,v) -> None:
+            mg = self.__get_move_group(group)
+            mg.set_goal_joint_tolerance(v)
+
+        def set_position_goal_tolerance(self,group: MoveGroup,v) -> None:
+            mg = self.__get_move_group(group)
+            mg.set_goal_position_tolerance(v)
 
         def get_planner_id(self,group:MoveGroup) -> str:
             mg = self.__get_move_group(group)
@@ -218,6 +229,9 @@ class ArmCommander():
     def get_random_pose(self,group:MoveGroup) -> PoseStamped: assert(False)
     def set_max_velocity_scaling_factor(self,group:MoveGroup,v) -> None :assert(False)
     def set_goal_tolerance(self,group:MoveGroup,v) -> None: assert(False)
+    def set_orientation_goal_tolerance(self,group:MoveGroup,v) -> None: assert(False)
+    def set_joint_goal_tolerance(self,group:MoveGroup,v) -> None: assert(False)
+    def set_position_goal_tolerance(self,group: MoveGroup,v) -> None: assert(False)
     def get_planner_id(self,group:MoveGroup) -> str: assert(False)
     def set_planner_id(self,group:MoveGroup, planner : str) -> str: assert(False)
     def go(self,group : MoveGroup,blocking=False): assert(False)

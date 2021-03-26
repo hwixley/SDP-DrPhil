@@ -802,7 +802,7 @@
         <pose>2.48231 4.09085 -1.73102 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='Wall_4'>
-          <pose>1.09293 1.00025 -1.73102 0 -0 3.14159</pose>
+          <pose>1.062 1.00025 -1.73102 0 -0 3.14159</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>

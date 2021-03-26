@@ -7,6 +7,8 @@ Panels:
         - /Global Options1
         - /Status1
         - /DepthCloud1/Auto Size1
+        - /Pose1
+        - /PoseArray1
         - /RobotState1
         - /MotionPlanning1
         - /Trajectory1
@@ -205,6 +207,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        px100/led_link1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         px100/left_finger_link:
           Alpha: 1
           Show Axes: false
@@ -430,12 +436,12 @@ Visualization Manager:
       Class: rviz/Pose
       Color: 255; 25; 0
       Enabled: true
-      Head Length: 0.30000001192092896
-      Head Radius: 0.10000000149011612
+      Head Length: 0.05000000074505806
+      Head Radius: 0.009999999776482582
       Name: Pose
       Queue Size: 10
-      Shaft Length: 1
-      Shaft Radius: 0.05000000074505806
+      Shaft Length: 0.20000000298023224
+      Shaft Radius: 0.009999999776482582
       Shape: Arrow
       Topic: /move_base/current_goal
       Unreliable: false
@@ -451,7 +457,7 @@ Visualization Manager:
       Head Radius: 0.029999999329447746
       Name: PoseArray
       Queue Size: 10
-      Shaft Length: 0.23000000417232513
+      Shaft Length: 0.05999999865889549
       Shaft Radius: 0.009999999776482582
       Shape: Arrow (3D)
       Topic: /spray_path/target_points
@@ -581,6 +587,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        px100/led_link1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         px100/left_finger_link:
           Alpha: 1
           Show Axes: false
@@ -751,6 +761,10 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          px100/led_link1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
           px100/left_finger_link:
             Alpha: 1
             Show Axes: false
@@ -924,6 +938,10 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          px100/led_link1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
           px100/left_finger_link:
             Alpha: 1
             Show Axes: false
@@ -1067,6 +1085,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        px100/led_link1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         px100/left_finger_link:
           Alpha: 1
           Show Axes: false
@@ -1118,7 +1140,7 @@ Visualization Manager:
       Head Length: 0.30000001192092896
       Head Radius: 0.10000000149011612
       Name: Pose
-      Queue Size: 10
+      Queue Size: 1
       Shaft Length: 1
       Shaft Radius: 0.05000000074505806
       Shape: Axes
@@ -1135,7 +1157,7 @@ Visualization Manager:
       Head Length: 0.019999999552965164
       Head Radius: 0.029999999329447746
       Name: PoseArray
-      Queue Size: 10
+      Queue Size: 1
       Shaft Length: 0.07999999821186066
       Shaft Radius: 0.009999999776482582
       Shape: Arrow (3D)
@@ -1170,7 +1192,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 1.0068793296813965
+      Distance: 0.3640446662902832
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -1178,17 +1200,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 1.028760552406311
-        Y: -1.8154679536819458
-        Z: 1.6470667123794556
+        X: -0.13520215451717377
+        Y: -0.08353795111179352
+        Z: 1.4918591976165771
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.8447970151901245
+      Pitch: 0.779796838760376
       Target Frame: map
-      Yaw: 3.599994421005249
+      Yaw: 3.659996271133423
     Saved: ~
 Window Geometry:
   Camera:

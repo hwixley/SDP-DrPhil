@@ -4,7 +4,7 @@ import unittest
 import sys
 import numpy as np
 from dr_phil_hardware.vision.ray import Ray
-from dr_phil_hardware.vision.utils import subtract,intersect,invert_homog_mat,interpolated_ray,angle_between,angle_between_pi
+from dr_phil_hardware.vision.utils import cartesian_2d_line_intercept, cartesian_line_from_ray, linear_regression_train, subtract,intersect,invert_homog_mat,interpolated_ray,angle_between,angle_between_pi
 from dr_phil_hardware.test.test_utils.test_utils import assertRayEquals
 
 import math
@@ -211,7 +211,99 @@ class VisionUtilsTest(unittest.TestCase):
     def test_angle_between_pi_4_3_quadrant(self):
         normal = np.array([[0],[0],[1]])
         self.assertAlmostEqual(math.pi,angle_between_pi(np.array([[1],[0],[0]]),np.array([[-1],[0],[0]]) ,normal))
+    
+    def test_line_intersect(self):
+        line1 = (0.5,0)
+        line2 = (0.1,0)
+        intercept = np.array([[0],[0]])
+        result = cartesian_2d_line_intercept(line1,line2)
+        self.assertTrue(np.allclose(intercept,result),"expected intercept at : {} but got: {}".format(intercept,result))
 
+    def test_line_intersect_2(self):
+        line1 = (1,-1)
+        line2 = (-1,1)
+        intercept = np.array([[1],[0]])
+        result = cartesian_2d_line_intercept(line1,line2)
+        self.assertTrue(np.allclose(intercept,result),"expected intercept at : {} but got: {}".format(intercept,result))
+    
+    def test_line_intersect_3(self):
+        line1 = (2,5)
+        line2 = (-2,-5)
+        intercept = np.array([[-2.5],[0]])
+        result = cartesian_2d_line_intercept(line1,line2)
+        self.assertTrue(np.allclose(intercept,result),"expected intercept at : {} but got: {}".format(intercept,result))
+    
+    def test_line_intersect_3(self):
+        line1 = (2,5)
+        line2 = (2,5)
+        result = cartesian_2d_line_intercept(line1,line2)
+        self.assertTrue(None == result,"expected None as output but got {}".format(result))
+
+    def test_line_from_ray_1(self):
+        line = (1,0)
+        ray = Ray(np.array([[0],[0]]),np.array([[0.5],[0.5]]))
+        result = cartesian_line_from_ray(ray)
+        self.assertEqual(line,result,msg="expected: {} but got {}".format(line,result))
+    
+    def test_line_from_ray_2(self):
+        line = (-1,0)
+        ray = Ray(np.array([[0],[0]]),np.array([[0.5],[-0.5]]))
+        result = cartesian_line_from_ray(ray)
+        self.assertEqual(line,result,msg="expected: {} but got {}".format(line,result))
+    
+    def test_line_from_ray_3(self):
+        line = (-1,1)
+        ray = Ray(np.array([[0],[1]]),np.array([[0.5],[-0.5]]))
+        result = cartesian_line_from_ray(ray)
+        self.assertEqual(line,result,msg="expected: {} but got {}".format(line,result))
+    
+    def test_line_from_ray_4(self):
+        line = (1,1)
+        ray = Ray(np.array([[0],[1]]),np.array([[0.5],[0.5]]))
+        result = cartesian_line_from_ray(ray)
+        self.assertEqual(line,result,msg="expected: {} but got {}".format(line,result))
+
+    def test_linear_reg(self):
+        samples = np.array([[0],
+                            [1],
+                            [2]])
+        outputs = np.array([[0],
+                            [1],
+                            [2]])
+        w = np.array([[0],[1]])
+        result = linear_regression_train(samples,outputs)
+        self.assertTrue(np.allclose(w,result),"Expected {}, but got {}".format(w,result))
+
+    def test_linear_reg_2(self):
+        samples = np.array([[0],
+                            [1],
+                            [2]])
+        outputs = np.array([[-0],
+                            [-1],
+                            [-2]])
+        w = np.array([[0],[-1]])
+        result = linear_regression_train(samples,outputs)
+        self.assertTrue(np.allclose(w,result),"Expected {}, but got {}".format(w,result))
+    
+    def test_linear_reg_3(self):
+        samples = np.array([[-0],
+                            [-1],
+                            [-2]])
+        outputs = np.array([[0],
+                            [1],
+                            [2]])
+        w = np.array([[0],[-1]])
+        result = linear_regression_train(samples,outputs)
+        self.assertTrue(np.allclose(w,result),"Expected {}, but got {}".format(w,result))
+    
+    def test_linear_reg_4(self):
+        samples = np.array([[0],
+                            [1]])
+        outputs = np.array([[1],
+                            [1]])
+        w = np.array([[1],[0]])
+        result = linear_regression_train(samples,outputs)
+        self.assertTrue(np.allclose(w,result),"Expected {}, but got {}".format(w,result))
 
 if __name__ == "__main__":
     import rosunit

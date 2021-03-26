@@ -6,8 +6,43 @@ from shapely.geometry import LineString
 import math 
 from tf import transformations as t
 
+from typing import Tuple
 
 
+
+def cartesian_line_from_ray(ray : Ray):
+    """ returns tuple (m,c) with m being gradient and c y-interecept"""
+    mx = ray.dir[0,0]
+    my = ray.dir[1,0]
+    bx = ray.origin[0,0]
+    by = ray.origin[1,0]
+    m = my/mx 
+    c = by - (m * bx)
+    return (m,c)
+    
+def cartesian_2d_line_intercept(line1 :Tuple[float,float],line2:Tuple[float,float]):
+    """[summary]
+    https://math.stackexchange.com/questions/25171/intersection-of-two-lines-in-2d
+    Args:
+        line1 (Tuple[float,float]): [description]
+        line2 (Tuple[float,float]): [description]
+    Returns:
+        2d array [[x],[y]]
+    """
+    m1 = line1[0]
+    c1 = -line1[1]
+    b1 = -1
+    m2 = line2[0]
+    c2 = -line2[1]
+    b2 = -1
+    bottom = (m1*b2 - b1*m2)
+
+    if bottom == 0: # no unique solution 
+        return None
+    else:
+        x = (c1*b2  - b1*c2)/bottom
+        y = (m1*c2 - c1*m2)/bottom
+        return np.array([[x],[y]])
 
 def quat_from_yaw(yaw):
     """ finds and returns the quaternion corresponding to rotation of vector (1,0,0) by the given yaw around the z axis"""
@@ -26,6 +61,9 @@ def intersect(ray1 : Ray, ray2 : Ray):
     segment1 = LineString([list(ray1.origin),list(ray1.get_point())])
     segment2 = LineString([list(ray2.origin),list(ray2.get_point())])
     return segment1.intersects(segment2)
+
+
+
 
 def subtract(ray1, ray2):
     """ returns ray1 - ray2

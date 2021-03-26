@@ -19,6 +19,7 @@ from moveit_msgs.msg import RobotTrajectory
 from geometry_msgs.msg import PoseArray 
 import dynamic_reconfigure
 import copy
+from rospy import service
 import tf2_py 
 import tf2_ros 
 
@@ -525,9 +526,7 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
         self.thread = None
         self.planning_complete = False
         self.waypoints = None 
-        self.waypoints_hash = None 
         
-        self.ran = False 
 
     def initialise(self):
         self.fraction = None
@@ -535,24 +534,16 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
         self.planning_complete = False
         self.thread = None
         self.waypoints = None
-
+        self.feedback_message = "Initialising planning threads"
 
         super().initialise()
 
-
-
     def update(self):
-        if self.ran:
-            waypoints_new = self.blackboard.get(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE)
-            if len(waypoints_new.poses) == self.waypoints_hash:
-                return py_trees.Status.FAILURE
-        
         
         # if planning hasn't started
         if not self.thread:
             # get waypoints 
             self.waypoints : PoseArray = copy.deepcopy(self.blackboard.get(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE))
-            self.waypoints_hash = len(self.waypoints.poses)
 
             if not self.waypoints:
                     self.feedback_message = "No waypoints at {}".format(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE)
@@ -578,7 +569,6 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
                 return py_trees.Status.RUNNING
             else:
                 self.feedback_message = "Waypoints is not of the right type"
-                self.ran=True
                 return py_trees.Status.FAILURE
 
         # running planning
@@ -588,7 +578,7 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
             return py_trees.Status.RUNNING
 
         # planning finished
-        else:
+        elif not self.thread.is_alive():
             # check it's valid
             assert(self.fraction)
 
@@ -597,15 +587,17 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
                 self.ran = True
                 return py_trees.Status.FAILURE
             else:
-                self.feedback_message = "Found valid plan"
-                # success
                 self.ran = True
                 self.blackboard.set(CreateMoveitTrajectoryPlan.PLAN_TARGET,self.trajectory)
                 return py_trees.Status.SUCCESS
-
+        else:
+            self.feedback_message= "INVALID STATE!"
+            assert(False)
 
     def terminate(self, new_status):
         # "drop" the planning thread if running
+        if self.thread is not None:
+            self.thread.join()
         self.thread = None
 
         super().terminate(new_status)
@@ -621,16 +613,18 @@ class CreateMoveitTrajectoryPlan(py_trees.Behaviour):
 
         (self.trajectory,self.fraction) = ac.plan_smooth_path(self.move_group,[x for x in waypoints.poses])
 
-        sys.exit()
+        sys.exit(0)
 
 class CreateMoveItMove(CreateMoveitTrajectoryPlan):
     """ creates a plan for the given move group to move the current state tothe first joint given on the blackboard under "moveit/pose_targets" as (:obj:`PoseArray`) message, fails if goal is too bad according to tolerance values.
         saves plan on blackboard at "moveit/plan" 
     """
 
-    def __init__(self, name, move_group: MoveGroup, pose_frame,goal_tolerance=1e-2):
+    def __init__(self, name, move_group: MoveGroup, pose_frame,goal_tolerance_pos=None,goal_tolerance_orient=None):
 
-        self.goal_tolerance = goal_tolerance
+        self.goal_tolerance_orient = goal_tolerance_orient
+        self.goal_tolerance_pos = goal_tolerance_pos
+
         super().__init__(name, move_group, fraction_threshold=-1, pose_frame=pose_frame,pose_target_include_only_idxs=[0])
 
     def blocking_plan(self, waypoints: PoseArray):
@@ -639,16 +633,21 @@ class CreateMoveItMove(CreateMoveitTrajectoryPlan):
         ac.set_pose_planning_frame(self.move_group,self.pose_frame)
         ac.set_pose_target(self.move_group,waypoints.poses[0])
         ac.set_curr_state_as_start_state(self.move_group)
-        # ac.set_goal_tolerance(self.move_group,self.goal_tolerance)
+
+        if self.goal_tolerance_orient is not None:
+            ac.set_orientation_goal_tolerance(self.move_group,self.goal_tolerance_orient)
+        if self.goal_tolerance_pos is not None:
+            ac.set_position_goal_tolerance(self.move_group,self.goal_tolerance_pos)
+
         (success,plan,planning_time,errorCode) = ac.plan(self.move_group)
         if success:
             self.trajectory = plan
             self.fraction = 1 # always successfull value
-            rospy.logerr("Successfull plan fraction 1")
+            self.feedback_message = "Found valid plan in {}s".format(planning_time)
         else:
             self.fraction = -100 # impossible value
             self.trajectory = None
-            rospy.logerr("No plan fraction -100")
+            self.feedback_message = "No valid plan. status:{}, code: {} ".format(success,errorCode)
         sys.exit(0)
 
 class ExecuteMoveItPlan(py_trees.Behaviour):
@@ -790,7 +789,7 @@ class CallService(py_trees.Behaviour):
         """
         self.service_topic = service_topic
         self.service_type = service_type    
-        self.service_content = service_content
+        self.service_content = service_content 
         self.blackboard_target = blackboard_target 
         self.pre_process_callable = pre_process_callable
         self.callable_none_is_failure = callable_none_is_failure
@@ -819,7 +818,6 @@ class CallService(py_trees.Behaviour):
         except Exception as E:
             self.failed = True
             self.exception = E
-            rospy.logfatal("ASDSDADSA\n|ASDASDASDSDA")
             sys.exit(1)
         sys.exit(0)
 
@@ -828,7 +826,9 @@ class CallService(py_trees.Behaviour):
 
         if not self.processing and self.return_value is None:
 
-            self.thread = threading.Thread(target=self.__blocking_call,args=(self.service_content,))
+            service_content = self.service_content() if callable(self.service_content) else self.service_content
+            self.thread = threading.Thread(target=self.__blocking_call,args=(
+                service_content,))
             
             self.thread.start()
             self.processing = True 

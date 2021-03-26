@@ -12,7 +12,7 @@ from typing import Tuple
 
 HANDLE_DOOR_DEPTH = 0.07
 
-def localize_pixel(img_pos,camera : Camera,lidar : Lidar, scan : LaserScan) -> Tuple[np.array,Ray]:
+def localize_pixel(img_pos,camera : Camera,lidar : Lidar, scan : LaserScan, smoothing_neighbours=0,outlier_factor=0.05) -> Tuple[np.array,Ray]:
     """ given 2d image, lidar and camera as well as the current scan message, localizes the pixel against the lidar data 
 
         Args:
@@ -48,7 +48,7 @@ def localize_pixel(img_pos,camera : Camera,lidar : Lidar, scan : LaserScan) -> T
     cam_ray_lidar_flat = lidar.get_ray_projection(cam_ray_lidar)
 
     # figure out which lidar rays correspond to the camera ray
-    (ray1,ray2) = lidar.get_corresponding_lidar_rays(cam_ray_lidar_flat,scan)
+    (ray1,ray2) = lidar.get_corresponding_lidar_rays(cam_ray_lidar_flat,scan,n=smoothing_neighbours,noise_factor=outlier_factor)
 
     # if no rays found corresponding to scan data
     if ray1 is None or ray2 is None:
