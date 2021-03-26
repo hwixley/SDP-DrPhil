@@ -1,0 +1,4 @@
+float64 battery_level
+float64 disinfectant_level
+int64 status
+---

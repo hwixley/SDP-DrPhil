@@ -1,3 +1,3 @@
-string return_time
+dr_phil_hardware/ReturnTime return_time
 dr_phil_hardware/CleaningTime weekdays
 dr_phil_hardware/CleaningTime weekends

@@ -27,7 +27,7 @@ class batterySim():
             
             #turtlebot cannot operate below 10v
             if (self.state.voltage <= 10.0):
-                raise Exception("Battery too low! Operation at below 10v can lead to battery damage.")
+                rospy.logwarn("Battery too low! Operation at below 10v can lead to battery damage.")
   
 
 if __name__ == '__main__':

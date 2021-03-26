@@ -9,10 +9,11 @@ requires proper .eng setup as described in the readme.md
 
 https://firestore.googleapis.com/v1/projects/drphil-bdadb/databases/(default)/documents/robots/test1
 """
+from codecs import register
 import requests
 import sys
 from config import RID,ROS_WS_HOST,ROS_WS_PORT
-from data import CleaningTime
+from data import CleaningTime, ReturnTime, Status
 from time import sleep,time
 import json
 import roslibpy
@@ -21,6 +22,7 @@ from copy import deepcopy
 
 class CmdListener():
     BASE_URL_RDATA = "https://firestore.googleapis.com/v1/projects/drphil-bdadb/databases/(default)/documents/robots"
+    BASE_URL_STATUSDATA="https://firestore.googleapis.com/v1/projects/drphil-bdadb/databases/(default)/documents/statuses"
 
     def __init__(self,robot_id,ros_port,ros_host) -> None:
         self.robot_id = robot_id
@@ -32,13 +34,14 @@ class CmdListener():
 
         self.update_period = 60 * 60
         self.publish_period = 5
+        self.reset_period = 60
         self.last_update_time = 0
         self.last_publish_time = 0
+        self.last_reset_time = 0
 
         self.cache_filename= "sched-cached.json"
         print("Initializing ros connection")
         self.ros = roslibpy.Ros(host=ros_host,port=ros_port)
-        self.ros.run()
         self.talker = roslibpy.Topic(self.ros, '/app/rdata', 'dr_phil_hardware/CleaningSchedule')
         
         # try to retrieve cached schedule
@@ -50,6 +53,74 @@ class CmdListener():
             self.skip_next_update = True 
         else:
             self.skip_next_update = False
+
+        self.status_service = roslibpy.Service(self.ros, '/app/set_status', 'dr_phil_hardware/SetRobotStatus')
+        self.reset_service = roslibpy.Service(self.ros, '/app/reset_return', 'std_srvs/Empty')
+        self.status_service.advertise(self.status_callback)
+        self.reset_service.advertise(self.reset_return_time_callback)
+
+        self.last_status = None
+
+        self.ros.run()
+
+    def status_callback(self,status : dict,response : dict):
+
+        if self.last_status is None:
+            self.last_status = status["status"]
+
+        url = "{}/{}".format(CmdListener.BASE_URL_STATUSDATA,self.robot_id)
+        headers = {'Content-type': 'application/json'}
+
+        uid = self.get_statusdata()["fields"]["uid"]
+        
+        status_obj =Status(status)
+        data = status_obj.get_dict()
+        data["fields"]["uid"] = uid 
+        
+        print("PATCH: {}".format(url))
+
+        r = requests.patch(url,data=json.dumps(data),headers=headers)
+
+        if r.ok:
+            print("New status: {}".format(status))
+
+        else:
+            print("Failed to update status: {} ,{}".format(r.reason,r.content))
+
+        
+
+        return True
+
+    def reset_return_time_callback(self,request,response):
+
+        time_now = time()
+        if not time_now - self.last_reset_time > self.update_period:
+            return True
+        else:
+            self.last_reset_time = time_now
+
+        rdata = self.get_rdata()
+
+        url = "{}/{}".format(CmdListener.BASE_URL_RDATA,self.robot_id)
+        headers = {'Content-type': 'application/json'}
+        
+        rdata["fields"]["returnTime"] = {
+                    "stringValue": ""
+                }
+        rdata["fields"]["returnDuration"] = {
+                    "stringValue":""
+                }
+
+        r = requests.patch(url,data=json.dumps(rdata),headers=headers)
+        if r.ok:
+            print("Reset return time")
+        else:
+            print("ERROR: could not reset return time {} {}".format(r.reason,r.content))
+
+        self.update_schedule(force_update=True)
+        self.publish_schedule()
+
+        return True
 
     def hash_response(self,response):
         return hash(json.dumps(response,sort_keys=True,ensure_ascii=True))
@@ -86,23 +157,26 @@ class CmdListener():
 
 
         
-
-    def get_rdata(self) -> dict:
+    def get_json(self,url) -> dict:
         try:
-            url = "{}/{}".format(CmdListener.BASE_URL_RDATA,self.robot_id)
+            url = "{}/{}".format(url,self.robot_id)
             print("GET: {}".format(url))
             response = requests.get(url).content
             data = json.loads(response)
             
             self.data=response
-            hash_string = self.hash_response(data)
-            self.schedule = data
-            self.schedule_hash = hash_string
 
             return data
         except Exception as e:
             print(e)
             return {}
+
+    def get_rdata(self) -> dict:
+        return self.get_json(CmdListener.BASE_URL_RDATA)
+
+    def get_statusdata(self) -> dict:
+        return self.get_json(CmdListener.BASE_URL_STATUSDATA)
+
 
     def data_valid(self,data):
         if data is None:
@@ -120,12 +194,12 @@ class CmdListener():
 
 
     def to_rosmsg(self,data : dict):
-        
+
         weekdays = CleaningTime(data["fields"]["weekdays"])
         weekdays = weekdays.get_dict()
 
         weekends = CleaningTime(data["fields"]["weekends"]).get_dict()
-        return_time = data["fields"]["returnTime"].get("stringValue","0")
+        return_time = ReturnTime(data["fields"]).get_dict()
         msg = {
             "return_time":return_time,
             "weekdays": weekdays,
@@ -133,21 +207,26 @@ class CmdListener():
             }
         return roslibpy.Message(msg)
 
-    def update_schedule(self):
-        time_now = time()
-        if not time_now - self.last_update_time > self.update_period:
-            return 
-        else:
-            self.last_update_time = time_now
+    def update_schedule(self,force_update=False):
+        if not force_update:
+            time_now = time()
+            if not time_now - self.last_update_time > self.update_period:
+                return 
+            else:
+                self.last_update_time = time_now
 
-        if self.skip_next_update:
-            self.skip_next_update = False
-            return 
+            if self.skip_next_update:
+                self.skip_next_update = False
+                return 
 
         print("Checking for schedule changes")
 
         prev_hash = self.schedule_hash
         data = self.get_rdata()
+
+        hash_string = self.hash_response(data)
+        self.schedule = data
+        self.schedule_hash = hash_string
 
         if self.data_valid(data):
             print("Received valid schedule with hash: {}".format(self.schedule_hash))
@@ -168,8 +247,6 @@ class CmdListener():
 
         if self.schedule is None:
             return 
-
-        print("Publishing schedule")
 
         self.forward_schedule()
 
@@ -197,5 +274,6 @@ if __name__ == "__main__":
         while(True):
             listener.spin()
     except Exception as E:
-        print(E)
+        import traceback 
+        print(traceback.format_exc())
         sys.exit(1)

@@ -59,12 +59,14 @@ catkin_python_setup()
    FILES
     CleaningSchedule.msg
     CleaningTime.msg   
+    ReturnTime.msg
  )
 
 ## Generate services in the 'srv' folder
  add_service_files(
    FILES
    GenerateTarget.srv
+   SetRobotStatus.srv
  )
 
 ## Generate actions in the 'action' folder

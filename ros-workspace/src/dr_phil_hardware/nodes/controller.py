@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
-from numpy.core.fromnumeric import var
+from py_trees import blackboard
 import rospy
 import py_trees
 import py_trees_ros
-from sensor_msgs.msg import Image
-from sensor_msgs.msg import LaserScan
+from sensor_msgs.msg import Image,LaserScan,BatteryState
 from dr_phil_hardware.behaviour.leafs.general import CheckFileExists
 from dr_phil_hardware.behaviour.leafs.ros import TransformToBlackboard
-from dr_phil_hardware.behaviour.trees.trees import create_explore_frontier_and_save_map,create_disinfect_doors_in_map, create_localize_robot, create_check_on_according_to_schedule,create_wait_for_next_clean
+from dr_phil_hardware.behaviour.trees.trees import DrPhilStatus, ROBOT_STATE_TARGET, create_explore_frontier_and_save_map,create_disinfect_doors_in_map, create_localize_robot, create_check_on_according_to_schedule, create_preempt_return_base, create_update_app_state,create_wait_for_next_clean
 import functools 
 import os
 import json 
 from rospy.exceptions import ROSException
-from geometry_msgs.msg import PoseArray,PoseStamped
+from geometry_msgs.msg import PoseArray,PoseStamped,PoseWithCovarianceStamped
 import sys
 from dr_phil_hardware.msg import CleaningSchedule
 
@@ -23,7 +22,9 @@ class Controller:
     HANDLE_POSE_SOURCE="handle_feature/pose"
     SCHEDULE_SOURCE="app/rdata"
     MAP_TO_ROB_TRANSFORM_SOURCE="tf/map/robot"
-    
+    ROBOT_POSE_SOURCE="robot/pose"
+    BATTERY_SOURCE="battery_state"
+
     def __init__(self,ignore_schedule=False):
 
         py_trees.logging.level = py_trees.logging.Level.INFO # set this to info for more information
@@ -93,6 +94,9 @@ class Controller:
 
     def create_tree(self,ignore_schedule):
         """ creates the behaviour tree  for dr-phil """
+        # set initial robot state
+        blackboard.Blackboard().set(ROBOT_STATE_TARGET,DrPhilStatus.IDLE_CHARGING.value)
+
         map_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"map")
 
         root = py_trees.composites.Parallel("drphil")
@@ -129,18 +133,29 @@ class Controller:
                                                         topic_name=Controller.SCHEDULE_SOURCE,
                                                         topic_type=CleaningSchedule,
                                                         blackboard_variables={Controller.SCHEDULE_SOURCE:None})
+        
+        pose2bb= py_trees_ros.subscribers.ToBlackboard(name="pose2bb",
+                                                        topic_name=Controller.ROBOT_POSE_SOURCE,
+                                                        topic_type=PoseWithCovarianceStamped,
+                                                        blackboard_variables={Controller.ROBOT_POSE_SOURCE:None})
 
-        map2robtransform2bb = TransformToBlackboard(variable_name=Controller.MAP_TO_ROB_TRANSFORM_SOURCE,
-                                                        target_frame="base_link",
-                                                        source_frame="map",
-                                                        name="map2rob2bb")
+        battery2bb= py_trees_ros.subscribers.ToBlackboard(name="battery2bb",
+                                                        topic_name=Controller.BATTERY_SOURCE,
+                                                        topic_type=BatteryState,
+                                                        blackboard_variables={Controller.BATTERY_SOURCE:None})
+        update_app_state = py_trees.composites.Sequence(children=[
+            py_trees.timers.Timer(duration=20),
+            create_update_app_state(Controller.BATTERY_SOURCE)
+        ])
 
-        topics2bb.add_children([camera2bb,scan2bb,target2bb,handle2bb,schedule2bb,map2robtransform2bb])
+        topics2bb.add_children([camera2bb,scan2bb,target2bb,handle2bb,schedule2bb,pose2bb,battery2bb,update_app_state])
 
 
         # priorities  branch for main tasks, the rest of the tree is to go here
 
         priorities = py_trees.composites.Selector("priorities")
+
+        pre_empt_check = create_preempt_return_base(Controller.SCHEDULE_SOURCE,Controller.HANDLE_POSE_SOURCE)
 
         non_preempt_tasks = py_trees.composites.Chooser("nonPreempt")
 
@@ -169,7 +184,7 @@ class Controller:
         disinfect_doors = create_disinfect_doors_in_map(handle_pose_src=Controller.HANDLE_POSE_SOURCE,
             spray_path_src=Controller.SPRAY_PATH_SOURCE,
             map_path=map_path,
-            distance_from_door=0.30)
+            distance_from_door=0.24)
             
         wait_for_next_clean = create_wait_for_next_clean(Controller.SCHEDULE_SOURCE)
         if ignore_schedule:
@@ -182,7 +197,7 @@ class Controller:
 
         non_preempt_tasks.add_children([disinfection_sequence])
    
-        priorities.add_children([non_preempt_tasks])
+        priorities.add_children([pre_empt_check,non_preempt_tasks])
         priorities = py_trees.decorators.SuccessIsRunning(priorities)
 
         root.add_children([topics2bb,priorities])
