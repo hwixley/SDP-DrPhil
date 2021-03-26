@@ -4,7 +4,7 @@
 
 ----------------
 
-requires proper .eng setup as described in the readme.md 
+requires proper .env setup as described in the readme.md 
 
 
 https://firestore.googleapis.com/v1/projects/drphil-bdadb/databases/(default)/documents/robots/test1
@@ -12,13 +12,15 @@ https://firestore.googleapis.com/v1/projects/drphil-bdadb/databases/(default)/do
 from codecs import register
 import requests
 import sys
-from config import RID,ROS_WS_HOST,ROS_WS_PORT
+from config import RID, ROS_IP, ROS_SSH_PASSWORD, ROS_SSH_USERNAME,ROS_WS_HOST,ROS_WS_PORT
 from data import CleaningTime, ReturnTime, Status
 from time import sleep,time
 import json
 import roslibpy
 import os
 from copy import deepcopy
+from sshtunnel import SSHTunnelForwarder
+
 
 class CmdListener():
     BASE_URL_RDATA = "https://firestore.googleapis.com/v1/projects/drphil-bdadb/databases/(default)/documents/robots"
@@ -267,7 +269,16 @@ class CmdListener():
         self.talker.publish(self.to_rosmsg(self.schedule))
 
 if __name__ == "__main__":
+    server = SSHTunnelForwarder(
+        ROS_IP,
+        ssh_username=ROS_SSH_USERNAME,
+        ssh_password=ROS_SSH_PASSWORD,
+        local_bind_address=(ROS_WS_HOST, ROS_WS_PORT),
+        remote_bind_address=(ROS_WS_HOST, ROS_WS_PORT)
+    )
 
+    server.start()
+    
     listener = CmdListener(RID,ROS_WS_PORT,ROS_WS_HOST)
 
     try:

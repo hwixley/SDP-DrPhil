@@ -9,4 +9,7 @@ in order for the script to run it requires a .env file to be places in the scrip
 RID={test1}
 ROS_WS_PORT={9090}
 ROS_WS_HOST={localhost}
+ROS_IP=
+ROS_SSH_USERNAME=
+ROS_SSH_PASSWORD=
 ```
