@@ -296,3 +296,15 @@ figcaption {
   font-style: italic;
   text-align: center;
 }
+
+h2 {
+  font-weight: bold;
+}
+
+h4 {
+  font-weight: bold;
+}
+
+.card-img-left {
+  height:9.5vw;
+}

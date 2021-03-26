@@ -69,10 +69,11 @@
                             <li><a href="#app">An iOS app </a> that allows users to controls the robot at a high level.</li>
                             <li><a href="#vision">A vision stack</a> which can detect door handles.</li>
                         </ul>
+                      </p>
 
-                        The whole system is implemented in ROS, where each thread is implemented as a node. This is all ran on a Raspberry Pi, which also handles communications between the various sensors and the app. To control the behaviour of the robot and manage the individual stacks together, we implemented a <a href="#behaviour">behaviour tree </a> behaviour tree as a single node which is ran when a cleaning routine is started.
-
-                    </p>
+                        <p>The whole system is implemented in ROS, where each thread is implemented as a node. This is all ran on a Raspberry Pi, which also handles communications between the various sensors and the app. To control the behaviour of the robot and manage the individual stacks together, we implemented a <a href="#behaviour">behaviour tree </a> behaviour tree as a single node which is ran when a cleaning routine is started.
+                        </p>
+                    
                     
 
 
@@ -94,11 +95,11 @@
 
                     <h2 id="navigation">Navigation</h2>
 
-                    <i><h4>Exploration</h4></i>	
+                    <h5><b>a. Exploration</b></h5>	
                     <p>The navigation system uses SLAM for mapping the robots environment, specifically, the gmapping package since it had the best performance during testing and it is relatively lightweight and customisable. The explore_lite and frontier_exploration package allows the robot to roam a space and create an occupancy map without human input.</p>	
 
-
-                    <i><h4>Door Handle Localisation</h4></i>	
+                    <h5><b>b. Door Handle Localisation</b></h5>	
+                    <i><h4></h4></i>	
                     <p>The door handle localisation algorithm uses geometry, the correspondence between lidar and camera rays to find out the 3D coordinates of the handle features within the image. We select the point of interest on our image, generate a 3D ray from the camera corresponding to all points mapping to that pixel, then perform intersection checks between this ray and the line segments formed by each consecutive lidar hit point. 	
                     The algorithm assumes the door is a plane perpendicular to the floor, and that the handle feature is placed roughly 4cm away from the door. Once the algorithm computes the coordinates, the robot can then localise itself infront of the door so it is ready to disinfect the handle.</p>	
 
@@ -113,22 +114,21 @@
                         <br>
                         <p>The disinfection stack is primarily hardware based. We have a pump which pumps water from the base of the turtlebot  to the nozzle located at the top of the arm. This is necessary because the liquid storage tank is heavy and would unbalance the arm if installed on it. As the tank is directly on top of the turtlebot, any spillage would be disastrous. Therefore the tank has a screw cap so it won't spill during normal operation whilst still being easy to remove and refill. </p>
 
-                        <i><h4>The Nozzle</h4></i>
+                        <h4>a. The Nozzle</h4>
                         <img class="images" style="width: 70%" src="images/nozzleCAD.png">
                         <figcaption><i>Nozzle in CAD</i></figcaption>
                         <p>To spray the disinfectant onto contact points, we ultimately decided to use a 60 degree full-cone nozzle, which evenly distributes the disinfectant inside it's spray cone. This is important to ensure the spray will cover contact points efficently and accurately as seen in the <a href="./evaluation.html">evaluation</a> section. A further benefit to this is that the spray simulation we created in gazebo has similar properties to the full cone (namely a even and full spread) so we can be sure that it's a good representation of the real functionality. </p>
 
-                        <i><h4>Control</h4></i>
+                        <h4>b. Control</h4>
                         <p>Dr. Phil controls the pump via the 12V openCR board on the turtlebot, which is itself connected to a motor board. This is necessary because the pump has to be relatively powerful to be able to lift the water up to door handle height, and the Raspberry Pi's GPIO can output only 3.3V. We also have a LED strip which was used to simulate when spraying was happening, which is useful for informing nearby people about the status of Dr.Phil.</p>
 
                         <p>As seen in the image, we also had to create fixings to keep everything still, as the robot might accidentally dislodge components when moving.</p>
                     <h2 id="armcontrol">Arm control</h2>
-                    <i><h4>Motion Planning</h4></i>	
+                    <h4>a. Motion Planning</h4>
 	                      <p>In order to move Dr. Phil's spray arm to disinfect doors handles, we use the MoveIt motion planning library which figures out the complex constraints and secondary goals of the arm.</p>	
 		
-	                      <i><h4>Arm Control</h4></i>	
 		
-	                      <i><h4>Sanitisation Path Planning</h4></i>	
+	                      <h4>b. Sanitisation Path Planning</h4>
 	                      <p>The sanitisation path planning script uses the coordinates of the center of the handle and the vector normal to the door as inputs. The center of handle is found through object detection and getting the center of the image of the bounding box generated. These inputs are then used to calculate output coordinates on 3 different x-y axes which ensures each angle of the handle is covered, and are all 10cm away from the handle to maximise spray efficiency. Our spray diameter is currently larger than the width of our custom handle so only a single spray on the given x-z axes is required. In the future, we can adapt the distance of spraying to account for wider handles. After this, the z coordinates for these set of x,y points are calculated, this is done by considering the height of the door handle, and replicating these x,y points at multiple heights, described by the z coordinate. These set of 3d coordinates ensure the door handle is fully disinfectant and the whole handle has been covered.</p>    
 
 
