@@ -10,6 +10,9 @@ load_dotenv(dotenv_path=env_path)
 ROS_WS_PORT = int(os.environ.get("ROS_WS_PORT","9090"))
 ROS_WS_HOST = os.environ.get("ROS_WS_HOST","localhost")
 RID = os.environ["RID"]
+ROS_IP = os.environ["ROS_IP"]
+ROS_SSH_USERNAME = os.environ["ROS_SSH_USERNAME"]
+ROS_SSH_PASSWORD = os.environ["ROS_SSH_PASSWORD"]
 
 # config = {
 #   "apiKey": os.environ['API_KEY'],
