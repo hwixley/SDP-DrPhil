@@ -16,6 +16,7 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var roundsLabel: UILabel!
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var shiftStack: UIStackView!
+    @IBOutlet weak var shiftTextLabel: UILabel!
     @IBOutlet weak var roundsTextLabel: UILabel!
     @IBOutlet weak var batteryLabel: UILabel!
     @IBOutlet weak var disinfectantLabel: UILabel!
@@ -25,6 +26,7 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var shiftView: UIView!
     @IBOutlet weak var statusView: UIView!
     @IBOutlet weak var taskView: UIView!
+    @IBOutlet weak var shiftTextStack: UIStackView!
     
     
     override func viewDidLoad() {
@@ -54,7 +56,7 @@ class HomeViewController: UIViewController {
                 if MyUser.robot!.returnTime == "ASAP" {
                     status = "Return to station ASAP"
                 } else {
-                    status = "Return to station at " + MyUser.robot!.returnTime!
+                    status = "Return to station at " + MyUser.robot!.returnTime!.suffix(5)
                 }
                 if MyUser.robot!.returnDuration == "REST" {
                     status += " for the rest of today's shift"
@@ -73,32 +75,40 @@ class HomeViewController: UIViewController {
                     if MyUser.robot!.schedule!.weekdays != nil {
                         shiftLabel.text = MyUser.robot!.schedule!.weekdays!.start + " - " +  MyUser.robot!.schedule!.weekdays!.end
                         roundsLabel.text = String(MyUser.robot!.schedule!.weekdays!.numRounds)
-                        return
+                    } else {
+                        roundsTextLabel.text = "No shift today"
+                        roundsLabel.text = ""
+                        shiftTextStack.isHidden = true
                     }
                 } else {
                     if MyUser.robot!.schedule!.weekends != nil {
                         shiftLabel.text = MyUser.robot!.schedule!.weekends!.start + " - " + MyUser.robot!.schedule!.weekends!.end
                         roundsLabel.text = String(MyUser.robot!.schedule!.weekends!.numRounds)
-                        return
+                    } else {
+                        roundsTextLabel.text = "No shift today"
+                        roundsLabel.text = ""
+                        shiftTextStack.isHidden = true
                     }
                 }
+            } else {
+                roundsTextLabel.text = "No shift today"
+                roundsLabel.text = ""
+                shiftTextStack.isHidden = true
             }
             
             if MyUser.statusInfo != nil {
                 statusLabel.text = MyUser.statusInfo!.getStatus()
                 
-                if MyUser.statusInfo!.resources != nil {
+                if MyUser.statusInfo!.status != -1 && MyUser.statusInfo!.resources != nil {
                     batteryLabel.text = String(MyUser.statusInfo!.resources!.battery) + "%"
                     disinfectantLabel.text = String(MyUser.statusInfo!.resources!.disinfectant) + "%"
                 }
+            } else {
+                statusLabel.text = "NA"
+                batteryLabel.text = "NA"
+                disinfectantLabel.text = "NA"
             }
         }
-        shiftView.isHidden = true
-        statusView.isHidden = true
-        taskView.isHidden = true
-        roundsTextLabel.text = "No shift today"
-        roundsLabel.text = ""
-        statusLabel.text = "Dr Phil is idle at it's charging station."
     }
     
     func loadStats() {
@@ -117,7 +127,7 @@ class HomeViewController: UIViewController {
                         self.batteryLabel.text = String(Int(status.resources!.battery)) + "%"
                     }
                     if status.resources!.disinfectant != -1 {
-                        self.disinfectantLabel.text = String(status.resources!.disinfectant)
+                        self.disinfectantLabel.text = String(Int(status.resources!.disinfectant)) + " ml"
                     }
                 }
                 MyUser.statusInfo = status

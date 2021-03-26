@@ -31,7 +31,7 @@ struct StatusInfo {
     
     func getStatus() -> String {
         if status == -1 {
-            return "NA"
+            return "Dr Phil is not connected yet, please turn the robot on."
         } else if status == 0 {
             return "Dr Phil is idle at it's charging station."
         } else if status == 1 {
