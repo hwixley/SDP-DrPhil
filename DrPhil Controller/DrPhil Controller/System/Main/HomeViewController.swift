@@ -114,7 +114,7 @@ class HomeViewController: UIViewController {
                 self.statusLabel.text = status.getStatus()
                 if status.resources != nil {
                     if status.resources!.battery != -1 {
-                        self.batteryLabel.text = String(status.resources!.battery)
+                        self.batteryLabel.text = String(Int(status.resources!.battery)) + "%"
                     }
                     if status.resources!.disinfectant != -1 {
                         self.disinfectantLabel.text = String(status.resources!.disinfectant)

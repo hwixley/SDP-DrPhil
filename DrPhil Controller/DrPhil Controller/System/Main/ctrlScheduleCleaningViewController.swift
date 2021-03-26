@@ -38,6 +38,7 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
     
     //MARK: Temporary vars
     var clickedTxtf: UITextField?
+    var selection = 0
     
     //MARK: Struct vars
     var schedule = CleanSchedule()
@@ -172,6 +173,16 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
         }
     }
     
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        let yPoint = textField.convert(textField.frame.origin, to: self.view).y
+        if yPoint > 440 {
+            selection = 1
+        } else {
+            selection = 0
+        }
+        return true
+    }
+    
     //MARK: FOcused keyboard
     func focusKB() {
         NotificationCenter.default.addObserver(self, selector: #selector(ctrlScheduleCleaningViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -232,4 +243,25 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
             }
         }
     }
+    
+    
+    //MARK: Focused keyboard
+    /*func focusKB() {
+        NotificationCenter.default.addObserver(self, selector: #selector(ctrlReturnViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ctrlReturnViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    @objc func keyboardWillShow(notification: NSNotification) {
+        guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
+            return
+        }
+        if self.view.frame.origin.y == 0 && self.selection == 1{
+            self.view.frame.origin.y -= keyboardSize.height
+        }
+    }
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if self.view.frame.origin.y != 0 {
+            self.view.frame.origin.y = 0
+        }
+    }*/
 }

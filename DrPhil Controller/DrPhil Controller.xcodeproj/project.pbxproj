@@ -29,6 +29,7 @@
 		C0412537260AC6D200BF0872 /* ForgotPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0412536260AC6D200BF0872 /* ForgotPasswordViewController.swift */; };
 		C0412539260AC6EF00BF0872 /* StartupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0412538260AC6EF00BF0872 /* StartupViewController.swift */; };
 		C041253B260AC8C900BF0872 /* ResetPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C041253A260AC8C900BF0872 /* ResetPasswordViewController.swift */; };
+		C041253D260E124200BF0872 /* mnHelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C041253C260E124200BF0872 /* mnHelpViewController.swift */; };
 		C06B434525BF5C090017D14B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434425BF5C090017D14B /* AppDelegate.swift */; };
 		C06B434725BF5C090017D14B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06B434625BF5C090017D14B /* SceneDelegate.swift */; };
 		C06B434C25BF5C090017D14B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C06B434A25BF5C090017D14B /* Main.storyboard */; };
@@ -83,6 +84,7 @@
 		C0412536260AC6D200BF0872 /* ForgotPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForgotPasswordViewController.swift; sourceTree = "<group>"; };
 		C0412538260AC6EF00BF0872 /* StartupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartupViewController.swift; sourceTree = "<group>"; };
 		C041253A260AC8C900BF0872 /* ResetPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordViewController.swift; sourceTree = "<group>"; };
+		C041253C260E124200BF0872 /* mnHelpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mnHelpViewController.swift; sourceTree = "<group>"; };
 		C06B434125BF5C090017D14B /* DrPhil.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DrPhil.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C06B434425BF5C090017D14B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C06B434625BF5C090017D14B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 				C0412536260AC6D200BF0872 /* ForgotPasswordViewController.swift */,
 				C0412538260AC6EF00BF0872 /* StartupViewController.swift */,
 				C041253A260AC8C900BF0872 /* ResetPasswordViewController.swift */,
+				C041253C260E124200BF0872 /* mnHelpViewController.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -506,6 +509,7 @@
 				C0412539260AC6EF00BF0872 /* StartupViewController.swift in Sources */,
 				C06B434525BF5C090017D14B /* AppDelegate.swift in Sources */,
 				C041253B260AC8C900BF0872 /* ResetPasswordViewController.swift in Sources */,
+				C041253D260E124200BF0872 /* mnHelpViewController.swift in Sources */,
 				C03A669425F95F1C00FC15CE /* StatsViewController.swift in Sources */,
 				C03A669525F95F1C00FC15CE /* ControlViewController.swift in Sources */,
 				C041253325FA66E500BF0872 /* RegistrationViewController.swift in Sources */,

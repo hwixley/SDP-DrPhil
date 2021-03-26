@@ -27,6 +27,7 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
     
     //MARK: Properties
     var clickedTxtf : UITextField? = nil
+    var selection = 0
     
 
     override func viewDidLoad() {
@@ -186,5 +187,35 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
         textField.resignFirstResponder()
         self.tapOutsideKB.isEnabled = false
         return true
+    }
+    
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        let yPoint = textField.convert(textField.frame.origin, to: self.view).y
+        if yPoint > 440 {
+            selection = 1
+        } else {
+            selection = 0
+        }
+        return true
+    }
+    
+    //MARK: Focused keyboard
+    func focusKB() {
+        NotificationCenter.default.addObserver(self, selector: #selector(RegistrationViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RegistrationViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    @objc func keyboardWillShow(notification: NSNotification) {
+        guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
+            return
+        }
+        if self.view.frame.origin.y == 0 && self.selection == 1{
+            self.view.frame.origin.y -= keyboardSize.height
+        }
+    }
+    @objc func keyboardWillHide(notification: NSNotification) {
+        if self.view.frame.origin.y != 0 {
+            self.view.frame.origin.y = 0
+        }
     }
 }
