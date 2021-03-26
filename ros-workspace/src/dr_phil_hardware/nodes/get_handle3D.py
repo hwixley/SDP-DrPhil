@@ -88,6 +88,10 @@ class Handle3DTransformation:
         # at that time
         self.image_stamp = rgb_msg.header.stamp
 
+        #Reset
+        self.handle_box = None
+        self.door_box = None
+
         try:
             self.rgb_image = self.bridge.imgmsg_to_cv2(rgb_msg, desired_encoding="bgr8")
             #Increment the number of frames to be processed

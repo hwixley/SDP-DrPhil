@@ -58,8 +58,8 @@ public:
   setParams();
 
   /// Initialize the cost map.
-  bool
-  costMapInit();
+  void
+  costMapInit(const nav_msgs::OccupancyGrid costmap);
 
   /// Map to world conversion.
   void
@@ -86,12 +86,14 @@ private:
   ros::NodeHandle nh_;
   ros::Publisher pub_visualization_marker_;
   ros::Subscriber sub_turtlepi_location_;
+  ros::Subscriber sub_costmap;
   ros::ServiceServer srv_generate_target_;
   tf2_ros::Buffer tfBuffer_;
   tf2_ros::TransformListener listener_{ tfBuffer_ };
   std::vector<int8_t> map_data_;
   std::unordered_set<uint32_t> free_space_;
   geometry_msgs::PoseWithCovarianceStamped current_position_;
+
 
   uint32_t map_size_x_;
   uint32_t map_size_y_;

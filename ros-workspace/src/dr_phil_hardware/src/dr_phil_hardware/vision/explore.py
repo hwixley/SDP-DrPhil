@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import rospy
-from geometry_msgs.msg import Twist, PoseStamped, Pose
+from geometry_msgs.msg import Twist, PoseStamped, Pose, PoseWithCovarianceStamped
 import numpy as np
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import actionlib
@@ -16,17 +16,17 @@ from dr_phil_hardware.srv import GenerateTarget
 def is_location_available(startPose: Pose, moveBaseGoal: MoveBaseGoal):
     start = PoseStamped()
     start.header.seq = 0
-    start.header.frame_id = "base_link"
+    start.header.frame_id = "map"
     start.header.stamp = rospy.Time(0)
     start.pose = startPose
 
     goal = moveBaseGoal.target_pose
-
+    rospy.wait_for_service('/move_base/make_plan')
     get_plan = rospy.ServiceProxy('/move_base/make_plan', GetPlan)
     req = GetPlan()
     req.start = start
     req.goal = goal
-    req.tolerance = 0
+    req.tolerance = 0.1
     resp = get_plan(req.start, req.goal, req.tolerance)
     #return resp
     if resp:
@@ -63,34 +63,36 @@ def generate_random_target(distance_threshold=0):
     if (distance_threshold !=0):
         set_thresh_flag= True
     
+    rospy.loginfo("Waiting for target_generator node to be available")
     rospy.wait_for_service('/target_generator/generate_nav_target')
     try:
         rand_target_service= rospy.ServiceProxy('/target_generator/generate_nav_target', GenerateTarget)
         response = rand_target_service(set_thresh_flag, distance_threshold)
-        rospy.loginfo("Request a random target from target_generator node")
+        rospy.loginfo("Requested a random target from target_generator node")
         return response.goal
     except rospy.ServiceException as e:
         rospy.logerr("Service call for Generating Random Target failed: %s"%e)
-    return NULL
+    return None
 
     
 
 
 
-
-def get_test_goal():
+def get_test_goal(robot_pose:PoseWithCovarianceStamped):
     # Creates a new goal with the MoveBaseGoal constructor
     goal = MoveBaseGoal()
-    goal.target_pose.header.frame_id = "base_link"
+    goal.target_pose.header.frame_id = "map"
     goal.target_pose.header.stamp = rospy.Time.now()
     # Move ? meters forward along the x axis of the "map" coordinate frame 
-    goal.target_pose.pose.position.x = 0.5
+    goal.target_pose.pose.position.x = robot_pose.position.x + 1
     # Move ? meters forward along the y axis of the "map" coordinate frame 
     goal.target_pose.pose.position.y = 0
     # No rotation of the mobile base frame w.r.t. map frame
-    goal.target_pose.pose.orientation.w = 1.0
+    goal.target_pose.pose.orientation.w = robot_pose.orientation.w
 
     return goal
+
+
 
 def move_to_goal(goal : MoveBaseGoal):
     client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
@@ -133,7 +135,7 @@ def angles_close(a, b, tolerance : float) -> bool:
 
 def initiate_rotation():
     velocity_publisher = rospy.Publisher('cmd_vel', Twist, queue_size=10)
-    speed = 45 #speed in deg/sec
+    speed = 30 #speed in deg/sec
     angular_speed = np.deg2rad(speed)
 
     vel_msg = Twist()
