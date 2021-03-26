@@ -16,7 +16,6 @@
         <joint name="joint4"/>
         <joint name="ee_arm"/>
     </group>
-    
     <group name="ee">
         <link name="px100/ee_arm_link"/>
     </group>
@@ -56,6 +55,8 @@
     <disable_collisions link1="base_link" link2="camera_link" reason="Adjacent"/>
     <disable_collisions link1="base_link" link2="caster_back_left_link" reason="Adjacent"/>
     <disable_collisions link1="base_link" link2="caster_back_right_link" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="pump_dummy_link" reason="Never"/>
+    <disable_collisions link1="base_link" link2="pump_link" reason="Never"/>
     <disable_collisions link1="base_link" link2="px100/base_arm" reason="Adjacent"/>
     <disable_collisions link1="base_link" link2="px100/shoulder_link" reason="Never"/>
     <disable_collisions link1="base_link" link2="px100/upper_arm_link" reason="Never"/>
@@ -67,6 +68,8 @@
     <disable_collisions link1="base_scan" link2="camera_link" reason="Never"/>
     <disable_collisions link1="base_scan" link2="caster_back_left_link" reason="Never"/>
     <disable_collisions link1="base_scan" link2="caster_back_right_link" reason="Never"/>
+    <disable_collisions link1="base_scan" link2="pump_dummy_link" reason="Never"/>
+    <disable_collisions link1="base_scan" link2="pump_link" reason="Never"/>
     <disable_collisions link1="base_scan" link2="px100/base_arm" reason="Never"/>
     <disable_collisions link1="base_scan" link2="px100/shoulder_link" reason="Never"/>
     <disable_collisions link1="base_scan" link2="px100/upper_arm_link" reason="Never"/>
@@ -77,15 +80,18 @@
     <disable_collisions link1="bottle_base_link" link2="camera_link" reason="Never"/>
     <disable_collisions link1="bottle_base_link" link2="caster_back_left_link" reason="Never"/>
     <disable_collisions link1="bottle_base_link" link2="caster_back_right_link" reason="Never"/>
-    <disable_collisions link1="bottle_base_link" link2="px100/base_arm" reason="Never"/>
+    <disable_collisions link1="bottle_base_link" link2="pump_dummy_link" reason="Adjacent"/>
+    <disable_collisions link1="bottle_base_link" link2="pump_link" reason="Adjacent"/>
+    <disable_collisions link1="bottle_base_link" link2="px100/base_arm" reason="Default"/>
     <disable_collisions link1="bottle_base_link" link2="px100/shoulder_link" reason="Never"/>
-    <disable_collisions link1="bottle_base_link" link2="px100/upper_arm_link" reason="Never"/>
     <disable_collisions link1="bottle_base_link" link2="wheel_left_link" reason="Never"/>
     <disable_collisions link1="bottle_base_link" link2="wheel_right_link" reason="Never"/>
-    <disable_collisions link1="bottle_cap_link" link2="bottle_link" reason="Default"/>
+    <disable_collisions link1="bottle_cap_link" link2="bottle_link" reason="Never"/>
     <disable_collisions link1="bottle_cap_link" link2="camera_link" reason="Never"/>
     <disable_collisions link1="bottle_cap_link" link2="caster_back_left_link" reason="Never"/>
     <disable_collisions link1="bottle_cap_link" link2="caster_back_right_link" reason="Never"/>
+    <disable_collisions link1="bottle_cap_link" link2="pump_dummy_link" reason="Never"/>
+    <disable_collisions link1="bottle_cap_link" link2="pump_link" reason="Never"/>
     <disable_collisions link1="bottle_cap_link" link2="px100/base_arm" reason="Never"/>
     <disable_collisions link1="bottle_cap_link" link2="px100/shoulder_link" reason="Never"/>
     <disable_collisions link1="bottle_cap_link" link2="px100/upper_arm_link" reason="Never"/>
@@ -94,50 +100,63 @@
     <disable_collisions link1="bottle_link" link2="camera_link" reason="Never"/>
     <disable_collisions link1="bottle_link" link2="caster_back_left_link" reason="Never"/>
     <disable_collisions link1="bottle_link" link2="caster_back_right_link" reason="Never"/>
+    <disable_collisions link1="bottle_link" link2="pump_dummy_link" reason="Never"/>
+    <disable_collisions link1="bottle_link" link2="pump_link" reason="Never"/>
     <disable_collisions link1="bottle_link" link2="px100/base_arm" reason="Never"/>
     <disable_collisions link1="bottle_link" link2="px100/shoulder_link" reason="Never"/>
-    <disable_collisions link1="bottle_link" link2="px100/upper_arm_link" reason="Never"/>
     <disable_collisions link1="bottle_link" link2="wheel_left_link" reason="Never"/>
     <disable_collisions link1="bottle_link" link2="wheel_right_link" reason="Never"/>
     <disable_collisions link1="camera_link" link2="caster_back_left_link" reason="Never"/>
     <disable_collisions link1="camera_link" link2="caster_back_right_link" reason="Never"/>
+    <disable_collisions link1="camera_link" link2="pump_dummy_link" reason="Never"/>
+    <disable_collisions link1="camera_link" link2="pump_link" reason="Never"/>
     <disable_collisions link1="camera_link" link2="px100/base_arm" reason="Never"/>
     <disable_collisions link1="camera_link" link2="px100/shoulder_link" reason="Never"/>
     <disable_collisions link1="camera_link" link2="px100/upper_arm_link" reason="Never"/>
     <disable_collisions link1="camera_link" link2="wheel_left_link" reason="Never"/>
     <disable_collisions link1="camera_link" link2="wheel_right_link" reason="Never"/>
     <disable_collisions link1="caster_back_left_link" link2="caster_back_right_link" reason="Never"/>
+    <disable_collisions link1="caster_back_left_link" link2="pump_dummy_link" reason="Never"/>
+    <disable_collisions link1="caster_back_left_link" link2="pump_link" reason="Never"/>
     <disable_collisions link1="caster_back_left_link" link2="px100/base_arm" reason="Never"/>
     <disable_collisions link1="caster_back_left_link" link2="px100/forearm_link" reason="Never"/>
     <disable_collisions link1="caster_back_left_link" link2="px100/gripper_bar_link" reason="Never"/>
     <disable_collisions link1="caster_back_left_link" link2="px100/gripper_link" reason="Never"/>
     <disable_collisions link1="caster_back_left_link" link2="px100/gripper_prop_link" reason="Never"/>
-    <disable_collisions link1="caster_back_left_link" link2="px100/led_link" reason="Never"/>
     <disable_collisions link1="caster_back_left_link" link2="px100/left_finger_link" reason="Never"/>
     <disable_collisions link1="caster_back_left_link" link2="px100/right_finger_link" reason="Never"/>
     <disable_collisions link1="caster_back_left_link" link2="px100/shoulder_link" reason="Never"/>
     <disable_collisions link1="caster_back_left_link" link2="px100/upper_arm_link" reason="Never"/>
     <disable_collisions link1="caster_back_left_link" link2="wheel_left_link" reason="Never"/>
     <disable_collisions link1="caster_back_left_link" link2="wheel_right_link" reason="Never"/>
+    <disable_collisions link1="caster_back_right_link" link2="pump_dummy_link" reason="Never"/>
+    <disable_collisions link1="caster_back_right_link" link2="pump_link" reason="Never"/>
     <disable_collisions link1="caster_back_right_link" link2="px100/base_arm" reason="Never"/>
     <disable_collisions link1="caster_back_right_link" link2="px100/forearm_link" reason="Never"/>
     <disable_collisions link1="caster_back_right_link" link2="px100/gripper_bar_link" reason="Never"/>
     <disable_collisions link1="caster_back_right_link" link2="px100/gripper_link" reason="Never"/>
     <disable_collisions link1="caster_back_right_link" link2="px100/gripper_prop_link" reason="Never"/>
-    <disable_collisions link1="caster_back_right_link" link2="px100/led_link" reason="Never"/>
     <disable_collisions link1="caster_back_right_link" link2="px100/left_finger_link" reason="Never"/>
     <disable_collisions link1="caster_back_right_link" link2="px100/right_finger_link" reason="Never"/>
     <disable_collisions link1="caster_back_right_link" link2="px100/shoulder_link" reason="Never"/>
     <disable_collisions link1="caster_back_right_link" link2="px100/upper_arm_link" reason="Never"/>
     <disable_collisions link1="caster_back_right_link" link2="wheel_left_link" reason="Never"/>
     <disable_collisions link1="caster_back_right_link" link2="wheel_right_link" reason="Never"/>
+    <disable_collisions link1="pump_dummy_link" link2="pump_link" reason="Default"/>
+    <disable_collisions link1="pump_dummy_link" link2="px100/base_arm" reason="Default"/>
+    <disable_collisions link1="pump_dummy_link" link2="px100/shoulder_link" reason="Never"/>
+    <disable_collisions link1="pump_dummy_link" link2="wheel_left_link" reason="Never"/>
+    <disable_collisions link1="pump_dummy_link" link2="wheel_right_link" reason="Never"/>
+    <disable_collisions link1="pump_link" link2="px100/base_arm" reason="Default"/>
+    <disable_collisions link1="pump_link" link2="px100/shoulder_link" reason="Never"/>
+    <disable_collisions link1="pump_link" link2="wheel_left_link" reason="Never"/>
+    <disable_collisions link1="pump_link" link2="wheel_right_link" reason="Never"/>
     <disable_collisions link1="px100/base_arm" link2="px100/shoulder_link" reason="Adjacent"/>
     <disable_collisions link1="px100/base_arm" link2="wheel_left_link" reason="Never"/>
     <disable_collisions link1="px100/base_arm" link2="wheel_right_link" reason="Never"/>
     <disable_collisions link1="px100/forearm_link" link2="px100/gripper_bar_link" reason="Never"/>
     <disable_collisions link1="px100/forearm_link" link2="px100/gripper_link" reason="Adjacent"/>
     <disable_collisions link1="px100/forearm_link" link2="px100/gripper_prop_link" reason="Never"/>
-    <disable_collisions link1="px100/forearm_link" link2="px100/led_link" reason="Never"/>
     <disable_collisions link1="px100/forearm_link" link2="px100/left_finger_link" reason="Never"/>
     <disable_collisions link1="px100/forearm_link" link2="px100/right_finger_link" reason="Never"/>
     <disable_collisions link1="px100/forearm_link" link2="px100/upper_arm_link" reason="Adjacent"/>
@@ -145,20 +164,14 @@
     <disable_collisions link1="px100/forearm_link" link2="wheel_right_link" reason="Never"/>
     <disable_collisions link1="px100/gripper_bar_link" link2="px100/gripper_link" reason="Adjacent"/>
     <disable_collisions link1="px100/gripper_bar_link" link2="px100/gripper_prop_link" reason="Adjacent"/>
-    <disable_collisions link1="px100/gripper_bar_link" link2="px100/led_link" reason="Never"/>
     <disable_collisions link1="px100/gripper_bar_link" link2="px100/left_finger_link" reason="Adjacent"/>
     <disable_collisions link1="px100/gripper_bar_link" link2="px100/right_finger_link" reason="Adjacent"/>
     <disable_collisions link1="px100/gripper_link" link2="px100/gripper_prop_link" reason="Adjacent"/>
-    <disable_collisions link1="px100/gripper_link" link2="px100/led_link" reason="Adjacent"/>
     <disable_collisions link1="px100/gripper_link" link2="px100/left_finger_link" reason="Never"/>
     <disable_collisions link1="px100/gripper_link" link2="px100/right_finger_link" reason="Never"/>
-    <disable_collisions link1="px100/gripper_prop_link" link2="px100/led_link" reason="Never"/>
     <disable_collisions link1="px100/gripper_prop_link" link2="px100/left_finger_link" reason="Never"/>
     <disable_collisions link1="px100/gripper_prop_link" link2="px100/right_finger_link" reason="Never"/>
     <disable_collisions link1="px100/gripper_prop_link" link2="px100/upper_arm_link" reason="Never"/>
-    <disable_collisions link1="px100/led_link" link2="px100/left_finger_link" reason="Never"/>
-    <disable_collisions link1="px100/led_link" link2="px100/right_finger_link" reason="Never"/>
-    <disable_collisions link1="px100/led_link" link2="px100/upper_arm_link" reason="Never"/>
     <disable_collisions link1="px100/left_finger_link" link2="px100/right_finger_link" reason="Adjacent"/>
     <disable_collisions link1="px100/shoulder_link" link2="px100/upper_arm_link" reason="Adjacent"/>
     <disable_collisions link1="px100/shoulder_link" link2="wheel_left_link" reason="Never"/>
