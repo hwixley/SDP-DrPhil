@@ -278,7 +278,7 @@
     <gazebo reference="$(arg robot_name)/gripper_link">
     <sensor type="depth" name="depth_camera">
     <pose>0.044 0.019 0.0345 0 0 0</pose>
-      <update_rate>4</update_rate>
+      <update_rate>20</update_rate>
       <camera>
         <horizontal_fov>${pi/6}</horizontal_fov>
         <image>
@@ -532,7 +532,7 @@
   <gazebo reference="$(arg robot_name)/left_finger_link">
     <sensor type="depth" name="depth_left">
     <pose>0.029 0.021 0.012480  0 0</pose>
-      <update_rate>4</update_rate>
+      <update_rate>20</update_rate>
       <camera>
         <horizontal_fov>${pi/6}</horizontal_fov>
         <image>
@@ -672,7 +672,7 @@
   <gazebo reference="$(arg robot_name)/right_finger_link">
     <sensor type="depth" name="depth_right">
     <pose>0.01 0.012 0.01248 0  0 0</pose>
-      <update_rate>4</update_rate>
+      <update_rate>20</update_rate>
       <camera>
         <horizontal_fov>${pi/6}</horizontal_fov>
         <image>
