@@ -22,7 +22,7 @@ from sklearn.cluster import KMeans
 class MapExplorer:
 
     #defines the maximum distance of what defines an explored region (square shaped)
-    REGION_EXPLORED_THRESHOLD = 50
+    REGION_EXPLORED_THRESHOLD = 2
     STOPPING_THRESHOLD = 0.90
 
     def __init__(self):
@@ -104,7 +104,7 @@ class MapExplorer:
             #print(explore.is_location_available(mapExplorer.robot_pose, goal))
             result = explore.move_to_goal(goal)
             if result:
-                self.area_explored+=(self.map_resolution*self.REGION_EXPLORED_THRESHOLD)*(self.map_resolution*self.REGION_EXPLORED_THRESHOLD)
+                self.area_explored+=((1/self.map_resolution)*self.REGION_EXPLORED_THRESHOLD)*((1/self.map_resolution)*self.REGION_EXPLORED_THRESHOLD)
                 self.explored_regions.append((goal))
                 rospy.loginfo("Goal execution done!")
                 # self.find_doors_nearby()
@@ -113,7 +113,7 @@ class MapExplorer:
     #If we've been near one of the random points generated, return true
     def was_explored(self, goal:PoseStamped):
         for pixel in self.explored_regions:
-            if abs(pixel.target_pose.pose.position.x - goal.x) < self.map_resolution*REGION_EXPLORED_THRESHOLD and abs(pixel.target_pose.pose.position.y - goal.y) < self.map_resolution*REGION_EXPLORED_THRESHOLD:
+            if abs(pixel.target_pose.pose.position.x - goal.x) < (1/self.map_resolution)*REGION_EXPLORED_THRESHOLD and abs(pixel.target_pose.pose.position.y - goal.y) < (1/self.map_resolution)*REGION_EXPLORED_THRESHOLD:
                 return True
         return False
 
@@ -145,16 +145,17 @@ class MapExplorer:
 
         self.number_of_movements+=1
         if self.number_of_movements == 1:
-            X = [ np.array([door.pose.position.x,
-                            door.pose.position.y,
-                            door.pose.position.z]) for door in self.door_locations]
-            y_pred = KMeans(n_clusters=1).fit_predict(X)
-            X_orientation = [ np.array([door.pose.orientation.x,
-                            door.pose.orientation.y,
-                            door.pose.orientation.z,
-                            ]) for door in self.door_locations]
-            y_pred = KMeans(n_clusters=1).fit_predict(X)
-            self.mark_all_doors(y_pred)
+            # X = [ np.array([door.pose.position.x,
+            #                 door.pose.position.y,
+            #                 door.pose.position.z]) for door in self.door_locations]
+            # y_pred = KMeans(n_clusters=1).fit_predict(X)
+            # X_orientation = [ np.array([door.pose.orientation.x,
+            #                 door.pose.orientation.y,
+            #                 door.pose.orientation.z,
+            #                 ]) for door in self.door_locations]
+            # y_pred = KMeans(n_clusters=1).fit_predict(X)
+            # self.mark_all_doors(y_pred)
+            pass
 
 
     
@@ -176,8 +177,8 @@ class MapExplorer:
             marker.pose.orientation.y = 0.0
             marker.pose.orientation.z = 0.0
             marker.pose.orientation.w =1
-            marker.scale.x =  self.map_resolution/self.REGION_EXPLORED_THRESHOLD
-            marker.scale.y = self.map_resolution/self.REGION_EXPLORED_THRESHOLD
+            marker.scale.x =  self.REGION_EXPLORED_THRESHOLD
+            marker.scale.y = self.REGION_EXPLORED_THRESHOLD
             marker.scale.z = 0.1
             marker.color.a = 1.0
             marker.color.r = 1.0
