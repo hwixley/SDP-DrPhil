@@ -24,7 +24,7 @@ from enum import IntEnum
 
 ROBOT_STATE_TARGET = "robot/state"
 APP_RESET_RETURN_TOPIC = "app/reset_return"
-
+ARM_TRAVELING_STATE = [0,0,-1.57,1.57,-1.57,0]
 
 
 class DrPhilStatus(IntEnum):
@@ -202,7 +202,7 @@ def create_set_positions_arm(parameters,name="positionArm"):
         msg=positions,
         msg_type=Float64MultiArray,
         topic="/joint_trajectory_point",
-        success_after_n_publishes=2,
+        success_on_publish=True,
         queue_size=10
     )
     
@@ -564,6 +564,7 @@ def create_execute_spray_trajectory(target_pose_src,planning_frame,distance_from
 
     check_not_completed = Lambda("checkNotCompleted",check)
 
+    reset_arm = create_set_positions_arm(ARM_TRAVELING_STATE,name="resetArm")
     move_in_front = create_move_in_front_of_current_spray_pose(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE,distance_from_pose)
     move_in_front = py_trees.decorators.FailureIsSuccess(move_in_front)
 
@@ -596,7 +597,7 @@ def create_execute_spray_trajectory(target_pose_src,planning_frame,distance_from
 
     remove_pose = Lambda("popPose",remove)
 
-    traj_sequence.add_children([publish_vis_s,check_not_completed,move_in_front,plan,execute_plan,remove_pose])
+    traj_sequence.add_children([check_not_completed,publish_vis_s,reset_arm,move_in_front,plan,execute_plan,remove_pose])
     traj_sequence = py_trees.decorators.Condition(traj_sequence,status=py_trees.Status.FAILURE)
 
     spray.add_children([move_target,traj_sequence])
@@ -644,10 +645,10 @@ def create_move_in_front_of_current_spray_pose(spray_poses_src,distance_from_pos
         name="moveTarget2BB")
 
     disable_costmap_1 = DynamicReconfigure("disableGlobalCostmap","move_base/global_costmap/inflation_layer",{
-        "enabled":False
+        "inflation_radius":0.05
     })
 
-    disable_costmap_2 = DynamicReconfigure("disableLocalCostmap","move_base/local_costmap/inflation_layer",{
+    disable_costmap_2 = DynamicReconfigure("disableLocalCostmap","move_base/local_costmap/obstacle_layer",{
         "enabled":False
     })
 
@@ -658,11 +659,11 @@ def create_move_in_front_of_current_spray_pose(spray_poses_src,distance_from_pos
 
     move_base = create_move_base_to_reach_pose(target_pose_src=bb2target)
 
-    enable_costmap_1 = DynamicReconfigure("disableGlobalCostmap","move_base/global_costmap/inflation_layer",{
-        "enabled":True
+    enable_costmap_1 = DynamicReconfigure("enableGlobalCostmap","move_base/global_costmap/inflation_layer",{
+        "inflation_radius":0.22
     })
 
-    enable_costmap_2 = DynamicReconfigure("disableLocalCostmap","move_base/local_costmap/inflation_layer",{
+    enable_costmap_2 = DynamicReconfigure("enableLocalCostmap","move_base/local_costmap/obstacle_layer",{
         "enabled":True
     })
   
