@@ -190,7 +190,8 @@ class Controller:
         disinfect_doors = create_disinfect_doors_in_map(handle_pose_src=Controller.HANDLE_POSE_SOURCE,
             spray_path_src=Controller.SPRAY_PATH_SOURCE,
             map_path=map_path,
-            distance_from_door=0.24)
+            distance_from_door=0.24,
+            spray_time=0.1)
             
         wait_for_next_clean = create_wait_for_next_clean(Controller.SCHEDULE_SOURCE)
         if ignore_schedule:

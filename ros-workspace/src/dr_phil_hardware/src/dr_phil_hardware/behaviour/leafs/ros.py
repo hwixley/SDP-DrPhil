@@ -879,7 +879,7 @@ class DynamicReconfigure(py_trees.Behaviour):
         except Exception as E:
             self.feedback_message = str(E) 
             return py_trees.Status.FAILURE
-            
+
         self.feedback_message = "updating configuration.."
         if self.client is not None:
             self.client.update_configuration(self.update_dict)
