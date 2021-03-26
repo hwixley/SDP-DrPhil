@@ -68,6 +68,7 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
         self.tapOutsideKB.isEnabled = false
         self.setupDPbounds()
         self.setupUI()
+        focusKB()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -183,27 +184,6 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
         return true
     }
     
-    //MARK: FOcused keyboard
-    func focusKB() {
-        NotificationCenter.default.addObserver(self, selector: #selector(ctrlScheduleCleaningViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(ctrlScheduleCleaningViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    
-    @objc func keyboardWillShow(notification: NSNotification) {
-        guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
-            return
-        }
-        
-        if self.view.frame.origin.y == 0 || self.clickedTxtf!.isEqual(weekendsEndTextField) {
-            self.view.frame.origin.y -= keyboardSize.height
-        }
-    }
-    
-    @objc func keyboardWillHide(notification: NSNotification) {
-        if self.view.frame.origin.y != 0 {
-            self.view.frame.origin.y = 0
-        }
-    }
     
     //MARK: Date picker
     func setupDPbounds() {
@@ -246,7 +226,7 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
     
     
     //MARK: Focused keyboard
-    /*func focusKB() {
+    func focusKB() {
         NotificationCenter.default.addObserver(self, selector: #selector(ctrlReturnViewController.keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(ctrlReturnViewController.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
@@ -263,5 +243,5 @@ class ctrlScheduleCleaningViewController: UIViewController, UITextFieldDelegate 
         if self.view.frame.origin.y != 0 {
             self.view.frame.origin.y = 0
         }
-    }*/
+    }
 }

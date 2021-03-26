@@ -41,6 +41,7 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
         passTextfield1.delegate = self
         passTextfield2.delegate = self
         self.tapOutsideKB.isEnabled = false
+        focusKB()
     }
     
     //MARK: Navigation
@@ -209,7 +210,7 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
         guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
             return
         }
-        if self.view.frame.origin.y == 0 && self.selection == 1{
+        if self.view.frame.origin.y == 0 && selection == 1{
             self.view.frame.origin.y -= keyboardSize.height
         }
     }
