@@ -41,10 +41,14 @@ public:
     if (msg_range.data ==1){
   
       sub_ = n_.subscribe("/depth_camera/depth/points", 10, &SubscribeAndPublish::callback, this);
+      subL_ = n_.subscribe("/depth_left/depth/points", 10, &SubscribeAndPublish::callbackLeftNozzle, this);
+      subR_ = n_.subscribe("/depth_right/depth/points", 10, &SubscribeAndPublish::callbackRightNozzle, this);
     }
     
     if (msg_range.data ==0){
       sub_.shutdown();
+      subL_.shutdown();
+      subR_.shutdown();
     }
   }
   
@@ -70,10 +74,123 @@ public:
     }
     catch (tf::TransformException ex){
         ROS_ERROR("%s",ex.what());
+        ROS_ERROR("middle transform");
     }
 
 
-    pcl_ros::transformPointCloud(*temp_cloud, *cloud_transformed,transform);
+    pcl_ros::transformPointCloud("odom", *temp_cloud, *cloud_transformed,listener);
+    sensor_msgs::PointCloud2 cloud_publish;
+    pcl::toROSMsg(*cloud_transformed,cloud_publish);
+
+    
+    //convert to old pointcloud type to merge latest pointcloud with 
+    //larger cloud being built up
+    sensor_msgs::convertPointCloud2ToPointCloud(cloud_publish, inputCloud);
+    
+
+    for (int p=0; p<inputCloud.points.size(); ++p)
+    {
+      if (isnan(inputCloud.points[p].x))
+      {
+        inputCloud.points[p] = inputCloud.points[inputCloud.points.size()-1];
+        inputCloud.points.resize(inputCloud.points.size()-1);
+        --p;
+      }
+    }
+    
+    if(n==0){
+      MergedCloud = inputCloud;
+    }
+
+    //publish to topic
+    merge_point_cloud(inputCloud, MergedCloud,tempCloud);
+    MergedCloud = tempCloud;
+    pub_.publish(MergedCloud);
+    n++;
+  }
+  
+  void callbackRightNozzle(const boost::shared_ptr<const sensor_msgs::PointCloud2> &input)
+  {
+
+    
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_transformed(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    sensor_msgs::PointCloud inputCloud;
+    sensor_msgs::PointCloud tempCloud;   
+    sensor_msgs::PointCloud2 test;
+    
+    //convert to PCL pointcloud then transform to global frame
+    pcl::PCLPointCloud2 pcl_pc2;
+    pcl_conversions::toPCL(*input, pcl_pc2);
+    pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);
+
+    try{
+        listener.waitForTransform("odom", "px100/led_right_link1", input->header.stamp, ros::Duration(5));
+        listener.lookupTransform("odom", "px100/led_right_link1", input->header.stamp, transform);
+    }
+    catch (tf::TransformException ex){
+        ROS_ERROR("right transform%s",ex.what());
+        ROS_ERROR("right transform");
+    }
+
+
+    pcl_ros::transformPointCloud("odom", *temp_cloud, *cloud_transformed,listener);
+    sensor_msgs::PointCloud2 cloud_publish;
+    pcl::toROSMsg(*cloud_transformed,cloud_publish);
+
+    
+    //convert to old pointcloud type to merge latest pointcloud with 
+    //larger cloud being built up
+    sensor_msgs::convertPointCloud2ToPointCloud(cloud_publish, inputCloud);
+    
+
+    for (int p=0; p<inputCloud.points.size(); ++p)
+    {
+      if (isnan(inputCloud.points[p].x))
+      {
+        inputCloud.points[p] = inputCloud.points[inputCloud.points.size()-1];
+        inputCloud.points.resize(inputCloud.points.size()-1);
+        --p;
+      }
+    }
+    
+    if(n==0){
+      MergedCloud = inputCloud;
+    }
+
+    //publish to topic
+    merge_point_cloud(inputCloud, MergedCloud,tempCloud);
+    MergedCloud = tempCloud;
+    pub_.publish(MergedCloud);
+    n++;
+  }
+  
+  void callbackLeftNozzle(const boost::shared_ptr<const sensor_msgs::PointCloud2> &input)
+  {
+
+    
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_transformed(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    sensor_msgs::PointCloud inputCloud;
+    sensor_msgs::PointCloud tempCloud;   
+    sensor_msgs::PointCloud2 test;
+    
+    //convert to PCL pointcloud then transform to global frame
+    pcl::PCLPointCloud2 pcl_pc2;
+    pcl_conversions::toPCL(*input, pcl_pc2);
+    pcl::fromPCLPointCloud2(pcl_pc2,*temp_cloud);
+
+    try{
+        listener.waitForTransform("odom", "px100/led_left_link1", input->header.stamp, ros::Duration(5));
+        listener.lookupTransform("odom", "px100/led_left_link1", input->header.stamp, transform);
+    }
+    catch (tf::TransformException ex){
+        ROS_ERROR("left transform%s",ex.what());
+        ROS_ERROR("left transform");
+    }
+
+
+    pcl_ros::transformPointCloud("odom", *temp_cloud, *cloud_transformed,listener);
     sensor_msgs::PointCloud2 cloud_publish;
     pcl::toROSMsg(*cloud_transformed,cloud_publish);
 
@@ -109,6 +226,8 @@ private:
   ros::Publisher pub_;
   ros::Subscriber sub_;
   ros::Subscriber sub1_;
+  ros::Subscriber subL_;
+  ros::Subscriber subR_;
 
 
 
@@ -131,20 +250,7 @@ else
 });
     vout.erase(unique_end, vout.end());
 }
-bool comparePoint(geometry_msgs::Point32 p1, geometry_msgs::Point32 p2){
-if (p1.x != p2.x)
-    return p1.x > p2.x;
-else if (p1.y != p2.y)
-    return  p1.y > p2.y;
-else
-    return p1.z > p2.z;
-}
 
-bool equalPoint(geometry_msgs::Point32 p1, geometry_msgs::Point32 p2){
-    if (p1.x == p2.x && p1.y == p2.y && p1.z == p2.z)
-        return true;
-    return false;
-}
 /**
  * \brief Function to merge two PointCloud data after checking if they are in they have the same `frame_id`.
  * \param cloud_in1, cloud_in2 : Two input PointClouds
