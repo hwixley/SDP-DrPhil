@@ -127,7 +127,6 @@ class Lidar:
             r = HuberRegressor(epsilon=1.05)
             r.fit(x_mat,y_mat)
             
-            w = utils.linear_regression_train(x_mat,y_mat)
             reg_line = (r.coef_[0],r.intercept_)
 
             cart_line1 = utils.cartesian_line_from_ray(ray1)
