@@ -874,7 +874,12 @@ class DynamicReconfigure(py_trees.Behaviour):
         return super().initialise()
     
     def update(self):
-        self.client = dynamic_reconfigure.client.Client(self.topic,timeout=10,config_callback=self.callback)
+        try:
+            self.client = dynamic_reconfigure.client.Client(self.topic,timeout=10,config_callback=self.callback)
+        except Exception as E:
+            self.feedback_message = str(E) 
+            return py_trees.Status.FAILURE
+
         self.feedback_message = "updating configuration.."
         if self.client is not None:
             self.client.update_configuration(self.update_dict)

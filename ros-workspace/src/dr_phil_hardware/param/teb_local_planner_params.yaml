@@ -37,7 +37,7 @@ TebLocalPlannerROS:
 # Goal Tolerance Parametes
 
   xy_goal_tolerance: 0.05
-  yaw_goal_tolerance: 0.2
+  yaw_goal_tolerance: 0.1
   free_goal_vel: false
   complete_global_plan: false
 
@@ -46,7 +46,7 @@ TebLocalPlannerROS:
   no_outer_iterations: 3
   penalty_epsilon: 0.05 
   weight_dynamic_obstacle: 1000
-  weight_obstacle: 50  # default 50
+  weight_obstacle: 1000  # default 50
   weight_inflation: 0.5 # 0.1
   weight_viapoint: 1
   weight_kinematics_nh: 10000 # degault 1000

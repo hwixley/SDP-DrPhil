@@ -124,10 +124,10 @@ class Lidar:
             points_np = np.array(points)
             x_mat = points_np[:,0,:]
             y_mat =points_np[:,1,0]
-            r = HuberRegressor(epsilon=1.05)
+            r = RANSACRegressor()
             r.fit(x_mat,y_mat)
             
-            reg_line = (r.coef_[0],r.intercept_)
+            reg_line = (r.estimator_.coef_[0],r.estimator_.intercept_)
 
             cart_line1 = utils.cartesian_line_from_ray(ray1)
             cart_line2 = utils.cartesian_line_from_ray(ray2)

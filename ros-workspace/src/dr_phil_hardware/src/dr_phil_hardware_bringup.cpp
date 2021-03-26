@@ -71,7 +71,7 @@ void Turtlebot3ManipulationBringup::armActionCallback(const control_msgs::Follow
   
   ros::Time start_time = jnt_tra.header.stamp;
 
-  for (uint32_t i = 0; i < jnt_tra_pts_size; i++)// = i + steps)
+  for (uint32_t i = 0; i < jnt_tra_pts_size; i = i + steps)
   {
     if (arm_action_server_.isPreemptRequested() || !ros::ok())
     {

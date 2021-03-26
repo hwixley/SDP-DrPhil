@@ -20,11 +20,13 @@ import math
 import copy
 from dr_phil_hardware.srv import SetRobotStatus,SetRobotStatusRequest
 from sensor_msgs.msg import BatteryState
+from std_msgs.msg import Float32
 from enum import IntEnum
 
 ROBOT_STATE_TARGET = "robot/state"
 APP_RESET_RETURN_TOPIC = "app/reset_return"
-
+SPRAY_COMMAND_TOPIC = "/spray_controller/command"
+ARM_TRAVELING_STATE = [0,0,-1.57,1.57,-1.57,0]
 
 
 class DrPhilStatus(IntEnum):
@@ -202,7 +204,7 @@ def create_set_positions_arm(parameters,name="positionArm"):
         msg=positions,
         msg_type=Float64MultiArray,
         topic="/joint_trajectory_point",
-        success_after_n_publishes=2,
+        success_on_publish=True,
         queue_size=10
     )
     
@@ -275,7 +277,7 @@ def create_explore_frontier_and_save_map(map_path=None,timeout=120,no_data_timeo
 
 
     
-def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,pose_frame="map",map_path=None,distance_from_door=0.1,name="disinfectDoors"):
+def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,pose_frame="map",map_path=None,distance_from_door=0.1,spray_time=0.1,name="disinfectDoors"):
     """[summary]
 
     Args:
@@ -351,7 +353,9 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,pose_frame="map
 
     publish_vis_s = PublishTopic("publishSprayTargets",get_spray,PoseArray,"/vis/spray_targets",success_on_publish=True)
     
-    execute_spray_sequence = create_execute_spray_trajectory(bb2bufferSpray,pose_frame,distance_from_pose=distance_from_door)
+    execute_spray_sequence = create_execute_spray_trajectory(bb2bufferSpray,pose_frame,
+        spray_time,
+        distance_from_pose=distance_from_door)
 
     kill_nodes = py_trees.blackboard.SetBlackboardVariable(name="killNodes",variable_name=killkey)
     
@@ -541,7 +545,7 @@ def create_try_various_arm_plans(pose_frame):
     plan.add_children([create_p2p_plan_lenient])
     return plan
 
-def create_execute_spray_trajectory(target_pose_src,planning_frame,distance_from_pose=0.1):
+def create_execute_spray_trajectory(target_pose_src,planning_frame,spray_time,distance_from_pose=0.1):
 
     spray = py_trees.Sequence("executeSprayTrajectory")
 
@@ -564,6 +568,7 @@ def create_execute_spray_trajectory(target_pose_src,planning_frame,distance_from
 
     check_not_completed = Lambda("checkNotCompleted",check)
 
+    reset_arm = create_set_positions_arm(ARM_TRAVELING_STATE,name="resetArm")
     move_in_front = create_move_in_front_of_current_spray_pose(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE,distance_from_pose)
     move_in_front = py_trees.decorators.FailureIsSuccess(move_in_front)
 
@@ -593,17 +598,32 @@ def create_execute_spray_trajectory(target_pose_src,planning_frame,distance_from
 
     execute_plan = ExecuteMoveItPlan("eeToNextPoint",MoveGroup.ARM,success_on_no_plan=True)
 
+    spray_duration = create_spray_for_duration(duration=spray_time)
 
     remove_pose = Lambda("popPose",remove)
 
-    traj_sequence.add_children([publish_vis_s,check_not_completed,move_in_front,plan,execute_plan,remove_pose])
+    traj_sequence.add_children([check_not_completed,publish_vis_s,reset_arm,
+                            move_in_front,plan,execute_plan,spray_duration,remove_pose])
     traj_sequence = py_trees.decorators.Condition(traj_sequence,status=py_trees.Status.FAILURE)
 
     spray.add_children([move_target,traj_sequence])
     spray.blackbox_level = spray.blackbox_level.BIG_PICTURE
     return spray
 
+def create_spray_for_duration(duration=0.1,name="sprayDuration"):
 
+    spray_sequence = py_trees.composites.Sequence(name=name)
+
+    on_msg = Float32()
+    on_msg.data = 1
+    off_msg = Float32()
+    off_msg.data = 0
+
+    start_spray = PublishTopic("startSpray",on_msg,Float32,SPRAY_COMMAND_TOPIC,success_on_publish=True)
+    wait = py_trees.timers.Timer(duration=duration,name="sprayInterval")
+    stop_spray = PublishTopic("stopSpray",off_msg,Float32,SPRAY_COMMAND_TOPIC,success_on_publish=True)
+    spray_sequence.add_children([start_spray,wait,stop_spray])
+    return spray_sequence
 
 def create_move_in_front_of_current_spray_pose(spray_poses_src,distance_from_pose=0.1,name="moveToSprayPose"):
     def process_pose():
@@ -635,19 +655,16 @@ def create_move_in_front_of_current_spray_pose(spray_poses_src,distance_from_pos
 
     bb2target = "{}/target".format(name)
 
-    
-    wait = py_trees.timers.Timer(duration=5)
-
     move_target = SetBlackboardVariableCustom(
         variable_name=bb2target,
         variable_value=process_pose,
         name="moveTarget2BB")
 
     disable_costmap_1 = DynamicReconfigure("disableGlobalCostmap","move_base/global_costmap/inflation_layer",{
-        "enabled":False
+        "inflation_radius":0.05
     })
 
-    disable_costmap_2 = DynamicReconfigure("disableLocalCostmap","move_base/local_costmap/inflation_layer",{
+    disable_costmap_2 = DynamicReconfigure("disableLocalCostmap","move_base/local_costmap/obstacle_layer",{
         "enabled":False
     })
 
@@ -658,19 +675,19 @@ def create_move_in_front_of_current_spray_pose(spray_poses_src,distance_from_pos
 
     move_base = create_move_base_to_reach_pose(target_pose_src=bb2target)
 
-    enable_costmap_1 = DynamicReconfigure("disableGlobalCostmap","move_base/global_costmap/inflation_layer",{
-        "enabled":True
+    enable_costmap_1 = DynamicReconfigure("enableGlobalCostmap","move_base/global_costmap/inflation_layer",{
+        "inflation_radius":0.22
     })
 
-    enable_costmap_2 = DynamicReconfigure("disableLocalCostmap","move_base/local_costmap/inflation_layer",{
+    enable_costmap_2 = DynamicReconfigure("enableLocalCostmap","move_base/local_costmap/obstacle_layer",{
         "enabled":True
     })
   
-    door_open =py_trees.composites.Sequence(name=name,children=[wait,move_target,
+    door_open =py_trees.composites.Sequence(name=name,children=[move_target,
             disable_costmap_1,disable_costmap_2,clear_costmaps,move_base,enable_costmap_1,enable_costmap_2])
     
     door_open.blackbox_level = py_trees.common.BlackBoxLevel.COMPONENT
-    door_open.name = "move2Door"
+    door_open.name = "move2SprayPose"
 
     return door_open
 

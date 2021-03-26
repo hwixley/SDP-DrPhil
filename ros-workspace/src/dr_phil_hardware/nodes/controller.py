@@ -143,10 +143,14 @@ class Controller:
                                                         topic_name=Controller.BATTERY_SOURCE,
                                                         topic_type=BatteryState,
                                                         blackboard_variables={Controller.BATTERY_SOURCE:None})
+        
         update_app_state = py_trees.composites.Sequence(children=[
             py_trees.timers.Timer(duration=20),
             create_update_app_state(Controller.BATTERY_SOURCE)
         ])
+
+        if ignore_schedule:
+            update_app_state = py_trees.behaviours.Running()
 
         topics2bb.add_children([camera2bb,scan2bb,target2bb,handle2bb,schedule2bb,pose2bb,battery2bb,update_app_state])
 
@@ -156,6 +160,8 @@ class Controller:
         priorities = py_trees.composites.Selector("priorities")
 
         pre_empt_check = create_preempt_return_base(Controller.SCHEDULE_SOURCE,Controller.HANDLE_POSE_SOURCE)
+        if ignore_schedule:
+            pre_empt_check = py_trees.behaviours.Failure()
 
         non_preempt_tasks = py_trees.composites.Chooser("nonPreempt")
 
@@ -184,7 +190,8 @@ class Controller:
         disinfect_doors = create_disinfect_doors_in_map(handle_pose_src=Controller.HANDLE_POSE_SOURCE,
             spray_path_src=Controller.SPRAY_PATH_SOURCE,
             map_path=map_path,
-            distance_from_door=0.24)
+            distance_from_door=0.24,
+            spray_time=0.1)
             
         wait_for_next_clean = create_wait_for_next_clean(Controller.SCHEDULE_SOURCE)
         if ignore_schedule:
@@ -224,7 +231,8 @@ if __name__ == "__main__":
         try:
             controller.update()
             rate.sleep()
-        except (KeyboardInterrupt,ROSException):
+        except (KeyboardInterrupt,ROSException) as E:
             rospy.logwarn("Calling stop() on root behaviour")
+
             controller.root.destroy()
             sys.exit(0)

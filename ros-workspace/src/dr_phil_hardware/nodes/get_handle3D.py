@@ -313,7 +313,7 @@ class Handle3DTransformation:
                     self.camera,
                     self.lidar,
                     self.scan,
-                    smoothing_neighbours=5)
+                    smoothing_neighbours=20)
 
                 point3d_map = self.rob2map @ np.append(point3d,[[1]],axis=0)
                 normal_map = normal.get_transformed(self.rob2map)
