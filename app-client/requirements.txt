@@ -2,3 +2,4 @@ python-firebase
 roslibpy
 python-dotenv
 ssh-tunnel
+pyinstaller

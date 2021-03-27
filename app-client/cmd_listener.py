@@ -20,6 +20,7 @@ import roslibpy
 import os
 from copy import deepcopy
 from sshtunnel import SSHTunnelForwarder
+import argparse
 
 
 class CmdListener():
@@ -277,7 +278,15 @@ if __name__ == "__main__":
         remote_bind_address=(ROS_WS_HOST, ROS_WS_PORT)
     )
 
-    server.start()
+    parser = argparse.ArgumentParser(description='App-client main script')
+
+    parser.add_argument("-l", "--localhost", help="Runs the script on localhost", action="store_true")
+
+    args = parser.parse_args()
+
+    if not args.localhost:
+        print("Establishing ssh tunnel")
+        server.start()
     
     listener = CmdListener(RID,ROS_WS_PORT,ROS_WS_HOST)
 
