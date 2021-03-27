@@ -10,7 +10,7 @@ import math
 
 from typing import Tuple 
 
-HANDLE_DOOR_DEPTH = 0.07
+HANDLE_DOOR_DEPTH = 0.04
 
 def localize_pixel(img_pos,camera : Camera,lidar : Lidar, scan : LaserScan, smoothing_neighbours=0,outlier_factor=0.05) -> Tuple[np.array,Ray]:
     """ given 2d image, lidar and camera as well as the current scan message, localizes the pixel against the lidar data 
