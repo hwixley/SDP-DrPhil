@@ -6,6 +6,13 @@ This script is to be run on a remote with access to the internet, and when confi
 
 pip3 install -r requirements.txt
 
+## Running the app-client script
+
+cmd_listener.py is the main entry point. It tries to establish an ssh tunnel by default. To make it run on localhost, use the optional argument.
+```
+optional arguments:
+-l, --localhost  Runs the script on localhost
+```
 ## App Client installer build
 
 This creates a standalone Linux executable for the app-client
