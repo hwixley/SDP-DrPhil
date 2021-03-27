@@ -10,6 +10,9 @@ using costmap_2d::FREE_SPACE;
 TargetGenerator::TargetGenerator(ros::NodeHandle& nh)
 : nh_(nh)
 {
+
+  registerService();
+
   registerSubscriber();
   // if (map_size_x_) {
   //   std::cout << "Cost map properly initialized." << std::endl;
@@ -21,7 +24,6 @@ TargetGenerator::TargetGenerator(ros::NodeHandle& nh)
   
   registerPublisher();
 
-  registerService();
 }
 
 TargetGenerator::~TargetGenerator()
@@ -83,6 +85,7 @@ TargetGenerator::costMapInit(const nav_msgs::OccupancyGrid costmap)
     map_size_y_ = costmap.info.height;
     map_data_ = costmap.data;
 
+}
 
 
 
