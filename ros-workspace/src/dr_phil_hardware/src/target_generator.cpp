@@ -34,7 +34,8 @@ TargetGenerator::registerSubscriber()
 {
   sub_turtlepi_location_ = nh_.subscribe("/amcl_pose", 10, &TargetGenerator::currentPositionCB, this);
   sub_costmap = nh_.subscribe("/move_base/global_costmap/costmap", 10, &TargetGenerator::costMapInit, this);
-  sub_local_costmap = nh_.subscribe("/move_base/local_costmap/costmap", 10, &TargetGenerator::localCostMapInit, this);
+  // sub_local_costmap = nh_.subscribe("/move_base/local_costmap/costmap", 10, &TargetGenerator::localCostMapInit, this);
+  init_ = true;
 
   std::cout << "Registered subscriber." << std::endl;
 }
@@ -82,15 +83,10 @@ TargetGenerator::costMapInit(const nav_msgs::OccupancyGrid costmap)
     map_size_y_ = costmap.info.height;
     map_data_ = costmap.data;
 
-    init_ = true;
 
 
 
 
-  // return true;
-  // }
-  // return false;
-}
 
 
 void
@@ -103,8 +99,54 @@ TargetGenerator::localCostMapInit(const nav_msgs::OccupancyGrid local_costmap)
     local_map_size_y_ = local_costmap.info.height;
     local_map_data_ = local_costmap.data;
 
-
 }
+
+//If possible, checks in 3x3 square the pixels surrounding (x,y) coordinates, starting from "top-left"
+bool 
+TargetGenerator::check_local_surrounding(uint32_t localmap_x, uint32_t localmap_y){
+    if ( (localmap_x - 1 > 0 && localmap_x + 1 < local_map_size_x_) && (localmap_y-1 > 0 && localmap_y +1 < local_map_size_y_)){
+        for (int i=-1; i<=1; i++){
+          for (int j=-1; j<=1; j++){
+            uint32_t idx = (localmap_x + i) + (localmap_y + j) * local_map_size_x_;
+            //If one of the points is not free (hence, any number but 0), return false
+
+            if (local_map_data_[idx] != 0) {
+              return false;
+            }
+          }
+        }
+        //Since all the surrounding space is free, return true 
+        return true;
+    }
+    //We assume the surrounding is free if we cant read the data. In other words, if the target point generated is outside the range of the data we have on local map.
+    return true;
+}
+
+// //If possible, checks in 9x9 square the pixels surrounding (x,y) coordinates, starting from "top-left"
+bool 
+TargetGenerator::check_global_surrounding(uint32_t map_x, uint32_t map_y){
+    // uint32_t map_x;
+    // uint32_t map_y;
+    if ( (map_x - 4 > 0 && map_x + 4 < map_size_x_) && (map_y- 4 > 0 && map_y +4 < map_size_y_)){
+        for (int i=-4; i<=4; i++){
+          for (int j=-4; j<=4; j++){
+            //worldToMap(map_x,)
+            uint32_t idx = (map_x + i) + (map_y + j) * map_size_x_;
+            //If one of the points is not free (hence, any number but 0), return false
+            if (map_data_[idx] != 0) {
+              return false;
+            }
+          }
+        }
+        //Since all the surrounding space is free, return true 
+        return true;
+    }
+    //we shouldnt take the edge of the map, return false
+    return false;
+}
+
+
+
 
 
 
@@ -133,6 +175,7 @@ TargetGenerator::generateTargetService(
   uint32_t local_idx;
 
   bool thresh;
+  bool is_global_free;
   bool is_free;
 
   auto checkThresh = [&](double x, double y, double wx, double wy) {
@@ -157,10 +200,12 @@ TargetGenerator::generateTargetService(
     
 
     mapToWorld(map_x, map_y, world_x, world_y);
-    worldToLocalMap(localmap_x,localmap_y,world_x,world_y);
+    // worldToLocalMap(localmap_x,localmap_y,world_x,world_y);
+
+
 
     idx = map_x + map_y * map_size_x_;
-    local_idx = localmap_x + localmap_y * local_map_size_x_;
+    // local_idx = localmap_x + localmap_y * local_map_size_x_;
 
     thresh = checkThresh(current_position_.pose.pose.position.x,
                     current_position_.pose.pose.position.y,
@@ -169,26 +214,21 @@ TargetGenerator::generateTargetService(
 
 
     //If we cannot determine the local costmap (point generated is further than local costmap size), assume it is free
-    if (local_idx > local_map_data_.size()){
-      is_free = 1;
-    }
-    //check if it is free when target is within range
-    else if(local_map_data_[local_idx] == 0){
-      is_free = 1;
-    }
-    else{
-      is_free = 0;
-    }
+    // if (local_idx > local_map_data_.size() && map_data_[idx] == 0){
+    //   is_free = 1;
+    // }
+    // //check if it is free when target is within range
+    // else if(local_map_data_[local_idx] == 0 && map_data_[idx] == 0){
+    //   // is_free = check_local_surrounding(world_x,world_y);
+    // }
+    // else{
+    //   is_free = 0;
+    // }
+
+    is_global_free = check_global_surrounding(map_x,map_y);
 
 
-    // uint32_t idx_left = (localmap_x -1) + localmap_y * local_map_size_x_;
-    // uint32_t idx_right = (localmap_x + 1) + localmap_y * local_map_size_x_;
-    // uint32_t idx_top = localmap_x + (localmap_y +1 ) * local_map_size_x_;
-    // uint32_t idx_bottom = localmap_x + (localmap_y -1) * local_map_size_x_;
-    // is_surrounding_free =  local_map_data_[idx_left] ==0 && local_map_data_[idx_right]== 0 && local_map_data_[idx_top] == 0 && local_map_data_[idx_bottom]==0;
-    
-
-  } while (!((map_data_[idx] ==0 && is_free == 1  && (thresh == 1))));
+  } while (! ((is_global_free==1 && (thresh == 1))));
 
   double radians = theta_ * (PI_ / 180.0);
   tf::Quaternion quaternion;
