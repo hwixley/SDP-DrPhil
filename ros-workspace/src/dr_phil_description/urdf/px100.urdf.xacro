@@ -484,7 +484,7 @@
       </link>
       
       <joint name="$(arg robot_name)/led_left_joint" type="fixed"> 
-  <origin xyz="0.108 0.012 0.01248" rpy="0 0 ${-pi/2}"/> 
+  <origin xyz="0.108 0.055 0.01248" rpy="0 0 ${-pi/2}"/> 
   <parent link="$(arg robot_name)/left_finger_link"/>
   <child link="$(arg robot_name)/led_left_link"/> </joint>
   
@@ -500,7 +500,7 @@
   </link>
   
   <joint name="$(arg robot_name)/led_left_joint1" type="fixed"> 
-  <origin xyz="0.108 0.012 0.01248" rpy="${-pi/2} 0 ${(-pi/2)-pi/2}"/> 
+  <origin xyz="0.108 0.055 0.01248" rpy="${-pi/2} 0 ${(-pi/2)-pi/2}"/> 
   <parent link="$(arg robot_name)/left_finger_link"/>
   <child link="$(arg robot_name)/led_left_link1"/> </joint>
   
@@ -509,7 +509,7 @@
   
   <gazebo reference="$(arg robot_name)/left_finger_link">
     <sensor type="depth" name="depth_left">
-    <pose>0.108 0.012 0.01248 0  0 ${-pi/2}</pose>
+    <pose>0.108 0.055 0.01248 0  0 ${-pi/2}</pose>
       <update_rate>20</update_rate>
       <camera>
         <horizontal_fov>${pi/6}</horizontal_fov>
@@ -536,7 +536,7 @@
           <depthImageCameraInfoTopicName>/depth_left/depth/camera_info</depthImageCameraInfoTopicName>
           <pointCloudTopicName>/depth_left/depth/points</pointCloudTopicName>
           <frameName>$(arg robot_name)/led_left_link1</frameName>
-          <pointCloudCutoff>0.02</pointCloudCutoff>
+          <pointCloudCutoff>0.0</pointCloudCutoff>
           <pointCloudCutoffMax>1.0</pointCloudCutoffMax>
           <distortionK1>0</distortionK1>
           <distortionK2>0</distortionK2>
@@ -554,7 +554,7 @@
   
   <gazebo reference="$(arg robot_name)/left_finger_link">
   <light name ='led' type = 'spot'>
-    <pose>0.088 -0.007 0.021 0 ${-pi/2} ${-pi/2}</pose><!--you can place light position here ,and it is useless to give position in link-->
+    <pose>0.088 0.045 0.021 0 ${-pi/2} ${-pi/2}</pose><!--you can place light position here ,and it is useless to give position in link-->
     <attenuation>
             <range>0</range>
           </attenuation>
@@ -613,7 +613,7 @@
       </link>
       
       <joint name="$(arg robot_name)/led_right_joint" type="fixed"> 
-  <origin xyz="0.07 -0.012 0.01248" rpy="0 0 ${pi/2}"/> 
+  <origin xyz="0.07 -0.055 0.01248" rpy="0 0 ${pi/2}"/> 
   <parent link="$(arg robot_name)/right_finger_link"/>
   <child link="$(arg robot_name)/led_right_link"/> </joint>
   
@@ -628,7 +628,7 @@
   </link>
   
   <joint name="$(arg robot_name)/led_right_joint1" type="fixed"> 
-  <origin xyz="0.7 -0.012 0.01248" rpy="${-pi/2} 0 ${(pi/2)-pi/2}"/> 
+  <origin xyz="0.7 -0.055 0.01248" rpy="${-pi/2} 0 ${(pi/2)-pi/2}"/> 
   <parent link="$(arg robot_name)/right_finger_link"/>
   <child link="$(arg robot_name)/led_right_link1"/> </joint>
   
@@ -637,7 +637,7 @@
   
   <gazebo reference="$(arg robot_name)/right_finger_link">
     <sensor type="depth" name="depth_right">
-    <pose>0.7 -0.012 0.01248 0  0 ${(pi/2)}</pose>
+    <pose>0.7 -0.055 0.01248 0  0 ${(pi/2)}</pose>
       <update_rate>20</update_rate>
       <camera>
         <horizontal_fov>${pi/6}</horizontal_fov>
@@ -664,7 +664,7 @@
           <depthImageCameraInfoTopicName>/depth_right/depth/camera_info</depthImageCameraInfoTopicName>
           <pointCloudTopicName>/depth_right/depth/points</pointCloudTopicName>
           <frameName>$(arg robot_name)/led_right_link1</frameName>
-          <pointCloudCutoff>0.06</pointCloudCutoff>
+          <pointCloudCutoff>0.0</pointCloudCutoff>
           <pointCloudCutoffMax>1.0</pointCloudCutoffMax>
           <distortionK1>0</distortionK1>
           <distortionK2>0</distortionK2>
@@ -682,7 +682,7 @@
 
 <gazebo reference="$(arg robot_name)/right_finger_link">
   <light name ='led' type = 'spot'>
-    <pose>0.0882 0.007 0.021 0 ${-pi/2} ${pi/2}</pose><!--you can place light position here ,and it is useless to give position in link-->
+    <pose>0.0882 -0.05 0.021 0 ${-pi/2} ${pi/2}</pose><!--you can place light position here ,and it is useless to give position in link-->
     <attenuation>
             <range>0</range>
           </attenuation>
