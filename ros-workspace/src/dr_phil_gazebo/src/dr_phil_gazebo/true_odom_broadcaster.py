@@ -15,11 +15,10 @@ from gazebo_msgs.srv import GetModelState,GetModelStateResponse
 def true_pose(pose_service : ServiceProxy):
 
     true_pose : GetModelStateResponse = pose_service.call("dr-phil","")
-    
     br = tf2_ros.TransformBroadcaster()
     t = geometry_msgs.msg.TransformStamped()
 
-    t.header.stamp = rospy.Time.now()
+    t.header.stamp = true_pose.header.stamp
     t.header.frame_id = "odom"
     t.child_frame_id = "base_footprint"
     t.transform.translation.x = true_pose.pose.position.x 
