@@ -13,6 +13,7 @@ This creates a standalone Linux executable for the app-client
 Dependency: pyinstaller
 
 In order to build the executable, run:
+```
 pyinstaller --clean --onefile \
             --hidden-import=pkg_resources \
             --name app-client \
@@ -20,7 +21,7 @@ pyinstaller --clean --onefile \
             --workpath bundled-app/build/ \
             --specpath bundled-app/ \
             cmd_listener.py
-
+```
 The bundled app executable can then be found in bundled-app/app-client.
 In order for the executable to run it requires a configured .env file placed in the same directory.
 
