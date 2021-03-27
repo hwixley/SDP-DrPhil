@@ -94,7 +94,7 @@ class Handle3DTransformation:
         results = yolov3(self.rgb_image,weights=self.weights,cfg=self.cfg, network=self.net, output_layers=self.out, class_names=self.classes)
         
         #See the YOLO results by calling the visualise results function
-        visualise_results(self.rgb_image, results, self.starting_time, self.frame_id)
+        # visualise_results(self.rgb_image, results, self.starting_time, self.frame_id)
 
         #Filter the results to have handles only - for now
         for box in results:
@@ -313,7 +313,7 @@ class Handle3DTransformation:
                     self.camera,
                     self.lidar,
                     self.scan,
-                    smoothing_neighbours=20)
+                    smoothing_neighbours=25)
 
                 point3d_map = self.rob2map @ np.append(point3d,[[1]],axis=0)
                 normal_map = normal.get_transformed(self.rob2map)
