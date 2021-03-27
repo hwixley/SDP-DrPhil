@@ -34,6 +34,7 @@ TargetGenerator::registerSubscriber()
 {
   sub_turtlepi_location_ = nh_.subscribe("/amcl_pose", 10, &TargetGenerator::currentPositionCB, this);
   sub_costmap = nh_.subscribe("/move_base/global_costmap/costmap", 10, &TargetGenerator::costMapInit, this);
+  sub_local_costmap = nh_.subscribe("/move_base/local_costmap/costmap", 10, &TargetGenerator::localCostMapInit, this);
 
   std::cout << "Registered subscriber." << std::endl;
 }
@@ -83,11 +84,24 @@ TargetGenerator::costMapInit(const nav_msgs::OccupancyGrid costmap)
 
     init_ = true;
 
+
   // return true;
   // }
   // return false;
 }
 
+
+void
+TargetGenerator::localCostMapInit(const nav_msgs::OccupancyGrid local_costmap)
+{
+    local_map_origin_x_ = local_costmap.info.origin.position.x;
+    local_map_origin_y_ = local_costmap.info.origin.position.y;
+    local_map_resolution_ = local_costmap.info.resolution;
+    local_map_size_x_ = local_costmap.info.width;
+    local_map_size_y_ = local_costmap.info.height;
+    local_map_data_ = local_costmap.data;
+
+}
 
 
 
@@ -113,34 +127,45 @@ TargetGenerator::generateTargetService(
 
   double world_x, world_y;
   uint32_t idx;
+  uint32_t local_idx;
+
   bool thresh;
   bool is_surrounding_free;
 
   auto checkThresh = [&](double x, double y, double wx, double wy) {
-    return sqrt(pow(wx - x, 2) + pow(wy - y, 2)) >= DISTANCE_THRESHOLD_  &&  sqrt(pow(wx - x, 2) + pow(wy - y, 2)) <= DISTANCE_THRESHOLD_ + 1 ; //Must be lower than the threshold
+    return sqrt(pow(wx - x, 2) + pow(wy - y, 2)) <= DISTANCE_THRESHOLD_ ; //Must be lower than the threshold
   };
 
   auto printTarget = [](double wx, double wy) {
     std::cout << "Target: (" << wx << " ," << wy << ")" << std::endl;
   };
 
-  
 
   
   // int count_iterations = 0;
   // auto original_threshold = DISTANCE_THRESHOLD;
   do {
- 
+    uint32_t localmap_x;
+    uint32_t localmap_y;
 
     uint32_t map_x = grid_x(gen);
     uint32_t map_y = grid_y(gen);
 
+    
+
     mapToWorld(map_x, map_y, world_x, world_y);
+    worldToLocalMap(localmap_x,localmap_y,world_x,world_y);
+
     idx = map_x + map_y * map_size_x_;
+    local_idx = localmap_x + localmap_y * local_map_size_x_;
+
     thresh = checkThresh(current_position_.pose.pose.position.x,
                     current_position_.pose.pose.position.y,
                     world_x,
                     world_y);
+
+
+            
     
     // auto idx_left = (map_x -1) + map_y * map_size_x_;
     // auto idx_right = (map_x + 1) + map_y * map_size_x_;
@@ -149,7 +174,7 @@ TargetGenerator::generateTargetService(
     // is_surrounding_free =  map_data_[idx_left]==0 && map_data_[idx_right]==0 && map_data_[idx_top]==0 && map_data_[idx_bottom]==0;
     
 
-  } while (!((map_data_[idx] ==0  && (thresh == 1))));
+  } while (!((map_data_[idx] ==0 && local_map_data_[local_idx] == 0  && (thresh == 1))));
 
   double radians = theta_ * (PI_ / 180.0);
   tf::Quaternion quaternion;
@@ -165,8 +190,6 @@ TargetGenerator::generateTargetService(
   res.success = true;
   printTarget(world_x, world_y);
   targetMarker(world_x, world_y);
-
-
 
 
 
@@ -198,6 +221,17 @@ TargetGenerator::worldToMap(
 }
 
 void
+TargetGenerator::worldToLocalMap(
+  uint32_t& map_x,
+  uint32_t& map_y,
+  const double world_x,
+  const double world_y) const
+{
+  map_x = (uint32_t)((world_x - local_map_origin_x_) / local_map_resolution_);
+  map_y = (uint32_t)((world_y - local_map_origin_y_) / local_map_resolution_);
+}
+
+void
 TargetGenerator::targetMarker(const double x, const double y) const
 {
   visualization_msgs::Marker marker;
@@ -221,7 +255,7 @@ TargetGenerator::targetMarker(const double x, const double y) const
   marker.color.r = 0.0;
   marker.color.g = 1.0;
   marker.color.b = 0.0;
-  marker.lifetime = ros::Duration(4);
+  marker.lifetime = ros::Duration(100);
   pub_visualization_marker_.publish(marker);
 }
 
