@@ -7,7 +7,18 @@ project(dr_phil_gazebo)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp pcl_conversions pcl_ros )
+find_package(catkin REQUIRED COMPONENTS 
+  roscpp 
+  pcl_conversions 
+  pcl_ros 
+  tf2
+  tf2_sensor_msgs
+  tf2_geometry_msgs
+  tf2_ros
+  tf2_msgs
+  sensor_msgs
+  geometry_msgs
+  )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -143,7 +154,6 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/dr_phil_gazebo_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
