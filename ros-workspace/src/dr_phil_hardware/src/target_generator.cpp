@@ -85,6 +85,8 @@ TargetGenerator::costMapInit(const nav_msgs::OccupancyGrid costmap)
     init_ = true;
 
 
+
+
   // return true;
   // }
   // return false;
@@ -100,6 +102,7 @@ TargetGenerator::localCostMapInit(const nav_msgs::OccupancyGrid local_costmap)
     local_map_size_x_ = local_costmap.info.width;
     local_map_size_y_ = local_costmap.info.height;
     local_map_data_ = local_costmap.data;
+
 
 }
 
@@ -130,7 +133,7 @@ TargetGenerator::generateTargetService(
   uint32_t local_idx;
 
   bool thresh;
-  bool is_surrounding_free;
+  bool is_free;
 
   auto checkThresh = [&](double x, double y, double wx, double wy) {
     return sqrt(pow(wx - x, 2) + pow(wy - y, 2)) <= DISTANCE_THRESHOLD_ ; //Must be lower than the threshold
@@ -165,16 +168,27 @@ TargetGenerator::generateTargetService(
                     world_y);
 
 
-            
-    
-    // auto idx_left = (map_x -1) + map_y * map_size_x_;
-    // auto idx_right = (map_x + 1) + map_y * map_size_x_;
-    // auto idx_top = map_x + (map_y +1 ) * map_size_x_;
-    // auto idx_bottom = map_x + (map_y -1) * map_size_x_;
-    // is_surrounding_free =  map_data_[idx_left]==0 && map_data_[idx_right]==0 && map_data_[idx_top]==0 && map_data_[idx_bottom]==0;
+    //If we cannot determine the local costmap (point generated is further than local costmap size), assume it is free
+    if (local_idx > local_map_data_.size()){
+      is_free = 1;
+    }
+    //check if it is free when target is within range
+    else if(local_map_data_[local_idx] == 0){
+      is_free = 1;
+    }
+    else{
+      is_free = 0;
+    }
+
+
+    // uint32_t idx_left = (localmap_x -1) + localmap_y * local_map_size_x_;
+    // uint32_t idx_right = (localmap_x + 1) + localmap_y * local_map_size_x_;
+    // uint32_t idx_top = localmap_x + (localmap_y +1 ) * local_map_size_x_;
+    // uint32_t idx_bottom = localmap_x + (localmap_y -1) * local_map_size_x_;
+    // is_surrounding_free =  local_map_data_[idx_left] ==0 && local_map_data_[idx_right]== 0 && local_map_data_[idx_top] == 0 && local_map_data_[idx_bottom]==0;
     
 
-  } while (!((map_data_[idx] ==0 && local_map_data_[local_idx] == 0  && (thresh == 1))));
+  } while (!((map_data_[idx] ==0 && is_free == 1  && (thresh == 1))));
 
   double radians = theta_ * (PI_ / 180.0);
   tf::Quaternion quaternion;
