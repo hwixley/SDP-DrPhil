@@ -619,10 +619,12 @@ def create_spray_for_duration(duration=0.1,name="sprayDuration"):
     off_msg = Float32()
     off_msg.data = 0
 
+    wait_before = py_trees.timers.Timer(duration=0.5,name="sprayBeforeWait")
     start_spray = PublishTopic("startSpray",on_msg,Float32,SPRAY_COMMAND_TOPIC,success_on_publish=True)
     wait = py_trees.timers.Timer(duration=duration,name="sprayInterval")
     stop_spray = PublishTopic("stopSpray",off_msg,Float32,SPRAY_COMMAND_TOPIC,success_on_publish=True)
-    spray_sequence.add_children([start_spray,wait,stop_spray])
+    wait_after = py_trees.timers.Timer(duration=0.5,name="sprayAfterWait")
+    spray_sequence.add_children([wait_before,start_spray,wait,stop_spray,wait_after])
     return spray_sequence
 
 def create_move_in_front_of_current_spray_pose(spray_poses_src,distance_from_pose=0.1,name="moveToSprayPose"):
@@ -660,12 +662,13 @@ def create_move_in_front_of_current_spray_pose(spray_poses_src,distance_from_pos
         variable_value=process_pose,
         name="moveTarget2BB")
 
-    disable_costmap_1 = DynamicReconfigure("disableGlobalCostmap","move_base/global_costmap/inflation_layer",{
-        "inflation_radius":0.05
-    })
+    # disable_costmap_1 = DynamicReconfigure("disableGlobalCostmap","move_base/local_costmap/inflation_layer",{
+    #     "inflation_radius":0.05
+    # })
 
-    disable_costmap_2 = DynamicReconfigure("disableLocalCostmap","move_base/local_costmap/obstacle_layer",{
-        "enabled":False
+    disable_costmap_2 = DynamicReconfigure("disableLocalCostmap","/move_base/TebLocalPlannerROS",{
+        "min_obstacle_dist":0.05,
+        "inflation_dist":0.10
     })
 
     clear_costmaps = CallService("clearCostmaps","move_base/clear_costmaps",
@@ -675,16 +678,17 @@ def create_move_in_front_of_current_spray_pose(spray_poses_src,distance_from_pos
 
     move_base = create_move_base_to_reach_pose(target_pose_src=bb2target)
 
-    enable_costmap_1 = DynamicReconfigure("enableGlobalCostmap","move_base/global_costmap/inflation_layer",{
-        "inflation_radius":0.22
-    })
+    # enable_costmap_1 = DynamicReconfigure("enableGlobalCostmap","move_base/local_costmap/inflation_layer",{
+    #     "inflation_radius":0.22
+    # })
 
-    enable_costmap_2 = DynamicReconfigure("enableLocalCostmap","move_base/local_costmap/obstacle_layer",{
-        "enabled":True
+    enable_costmap_2 = DynamicReconfigure("enableLocalCostmap","/move_base/TebLocalPlannerROS",{
+        "min_obstacle_dist":0.22,
+        "inflation_dist":0.44
     })
   
     door_open =py_trees.composites.Sequence(name=name,children=[move_target,
-            disable_costmap_1,disable_costmap_2,clear_costmaps,move_base,enable_costmap_1,enable_costmap_2])
+            disable_costmap_2,clear_costmaps,move_base,enable_costmap_2])
     
     door_open.blackbox_level = py_trees.common.BlackBoxLevel.COMPONENT
     door_open.name = "move2SprayPose"
