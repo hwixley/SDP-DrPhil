@@ -1,8 +1,13 @@
-import os
+import os, sys
 from dotenv import load_dotenv
 
-
-env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".env")
+if getattr(sys, 'frozen', False):
+    # If the application is run as a bundle, the PyInstaller bootloader
+    # extends the sys module by a flag frozen=True and sets the app 
+    # path into variable sys.executable
+    env_path = os.path.join(os.path.dirname(sys.executable),".env")
+else:
+    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),".env")
 
 print("Loading .env file from: {}".format(env_path))
 load_dotenv(dotenv_path=env_path)
