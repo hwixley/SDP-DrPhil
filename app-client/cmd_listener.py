@@ -9,10 +9,8 @@ requires proper .env setup as described in the readme.md
 
 https://firestore.googleapis.com/v1/projects/drphil-bdadb/databases/(default)/documents/robots/test1
 """
-from codecs import register
 import requests
 import sys
-from config import RID, ROS_IP, ROS_SSH_PASSWORD, ROS_SSH_USERNAME,ROS_WS_HOST,ROS_WS_PORT
 from data import CleaningTime, ReturnTime, Status
 from time import sleep,time
 import json
@@ -21,6 +19,9 @@ import os
 from copy import deepcopy
 from sshtunnel import SSHTunnelForwarder
 import argparse
+# setup config variables
+from config import setup
+ROS_WS_PORT,ROS_WS_HOST,RID,ROS_IP,ROS_SSH_USERNAME,ROS_SSH_PASSWORD = setup()
 
 
 class CmdListener():
@@ -65,6 +66,9 @@ class CmdListener():
         self.last_status = None
 
         self.ros.run()
+
+    def shutdown(self):
+        self.close()        
 
     def status_callback(self,status : dict,response : dict):
 
@@ -257,7 +261,7 @@ class CmdListener():
 
         if not self.ros.is_connected:
             print("ros disconnected, exitting")
-            self.ros.terminate()
+            self.ros.close()
             sys.exit(1)
 
         self.update_schedule()
@@ -270,6 +274,10 @@ class CmdListener():
         self.talker.publish(self.to_rosmsg(self.schedule))
 
 if __name__ == "__main__":
+
+
+
+
     server = SSHTunnelForwarder(
         ROS_IP,
         ssh_username=ROS_SSH_USERNAME,
@@ -294,6 +302,5 @@ if __name__ == "__main__":
         while(True):
             listener.spin()
     except Exception as E:
-        import traceback 
-        print(traceback.format_exc())
+        listener.shutdown()
         sys.exit(1)
