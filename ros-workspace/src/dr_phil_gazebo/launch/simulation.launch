@@ -35,6 +35,7 @@
   <include file="$(find dr_phil_description)/launch/includes/description.launch.xml">
     <arg name="use_gpu_ray" value="$(arg use_gpu_ray)" />
   </include>
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model dr-phil -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description " />
 
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
     <param name="publish_frequency" type="double" value="50.0" />
@@ -44,8 +45,7 @@
   <node name="px100_control_merger" pkg="dr_phil_gazebo" type="px100_joint_controller_merger.py" respawn="false" />
   <node name="battery_level" pkg="dr_phil_gazebo" type="battery_level.py" respawn="false" />
   <node name="spray_controller" pkg="dr_phil_gazebo" type="spray_controller" respawn="true" />
-  <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model dr-phil -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description " />
-  <node name="coverage_pc_generator" pkg="dr_phil_gazebo" type="coverage_pc_generator" respawn="true" />
+  <!-- <node name="coverage_pc_generator" pkg="dr_phil_gazebo" type="coverage_pc_generator" respawn="true" /> -->
 
   <!-- spawn arm controllers -->
 

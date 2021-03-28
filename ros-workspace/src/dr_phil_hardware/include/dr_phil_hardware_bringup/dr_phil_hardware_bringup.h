@@ -47,6 +47,7 @@ class Turtlebot3ManipulationBringup
   // ROS Subscriber
   ros::Subscriber display_planned_path_sub_;
   ros::Subscriber gripper_pos_sub_;
+  ros::Subscriber arm_body_pos_sub_;
 
   // current state
   std_msgs::Float64MultiArray curr_state;
@@ -57,6 +58,7 @@ class Turtlebot3ManipulationBringup
 
   // Callback Funcdtions
   void armActionCallback(const control_msgs::FollowJointTrajectoryGoalConstPtr &msg);
+  void armBodyCallback(const std_msgs::Float64MultiArray &msg);
   void gripperPosCallback(const std_msgs::Float64 &msg);
 
   // utility
