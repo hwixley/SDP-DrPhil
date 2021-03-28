@@ -115,13 +115,13 @@ class RunRos(py_trees.behaviour.Behaviour):
             # if process died when not expected
             elif ok == 2 or (ok == 1 and not self.success_on_non_error_exit):
 
-                self.logger.error("stderr dump: "+self.get_last_n_lines(self.stderr_queue,50))
-                self.logger.error("stdout dump: "+self.get_last_n_lines(self.stdout_queue,50))
+                # self.logger.error("stderr dump: "+self.get_last_n_lines(self.stderr_queue,50))
+                # self.logger.error("stdout dump: "+self.get_last_n_lines(self.stdout_queue,50))
                 return py_trees.Status.FAILURE
 
             # if process died but we expected it
             else:
-                self.logger.debug("process ended stdout dump: "+self.get_last_n_lines(self.stdout_queue,50))
+                # self.logger.debug("process ended stdout dump: "+self.get_last_n_lines(self.stdout_queue,50))
                 self.last_success = True
                 return py_trees.Status.SUCCESS
 
@@ -164,6 +164,7 @@ class RunRos(py_trees.behaviour.Behaviour):
             except Exception as e:
                 print("COULD NOT KILL, {0}".format(self.process))
                 raise e
+
                 
 
         self.blackboard.set(self.alive_key,None)
@@ -193,8 +194,8 @@ class RunRos(py_trees.behaviour.Behaviour):
         # log.truncate(0)
 
         launch_process = subprocess.Popen(command, 
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
                 shell=True,
                 preexec_fn=os.setsid,
                 close_fds=ON_POSIX,
@@ -206,11 +207,11 @@ class RunRos(py_trees.behaviour.Behaviour):
         # want to have a nonblocking way of reading output, start a separate thread for each output channel
         # read continously and store in non blocking to read structure shared with main program
 
-        self.stdout_queue = LifoQueue()
-        self.stderr_queue = LifoQueue()
+        # self.stdout_queue = LifoQueue()
+        # self.stderr_queue = LifoQueue()
 
-        self.launch_log_thread(launch_process.stdout,self.stdout_queue)
-        self.launch_log_thread(launch_process.stderr,self.stderr_queue)
+        # self.launch_log_thread(launch_process.stdout,self.stdout_queue)
+        # self.launch_log_thread(launch_process.stderr,self.stderr_queue)
 
         self.process = launch_process
         self.blackboard.set(self.alive_key,True)
@@ -288,9 +289,9 @@ class PublishTopic(py_trees.behaviour.Behaviour):
         self.publisher = rospy.Publisher(topic,msg_type,queue_size=queue_size)
         self.success_on_publish = success_on_publish    
         self.n_target = -1 if success_after_n_publishes is None else success_after_n_publishes
-
+        self.curr_n = 0
     def initialise(self):
-        pass
+        self.curr_n = 0
 
     def update(self):
         self.feedback_message = "Waiting for data"
@@ -302,9 +303,11 @@ class PublishTopic(py_trees.behaviour.Behaviour):
             self.feedback_message = "Publisher failure: {}".format(E)
             return py_trees.common.Status.FAILURE
 
-        if self.success_on_publish or self.n_target >= 0:
-            self.n_target -= 1
-            if self.n_target > 0:
+        if self.success_on_publish:
+            return py_trees.common.Status.SUCCESS
+        elif self.curr_n < self.n_target:
+            self.curr_n += 1
+            if self.curr_n < self.n_target:
                 return py_trees.common.Status.RUNNING
             else:
                 return py_trees.common.Status.SUCCESS
@@ -458,6 +461,7 @@ class ActionClientConnectOnInit(py_trees_ros.actions.ActionClient):
         # take goal from blackboard possibly
         self.action_goal = self.action_maybe_callable() if callable(self.action_maybe_callable) else self.action_maybe_callable
         
+        self.feedback_message = str(self.action_goal)
         self.action_client = None
         self.connected = False
         self.time_start = rospy.get_time()

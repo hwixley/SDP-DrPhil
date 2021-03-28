@@ -24,6 +24,7 @@ def quat_to_vec(quat : list):
     Returns:
         [type]: [description]
     """
+    assert(len(quat) == 4)
 
     (a,b,c) = t.euler_from_quaternion(quat)
     mat = t.euler_matrix(a,b,c)

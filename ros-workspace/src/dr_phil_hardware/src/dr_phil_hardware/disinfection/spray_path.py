@@ -19,9 +19,9 @@ DISTANCE_FROM_HANDLE = 100 #100  # (mm)
 HANDLE_DIMENSIONS = [19, 130, 37]  # width, height, depth (mm)
 SPRAY_ANGLE = 30  # (degrees)
 SPRAY_RADIUS = DISTANCE_FROM_HANDLE * math.tan(math.radians(SPRAY_ANGLE))  # (mm)
-CIRCLE_EDGE = math.sqrt(2 * SPRAY_RADIUS * SPRAY_RADIUS) / 2  # (mm)
+MULTIPLIER_Z = 0.8 # factor to multiply z coordinates by
+CIRCLE_EDGE = (math.sqrt(2 * SPRAY_RADIUS * SPRAY_RADIUS) / 2) * MULTIPLIER_Z  # (mm)
 SPRAY_CONFIDENCE = CIRCLE_EDGE *1.5  # (mm)
-        
     
 class Coord:
     def __init__(self, x, y, z):
@@ -91,7 +91,7 @@ def transform_points(points, handle_center, vector):
 def calc_z_spray_centroids(center_z):
     top = (center_z + HANDLE_DIMENSIONS[1]/2) + SPRAY_CONFIDENCE
     bottom = (center_z - HANDLE_DIMENSIONS[1]/2) - SPRAY_CONFIDENCE
-    num_sprays = int(math.ceil(HANDLE_DIMENSIONS[1]/(2*CIRCLE_EDGE))) + int(SPRAY_CONFIDENCE/CIRCLE_EDGE) * 2
+    num_sprays = int(math.ceil(HANDLE_DIMENSIONS[1]/(2*CIRCLE_EDGE))) + (int(SPRAY_CONFIDENCE/CIRCLE_EDGE) * 2)
 
     spray_centroids = np.zeros(num_sprays)
     index = 0
@@ -253,4 +253,4 @@ if __name__ == '__main__':
     center = Coord(0.0, 0.0, 0.0)
     direction = Coord(1.0, 0.0, 0.0)
 
-    calculate_spray_path(center, direction)
+    print(calculate_spray_path(center, direction))

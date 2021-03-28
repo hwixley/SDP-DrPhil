@@ -124,17 +124,25 @@ class CheckIsOnSchedule(py_trees.Behaviour):
         cleaning_time_off_seconds = cleaning_time.hour_off * 60 * 60 + cleaning_time.minute_off * 60
         return time_now_seconds >= cleaning_time_on_seconds and time_now_seconds < cleaning_time_off_seconds
 
+    def initialise(self):
+        self.feedback_message = ""
+        return super().initialise()
     def update(self):
+        self.feedback_message="looking for schedule.."
         schedule : CleaningSchedule= py_trees.Blackboard().get(self.schedule_src)
         now = datetime.datetime.now()
         is_weekend = now.weekday() >= 5
 
         if schedule is None:
+            self.feedback_message = "No schedule found"
             return Status.FAILURE
         
         on_schedule_weekday = not is_weekend and self.in_cleaning_interval(now,schedule.weekdays)
         on_schedule_weekend = is_weekend and self.in_cleaning_interval(now,schedule.weekends)
+        
     
+        start_time = schedule.weekends.hour_on if is_weekend else schedule.weekdays.hour_on
+        self.feedback_message = "weekend?:{} , start hour:{}".format(is_weekend, start_time)
         if on_schedule_weekend or on_schedule_weekday:
             return Status.SUCCESS
         else:

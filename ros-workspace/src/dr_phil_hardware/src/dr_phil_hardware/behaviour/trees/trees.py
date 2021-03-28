@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from dr_phil_hardware.vision.utils import quat_from_yaw
 from py_trees.blackboard import Blackboard, SetBlackboardVariable
 from dr_phil_hardware.arm_interface.command_arm import  MoveGroup
 import py_trees
@@ -9,7 +10,7 @@ from dr_phil_hardware.behaviour.decorators import HoldStateForDuration
 import operator
 from geometry_msgs.msg import Twist, PoseArray, Pose, PoseStamped,PoseWithCovarianceStamped
 import os
-from std_msgs.msg import Float64MultiArray
+from std_msgs.msg import Float64MultiArray,Float64
 from py_trees.common import BlackBoxLevel, Status
 import rospy 
 from move_base_msgs.msg import MoveBaseAction,MoveBaseGoal
@@ -26,7 +27,7 @@ from enum import IntEnum
 ROBOT_STATE_TARGET = "robot/state"
 APP_RESET_RETURN_TOPIC = "app/reset_return"
 SPRAY_COMMAND_TOPIC = "/spray_controller/command"
-ARM_TRAVELING_STATE = [0,0,-1.57,1.57,-1.57,0]
+ARM_TRAVELING_STATE = [0,0,-1.57,1.57,-1.57,1.57]
 
 
 class DrPhilStatus(IntEnum):
@@ -35,6 +36,9 @@ class DrPhilStatus(IntEnum):
     RETURNING_TO_BASE = 2,
     STUCK = 3,
     EXECUTING_HALT_PROCEDURE = 4,
+
+
+
 
 def create_update_app_state(battery_src,name="updateAppState"):
     """Updates robot state from the given sources, communicates with app
@@ -106,13 +110,16 @@ def create_return_base(pose_src,name="returnHome"):
 
     set_return_home = create_set_robot_status(DrPhilStatus.RETURNING_TO_BASE)
 
+    
     home = PoseStamped()
     home.header.stamp = rospy.Time.now()
     home.header.frame_id = "map"
     home.pose = Pose()
     home.pose.position.x = HOME[0]
     home.pose.position.y = HOME[1]
-    home.pose.orientation.w = 1
+    home.pose.orientation.x,home.pose.orientation.y,home.pose.orientation.z,home.pose.orientation.w = quat_from_yaw(0)
+    m = MoveBaseGoal()
+    m.target_pose = home 
 
     sequence = py_trees.composites.Sequence()
     set_goal = SetBlackboardVariable("setHomeGoal",variable_name=TARGET_POSE_SRC,variable_value=home)
@@ -199,17 +206,36 @@ def create_set_positions_arm(parameters,name="positionArm"):
     positions = Float64MultiArray()
     positions.data = parameters 
 
+
     position_arm = PublishTopic(
         name=name,
         msg=positions,
         msg_type=Float64MultiArray,
-        topic="/joint_trajectory_point",
-        success_on_publish=True,
+        topic="/arm_body_position",
+        success_after_n_publishes=2,
         queue_size=10
     )
     
 
     return position_arm
+
+def create_set_gripper_position(value,name="setGripper"):
+    low_lim = -1
+    upper_lim = 1.57
+    clean = min(upper_lim,max(low_lim,value))
+
+    position = Float64()
+    position.data = clean
+    position_gripper = PublishTopic(
+        name=name,
+        msg=clean,
+        msg_type=Float64,
+        topic="/gripper_position",
+        success_after_n_publishes=2,
+        queue_size=10
+    )
+    
+    return position_gripper
 
 def create_explore_frontier_and_save_map(map_path=None,timeout=120,no_data_timeout=20):
     """ creates subtree which executes frontier exploration, generates a map and saves it to the given map_name 
@@ -276,7 +302,155 @@ def create_explore_frontier_and_save_map(map_path=None,timeout=120,no_data_timeo
 
 
 
+def create_open_door(handle_pose_src,map_path,pose_frame="map",name="openDoorSequence"):
     
+    
+    parallel = py_trees.composites.Parallel("disinfectDoors",policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
+
+    load_map = create_load_map(map_path=map_path + ".yaml")
+
+    start_disinfection_nodes = RunRos(name="runDisinfectionNodes",
+        blackboard_alive_key="/disinfect/alive",
+        blackboard_kill_trigger_key="/kill",
+        launch_file="disinfect_task.launch",
+        package="dr_phil_hardware"
+    )
+    start_disinfection_nodes.blackbox_level = BlackBoxLevel.DETAIL
+
+    
+    open_door_sequence = py_trees.composites.Sequence(name)
+
+    parallel.add_children([load_map,start_disinfection_nodes,open_door_sequence])
+
+    bb2bufferPath = "/door_open/path"
+    bb2bufferPose = "/door_open/pose"
+
+    def snapshot_targets(snapshot=False):
+            handle : PoseStamped = py_trees.Blackboard().get(handle_pose_src)
+
+            if handle is not None:
+                # save
+                if snapshot:
+                    import numbers
+                    pa = PoseArray()
+                    pa.header.frame_id = handle.header.frame_id
+                    pa.header.stamp = handle.header.stamp
+                    copyh = copy.deepcopy(handle.pose)
+                    copyh = rotate_pose_by_yaw(math.pi - math.radians(0),copyh)
+
+                    orientation = [copyh.orientation.x,copyh.orientation.y,copyh.orientation.z,copyh.orientation.w]
+                    vec = 0.01 * quat_to_vec(orientation)
+                   
+                    copyh.position.x += float(vec[0])
+                    copyh.position.y += float(vec[1])
+                    pa.poses  = [copyh]
+
+
+                    py_trees.Blackboard().set(bb2bufferPath,pa)
+                    py_trees.Blackboard().set(bb2bufferPose,copy.deepcopy(handle))
+                return py_trees.Status.SUCCESS
+            else:
+                return py_trees.Status.RUNNING
+    
+    wait = py_trees.timers.Timer(name="wait",duration=2)
+
+    # TEMPORARY \
+    from move_base_msgs.msg import MoveBaseGoal
+    m = MoveBaseGoal()
+    ps = PoseStamped()
+    ps.header.frame_id = "map"
+    ps.header.stamp = rospy.Time.now()
+    ps.pose.position.x,ps.pose.position.y,ps.pose.position.z = 0.87,0.87 - 1.5,0.24
+    ps.pose.orientation.x,ps.pose.orientation.y,ps.pose.orientation.z,ps.pose.orientation.w = quat_from_yaw(-math.pi/2 * 3)
+    
+    m.target_pose = ps 
+
+    set_goal=py_trees.blackboard.SetBlackboardVariable(variable_name="/temp/pose",variable_value=m)
+    temp_move = create_move_base_to_reach_pose(
+        target_pose_src="/temp/pose")
+
+
+    temp_move_to_handle = py_trees.Sequence()
+    temp_move_to_handle.add_children([set_goal,temp_move])
+    # TEMPORARY /
+
+
+    await_targets = Lambda("awaitTargets",snapshot_targets)
+    
+    wait_2 = py_trees.timers.Timer(name="wait",duration=2)
+
+    # note we use the pose directly from the blackboard sent in not the buffer
+    # since we didnt snapshot yet
+    move_to_door = create_move_in_front_of_door(handle_pose_src,1)
+
+    wait_3 = py_trees.timers.Timer(name="wait",duration=2)
+
+    snapshot_target = Lambda("snapshotTargets",lambda:snapshot_targets(snapshot=True))
+
+
+    reset_arm = create_set_positions_arm(ARM_TRAVELING_STATE)
+    open_gripper = create_set_gripper_position(1.57)
+
+    plan_to_handle = create_execute_spray_trajectory(bb2bufferPath,pose_frame,0,0.195,move_only=True)
+
+
+    grip_sequence = py_trees.Sequence()
+
+    close_gripper1 = create_set_gripper_position(1.2)
+    close_gripper2 = create_set_gripper_position(0.4)
+    close_gripper3 = create_set_gripper_position(0)
+    close_gripper4 = create_set_gripper_position(-0.2)
+    close_gripper5 = create_set_gripper_position(-0.4)
+    close_gripper6 = create_set_gripper_position(-0.6)
+    close_gripper7 = create_set_gripper_position(-0.78) 
+
+    grip_sequence.add_children([close_gripper1,close_gripper2,close_gripper3,
+    close_gripper4,close_gripper5,close_gripper6,close_gripper7 ])
+    pull = Twist()
+    pull.linear.x = -0.09 * 0.15 * 2.2
+    pull.angular.z = 0.015 * 2 * 2.2
+
+    initiate_pull = PublishTopic("initiatePull",pull,Twist,"/cmd_vel",queue_size=1,success_after_n_publishes=2)
+
+    wait_4 = py_trees.timers.Timer(duration=25)
+
+    stop_pull = PublishTopic("initiatePull",Twist(),Twist,"/cmd_vel",queue_size=1,success_after_n_publishes=2)
+
+    
+    bb2bufferPosenew = "/door_open/forward"
+    def get_new_goal():
+        pose : PoseStamped = Blackboard().get(bb2bufferPath)
+
+        pose.header = rospy.Time.now()
+
+        pose.pose = rotate_pose_by_yaw(math.pi,pose.pose)
+        new_quat = [pose.pose.orientation.x,pose.pose.orientation.y,pose.pose.orientation.z,pose.pose.orientation.w]
+        vec = quat_to_vec(new_quat) * 5
+        pose.pose.position.x += vec[0]
+        pose.pose.position.y += vec[1]
+
+
+        mg = MoveBaseGoal()
+        mg.target_pose = pose
+
+        Blackboard().set(bb2bufferPosenew,mg)
+
+        return Status.SUCCESS
+
+
+    open_grip = create_set_gripper_position(1.5)
+    swing_arm_left = create_set_positions_arm([0,1.57,0,0,0,0])
+
+    get_new_goal_ = Lambda("setNewGoal",lambda:get_new_goal)
+
+    move_new_goal = create_move_base_to_reach_pose(bb2bufferPosenew)
+
+    open_door_sequence.add_children([wait,temp_move_to_handle,await_targets,wait_2,move_to_door,
+    wait_3,snapshot_target,reset_arm,open_gripper,plan_to_handle,grip_sequence,initiate_pull,
+    wait_4,stop_pull,open_grip,swing_arm_left,get_new_goal_,move_new_goal])
+    
+    return parallel
+
 def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,pose_frame="map",map_path=None,distance_from_door=0.1,spray_time=0.1,name="disinfectDoors"):
     """[summary]
 
@@ -311,9 +485,29 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,pose_frame="map
     sequence.blackbox_level = BlackBoxLevel.BIG_PICTURE
 
 
+    # # TEMPORARY \
+    # from move_base_msgs.msg import MoveBaseGoal
+    # m = MoveBaseGoal()
+    # ps = PoseStamped()
+    # ps.header.frame_id = "map"
+    # ps.header.stamp = rospy.Time.now()
+    # ps.pose.position.x,ps.pose.position.y,ps.pose.position.z = 0.87,0.87 - 1.5,0.24
+    # ps.pose.orientation.x,ps.pose.orientation.y,ps.pose.orientation.z,ps.pose.orientation.w = quat_from_yaw(-math.pi/2 * 3)
+    
+    # m.target_pose = ps 
+
+    # set_goal=py_trees.blackboard.SetBlackboardVariable(variable_name="/temp/pose",variable_value=m)
+    # temp_move = create_move_base_to_reach_pose(
+    #     target_pose_src="/temp/pose")
+
+
+    # temp_move_to_handle = py_trees.Sequence()
+    # temp_move_to_handle.add_children([set_goal,temp_move])
+    # # TEMPORARY /
+
     set_disinfect = create_set_robot_status(DrPhilStatus.CLEANING)
 
-    reset_arm = create_set_positions_arm([0,0,-1.5,1.5,-1.5,0],name="resetArm")
+    reset_arm = create_set_positions_arm(ARM_TRAVELING_STATE,name="resetArm")
 
     localize = create_localize_robot()
     localize.blackbox_level = BlackBoxLevel.COMPONENT
@@ -488,7 +682,12 @@ def create_face_closest_obstacle(min_distance = 0.5,face_angle=0):
 
 
 def create_move_base_to_reach_pose(target_pose_src,name="reachTargetPos"):
-    """ reaches first target in the given pose array on the blackboard """
+    """Reaches given move base goal 
+
+    Args:
+        target_pose_src ([type]): [description]
+        name (str, optional): [description]. Defaults to "reachTargetPos".
+    """
 
 
     def get_goal():
@@ -499,7 +698,6 @@ def create_move_base_to_reach_pose(target_pose_src,name="reachTargetPos"):
         if goal is None:
             return PoseStamped()
         else:
-            print(goal.target_pose)
             return goal.target_pose
 
     sequence = py_trees.composites.Sequence(name="reachTargetPosSequence")
@@ -545,7 +743,7 @@ def create_try_various_arm_plans(pose_frame):
     plan.add_children([create_p2p_plan_lenient])
     return plan
 
-def create_execute_spray_trajectory(target_pose_src,planning_frame,spray_time,distance_from_pose=0.1):
+def create_execute_spray_trajectory(target_pose_src,planning_frame,spray_time,distance_from_pose=0.1,move_only=False):
 
     spray = py_trees.Sequence("executeSprayTrajectory")
 
@@ -569,6 +767,9 @@ def create_execute_spray_trajectory(target_pose_src,planning_frame,spray_time,di
     check_not_completed = Lambda("checkNotCompleted",check)
 
     reset_arm = create_set_positions_arm(ARM_TRAVELING_STATE,name="resetArm")
+    if move_only:
+        reset_arm = py_trees.behaviours.Success()
+
     move_in_front = create_move_in_front_of_current_spray_pose(CreateMoveitTrajectoryPlan.WAYPOINT_SOURCE,distance_from_pose)
     move_in_front = py_trees.decorators.FailureIsSuccess(move_in_front)
 
@@ -598,7 +799,10 @@ def create_execute_spray_trajectory(target_pose_src,planning_frame,spray_time,di
 
     execute_plan = ExecuteMoveItPlan("eeToNextPoint",MoveGroup.ARM,success_on_no_plan=True)
 
+    
     spray_duration = create_spray_for_duration(duration=spray_time)
+    if move_only:
+        spray_duration = py_trees.behaviours.Success()
 
     remove_pose = Lambda("popPose",remove)
 
@@ -628,7 +832,14 @@ def create_spray_for_duration(duration=0.1,name="sprayDuration"):
     return spray_sequence
 
 def create_move_in_front_of_current_spray_pose(spray_poses_src,distance_from_pose=0.1,name="moveToSprayPose"):
-    def process_pose():
+    """Moves in front of current pose at the given distance or the distance necessary to reach the pose with the end effector (further if target is closer to the height of hte base of the arm)
+
+    Args:
+        spray_poses_src ([type]): [description]
+        distance_from_pose (float, optional): [description]. Defaults to 0.1.
+        name (str, optional): [description]. Defaults to "moveToSprayPose".
+    """
+    def process_pose(distance_from_pose):
         poses : PoseArray = py_trees.Blackboard().get(spray_poses_src)
         
         if poses is None or len(poses.poses) == 0:
@@ -638,7 +849,13 @@ def create_move_in_front_of_current_spray_pose(spray_poses_src,distance_from_pos
         handle_quat = [pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w]
 
         from random import random
-        vec = quat_to_vec(handle_quat) * (-distance_from_pose + (random()*0.05))
+
+        # simple fix for reachability of poses right at height of base of the arm
+        distance_from_arm_base = abs(pose.position.z - 0.25)
+        if distance_from_arm_base <= 0.07:
+            distance_from_pose += 0.04
+        
+        vec = quat_to_vec(handle_quat) * -distance_from_pose
 
         new_pose = Pose()
         new_pose.position.x = vec[0] + pose.position.x
@@ -659,7 +876,7 @@ def create_move_in_front_of_current_spray_pose(spray_poses_src,distance_from_pos
 
     move_target = SetBlackboardVariableCustom(
         variable_name=bb2target,
-        variable_value=process_pose,
+        variable_value=lambda : process_pose(distance_from_pose),
         name="moveTarget2BB")
 
     # disable_costmap_1 = DynamicReconfigure("disableGlobalCostmap","move_base/local_costmap/inflation_layer",{
