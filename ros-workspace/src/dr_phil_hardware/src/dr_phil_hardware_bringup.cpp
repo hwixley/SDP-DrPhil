@@ -32,6 +32,7 @@ Turtlebot3ManipulationBringup::Turtlebot3ManipulationBringup()
 
   // Init subscriber
   gripper_pos_sub_ = nh_.subscribe("gripper_position",100,&Turtlebot3ManipulationBringup::gripperPosCallback,this);
+  arm_body_pos_sub_ = nh_.subscribe("arm_body_position",100,&Turtlebot3ManipulationBringup::armBodyCallback,this);
 
   curr_state = std_msgs::Float64MultiArray();
   curr_state.data.resize(6);
@@ -44,20 +45,24 @@ Turtlebot3ManipulationBringup::Turtlebot3ManipulationBringup()
 
 Turtlebot3ManipulationBringup::~Turtlebot3ManipulationBringup() {}
 
+void Turtlebot3ManipulationBringup::armBodyCallback(const std_msgs::Float64MultiArray &msg){
+  for (int i =0; i < 5; i ++){
+    curr_state.data[i] = msg.data[i];
+  }
+  curr_state.data[5] = gripper_state.data;
+  publishPoint(curr_state);
+}
+
+
 void Turtlebot3ManipulationBringup::publishPoint(const std_msgs::Float64MultiArray msg){
   curr_state = msg;
   joint_trajectory_point_pub_.publish(msg);
 }
 
 void Turtlebot3ManipulationBringup::gripperPosCallback(const std_msgs::Float64 &msg){
-  ROS_ERROR("%s",msg);
   gripper_state = msg;
-  ROS_ERROR("%f",msg.data);
   curr_state.data[5] = msg.data;
-  ROS_ERROR("%f",msg.data);
   publishPoint(curr_state);
-
-
 }
 
 void Turtlebot3ManipulationBringup::armActionCallback(const control_msgs::FollowJointTrajectoryGoalConstPtr &goal)
