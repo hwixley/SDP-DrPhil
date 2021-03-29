@@ -105,10 +105,10 @@ class MapExplorer:
             self.plan = TSP.RoutePlanner([self.robot_pose.position.x, self.robot_pose.position.y], self.grid.unexplored_regions)
 
             self.cells_to_visit = [cell_num for cell_num,cell in  self.grid.unexplored_regions.items() if cell.is_free_space==True]
-            print(self.plan.calculateTourCost(self.plan.tourIndex))
-            # self.cells_to_visit = self.grid.unexplored_regions
-            self.cells_to_visit = self.plan.generateRoute()
-            print(self.plan.calculateTourCost(self.plan.tourIndex))
+            # print(self.plan.calculateTourCost(self.plan.tourIndex))
+            # # self.cells_to_visit = self.grid.unexplored_regions
+            # self.cells_to_visit = self.plan.generateRoute()
+            # print(self.plan.calculateTourCost(self.plan.tourIndex))
             self.initialise_map_once = False
             self.grid.mark_all_available_cells(self.pub_cell_visualization_marker)
     
@@ -199,16 +199,16 @@ class MapExplorer:
                 
                 #Greedy approach
                 current_position = [self.robot_pose.position.x,self.robot_pose.position.y]
-                self.plan.nearest_cell(self.grid,self.cells_to_visit,current_position)
-                # self.cells_to_visit.remove(next_cell)
+                next_cell = self.plan.nearest_cell(self.grid,self.cells_to_visit,current_position)
+                self.cells_to_visit.remove(next_cell)
 
                 print(self.cells_to_visit)
-                next_cell = self.cells_to_visit.pop(0)
+                # next_cell = self.cells_to_visit.pop(0)
 
                 self.twooptdistance += self.plan.euclidean(current_position,self.grid.unexplored_regions[next_cell].center)
                 
 
-                self.area_explored+=self.grid.cell_size*self.grid.resolution
+                self.area_explored+=self.grid.cell_size*(self.grid.resolution*self.grid.resolution)
                 goal_coordinates = self.grid.unexplored_regions[next_cell].update_and_return_central_point()
                 #Set goal
                 goal = MoveBaseGoal()

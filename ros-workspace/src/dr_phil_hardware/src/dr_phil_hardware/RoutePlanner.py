@@ -1,9 +1,12 @@
 import numpy as np
 import math
+from typing import Dict,List
+
+
 
 #The class tackles the Traveling Salesmen Problem using TwoOpt for finding the estimated, best journey given a list of points and a starting point.
 class RoutePlanner: 
-    def __init__(self, start_point, grid_cells):
+    def __init__(self, start_point : List[float], grid_cells : Dict):
 
         STARTING_INDEX = -1
         #Stores the distances from one point to another
@@ -167,11 +170,6 @@ class RoutePlanner:
         
         
         return newRoute, newOrderedCells;
-
-
-
-
-
 
     def gettourIndex(self) :
         return self.tourIndex;
