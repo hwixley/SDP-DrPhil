@@ -45,7 +45,7 @@ class HandleLocator:
         if result:
             rospy.loginfo("Goal execution done!")
             explore.rotate360()
-            print
+            
             if self.door_pose is not None:
                 find_doors_nearby()
 

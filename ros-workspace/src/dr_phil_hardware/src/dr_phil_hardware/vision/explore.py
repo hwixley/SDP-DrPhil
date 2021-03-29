@@ -2,7 +2,8 @@
 import rospy
 from geometry_msgs.msg import Twist, PoseStamped, Pose, PoseWithCovarianceStamped
 import numpy as np
-from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal, MoveBaseActionFeedback
+# impirt SimpleGoalState
 import actionlib
 from nav_msgs.srv import GetPlan
 import random
@@ -26,7 +27,7 @@ def is_location_available(startPose: Pose, moveBaseGoal: MoveBaseGoal):
     req = GetPlan()
     req.start = start
     req.goal = goal
-    req.tolerance = 0.1
+    req.tolerance = 0
     resp = get_plan(req.start, req.goal, req.tolerance)
     #return resp
     if resp:
@@ -97,8 +98,33 @@ def get_test_goal(robot_pose:PoseWithCovarianceStamped):
 def move_to_goal(goal : MoveBaseGoal):
     client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
     client.wait_for_server()
+
     # Sends the goal to the action server.
     client.send_goal(goal)
+
+#     #  with self.done_condition:
+# # 00134             while not rospy.is_shutdown():
+# # 00135                 time_left = timeout_time - rospy.get_rostime()
+# # 00136                 if timeout > rospy.Duration(0.0) and time_left <= rospy.Duration(0.0):
+# # 00137                     break
+# # 00138 
+# # 00139                 if self.simple_state == SimpleGoalState.DONE:
+# # 00140                     break
+# # 00141 
+# # 00142                 if time_left > loop_period or timeout == rospy.Duration():
+# # 00143                     time_left = loop_period
+# # 00144 
+# # 00145                 self.done_condition.wait(time_left.to_sec())
+# # 00146 
+# # 00147         return self.simple_state == SimpleGoalState.DONE
+
+#     while client.get_state() != SimpleGoalState.DONE and not rospy.is_shutdown():
+#         feedback = rospy.Subscriber('move_base/feedback', MoveBaseActionFeedback, )
+#         if (is_location_available(robot,goal))
+#     
+# 
+# 
+
     # Waits for the server to finish performing the action.
     wait = client.wait_for_result()
     # If the result doesn't arrive, assume the Server is not available

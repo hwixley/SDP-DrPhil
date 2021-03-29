@@ -12,11 +12,16 @@ import math
 import numpy as np
 
 import dr_phil_hardware.vision.explore as explore
+import dr_phil_hardware.grid_map as grid_map
+
+from move_base_msgs.msg import  MoveBaseGoal
+import dr_phil_hardware.RoutePlanner as TSP
 
 
 from sklearn.cluster import AgglomerativeClustering
 #TODO:rospy.service.ServiceException: service [/move_base/make_plan] responded with an error: b''
-#Happens when recovery behaviour happens
+#Happens when recovery behaviour or moving-  [1616849172.299558158, 905.107000000]: move_base must be in an inactive state to make a plan for an external user
+
 #TODO: Segmentation fault: Order of opening nodes matters (happens when map_explorer is called before target_generator)
 #TODO: Stopping motors - cant shutdown properly
 
@@ -28,10 +33,10 @@ from sklearn.cluster import AgglomerativeClustering
 class MapExplorer:
 
     #defines the maximum distance of what defines an explored region (square shaped)
-    REGION_EXPLORED_THRESHOLD = 2
-    STOPPING_THRESHOLD = 0.60
+    REGION_EXPLORED_THRESHOLD = 0.4
+    STOPPING_THRESHOLD = 0.70
 
-    DOOR_WIDTH_THRESH= 1.5
+    DOOR_WIDTH_THRESH= 1.3
 
     def __init__(self):
         self.global_costmap = None
@@ -39,6 +44,9 @@ class MapExplorer:
         self.robot_pose = Pose() # robot pose in map frame
         #TODO: might need to turn this to posearray
         self.spotted_door = None
+        self.initialise_map_once = True
+
+        self.pub_cell_visualization_marker = rospy.Publisher('/marked_cells', MarkerArray, queue_size=400)
 
         self.global_costmap_sub = rospy.Subscriber("/move_base/global_costmap/costmap", OccupancyGrid, callback=self.global_costmap_callback)
         self.amcl_pose_sub = rospy.Subscriber ('/amcl_pose', PoseWithCovarianceStamped, callback=self.robot_pose_callback)
@@ -56,12 +64,20 @@ class MapExplorer:
         self.area_explored= 0
         self.total_area = 0
         self.map_resolution = 0
-        self.get_map_area_and_resolution()
+        # self.get_map_area_and_resolution()
 
         self.number_of_movements = 0
+        self.grid = None
+        self.cells_to_visit = None
+        self.plan= None
 
         self.pub_visualization_marker = rospy.Publisher('/explored_regions', MarkerArray, queue_size=100)
+
         self.pub_door_visualization_marker = rospy.Publisher('/door/markers', MarkerArray, queue_size=100)
+        self.pub_final_door_visualization_marker = rospy.Publisher('/door/final_markers', MarkerArray, queue_size=10)
+
+        self.twooptdistance=0
+
 
 
 
@@ -83,53 +99,155 @@ class MapExplorer:
         #print(yaw)
 
     def global_costmap_callback(self, global_costmap : OccupancyGrid):
-        self.global_costmap = global_costmap
+        if self.initialise_map_once and self.robot_pose is not None and global_costmap is not None:
+            self.global_costmap = global_costmap
+            self.grid = grid_map.Grid(global_costmap)
+            self.plan = TSP.RoutePlanner([self.robot_pose.position.x, self.robot_pose.position.y], self.grid.unexplored_regions)
+
+            self.cells_to_visit = [cell_num for cell_num,cell in  self.grid.unexplored_regions.items() if cell.is_free_space==True]
+            print(self.plan.calculateTourCost(self.plan.tourIndex))
+            # self.cells_to_visit = self.grid.unexplored_regions
+            self.cells_to_visit = self.plan.generateRoute()
+            print(self.plan.calculateTourCost(self.plan.tourIndex))
+            self.initialise_map_once = False
+            self.grid.mark_all_available_cells(self.pub_cell_visualization_marker)
+    
+    def find_mean_across_clusters(self,door_loc, ind):
+        current_cluster = ind[0]
+        current_cluster_first_index = 0 
+        new_door_locations = []
+        print(ind)
+        for i in range(0,len(ind)):
+            if (current_cluster != ind[i]) or i==len(ind)-1:
+                if current_cluster_first_index==len(ind)-1:
+                    current_cluster_first_index -= 1
+                current_doors = door_loc[current_cluster_first_index:i]
+                print("Current Doors")
+                print(current_doors)
+                number_of_current_doors = len(current_doors)
+                print(i)
+                door_average = PoseStamped()
+                sum_x, sum_y, sum_z, sum_orientation_x, sum_orientation_y, sum_orientation_z, sum_orientation_w = 0,0,0, 0,0,0,0
+                for door in current_doors:
+                    sum_x += door.pose.position.x
+                    sum_y += door.pose.position.y
+                    sum_z += door.pose.position.z
+                    q = [door.pose.orientation.x,door.pose.orientation.y,door.pose.orientation.z,door.pose.orientation.w]
+                    euler_angles = tf.transformations.euler_from_quaternion(q)
+
+                    sum_orientation_x += euler_angles[0]
+                    sum_orientation_y += euler_angles[1]
+                    sum_orientation_z += euler_angles[2]
+                    # sum_orientation_w += door.pose.orientation.w
+                door_average.pose.position.x = sum_x / number_of_current_doors
+                door_average.pose.position.y = sum_y / number_of_current_doors
+                door_average.pose.position.z = sum_z / number_of_current_doors
+
+
+                average_roll = sum_orientation_x / number_of_current_doors
+                average_pitch = sum_orientation_y / number_of_current_doors
+                average_yaw = sum_orientation_z / number_of_current_doors
+                average_q = tf.transformations.quaternion_from_euler(average_roll,average_pitch,average_yaw)
+                door_average.pose.orientation.x,door_average.pose.orientation.y,door_average.pose.orientation.z ,door_average.pose.orientation.w = average_q[0], average_q[1], average_q[2], average_q[3]
+
+                print("Avg")
+                print(door_average)
+
+                new_door_locations.append(door_average)
+                cuurent_cluster = ind[i]
+                current_cluster_first_index= i
+            
+        #Update door locations
+        self.door_locations = new_door_locations
 
     def spin(self):
-        if (self.area_explored/self.total_area)>=self.STOPPING_THRESHOLD:
-            print("we explored everything!")
-       
-        else:
-            #Start with generating targets 
-            distance_threshold = 2
-            goal = explore.generate_random_target(distance_threshold)
-            counter = 0
-            while (goal is None  or not explore.is_location_available(self.robot_pose, goal) or self.was_explored(goal)):
-                goal = explore.generate_random_target(distance_threshold)
-                counter+=1
-                #Every 5 iterations, increase the distance threshold. This is done in order to prevent the robot from getting stuck in case it cant find a suitable target.
-                if (counter%5==0):
-                    counter =0 
-                    rospy.loginfo("Increasing the distance threshold")
-                    distance_threshold+=1
-            rospy.loginfo("Recieved random target")
-            #print(mapExplorer.robot_pose)
-            #print(explore.is_location_available(mapExplorer.robot_pose, goal))
-            result = explore.move_to_goal(goal)
-            if result:
-                self.area_explored+=((1/self.map_resolution)*self.REGION_EXPLORED_THRESHOLD)*((1/self.map_resolution)*self.REGION_EXPLORED_THRESHOLD)
-                self.explored_regions.append((goal))
-                rospy.loginfo("Goal execution done!")
-                # self.find_doors_nearby()
-        self.mark_all_explored_regions()
+        self.custom_spin()
+        if self.cells_to_visit is not None:
+            if len(self.cells_to_visit)<1:
+                print("we explored everything!")
+                if self.door_locations is not None:
+                    #print(self.door_locations)
+                    #Only taking into account x,y points to indicate different doors
+                    X = [ np.array([door.pose.position.x,
+                                    door.pose.position.y]) for door in self.door_locations]
 
-    #If we've been near one of the random points generated, return true
-    def was_explored(self, goal):
-        for pixel in self.explored_regions:
-            # pixels = (1/self.map_resolution)*self.REGION_EXPLORED_THRESHOLD
-            # print(pixels)
-            explored_x = pixel.target_pose.pose.position.x 
-            goal_x = goal.target_pose.pose.position.x
+                    print(X)
+                    if (len(self.door_locations) > 1):
 
-            explored_y = pixel.target_pose.pose.position.y
-            goal_y = goal.target_pose.pose.position.y
+                        y_pred = AgglomerativeClustering(linkage='ward',distance_threshold=self.DOOR_WIDTH_THRESH, n_clusters=None).fit_predict(X)
+                        
+                        print(y_pred)
+                        ind = np.argsort(y_pred)
+                        print(ind)
+                        #for i in range(0,len(ind)):
+
+                        self.door_locations = list(np.array(self.door_locations)[ind])
+                        self.find_mean_across_clusters(self.door_locations, np.sort(y_pred))
+                        self.mark_final_doors()
+                    else:
+                        print("No doors found!")
+
+                print("Distance covered" + str(self.plan.actual_distance))
+                print("Two Opt Distance covered" + str(self.twooptdistance))
+
+                total_area_free_space = self.grid.total_area
+                print("Area explored- 0.3m:" + str(self.area_explored/total_area_free_space))
+                rospy.signal_shutdown("Finished exploration")
+        
+            else:
+              
+                
+                #Greedy approach
+                current_position = [self.robot_pose.position.x,self.robot_pose.position.y]
+                self.plan.nearest_cell(self.grid,self.cells_to_visit,current_position)
+                # self.cells_to_visit.remove(next_cell)
+
+                print(self.cells_to_visit)
+                next_cell = self.cells_to_visit.pop(0)
+
+                self.twooptdistance += self.plan.euclidean(current_position,self.grid.unexplored_regions[next_cell].center)
+                
+
+                self.area_explored+=self.grid.cell_size*self.grid.resolution
+                goal_coordinates = self.grid.unexplored_regions[next_cell].update_and_return_central_point()
+                #Set goal
+                goal = MoveBaseGoal()
+                goal.target_pose.header.frame_id = "map"
+                goal.target_pose.header.stamp = rospy.Time.now()
+                goal.target_pose.pose.position.x = goal_coordinates[0]
+                goal.target_pose.pose.position.y = goal_coordinates[1]
+                goal.target_pose.pose.position.z = 0
+                # No rotation of the mobile base frame w.r.t. map frame
+                goal.target_pose.pose.orientation.w = self.robot_pose.orientation.w
+
+                
+
+                result = explore.move_to_goal(goal)
+                if result:
+                    # self.area_explored+=((1/self.map_resolution)*self.REGION_EXPLORED_THRESHOLD)*((1/self.map_resolution)*self.REGION_EXPLORED_THRESHOLD)
+                    self.explored_regions.append((goal))
+                    rospy.loginfo("Goal execution done!")
+                    # self.find_doors_nearby()
+
+
+            self.mark_all_explored_regions()
+
+    # #If we've been near one of the random points generated, return true
+    # def was_explored(self, goal):
+    #     for pixel in self.explored_regions:
+    #         # pixels = (1/self.map_resolution)*self.REGION_EXPLORED_THRESHOLD
+    #         # print(pixels)
+    #         explored_x = pixel.target_pose.pose.position.x 
+    #         goal_x = goal.target_pose.pose.position.x
+
+    #         explored_y = pixel.target_pose.pose.position.y
+    #         goal_y = goal.target_pose.pose.position.y
 
 
 
-
-            if abs(explored_x - goal_x) <  self.REGION_EXPLORED_THRESHOLD and abs(explored_y - goal_y) < self.REGION_EXPLORED_THRESHOLD:
-                return True
-        return False
+    #         if abs(explored_x - goal_x) <  self.REGION_EXPLORED_THRESHOLD and abs(explored_y - goal_y) < self.REGION_EXPLORED_THRESHOLD:
+    #             return True
+    #     return False
 
     def get_map_area_and_resolution(self):
         rospy.loginfo("Waiting for static_map")
@@ -141,7 +259,7 @@ class MapExplorer:
             map_size_x = response.map.info.width
             map_size_y = response.map.info.height
             self.map_resolution = response.map.info.resolution
-            self.total_area = len([x for x in response.map.data if x!=-1])
+            # self.total_area = len([x for x in response.map.data if x!=-1])
             print((self.total_area))
             print(self.map_resolution)
 
@@ -154,28 +272,13 @@ class MapExplorer:
         # result = explore.move_to_goal(goal)
         # if result:
             # rospy.loginfo("Goal execution done!")
-        self.door_poses_sub = rospy.Subscriber('/door/pose', PoseStamped, callback=self.door_pose_callback)
         self.find_doors_nearby()
         # self.mark_all_doors()
-        if self.door_locations is not None:
-            print(self.door_locations)
-            #Only taking into account x,y points to indicate different doors
-            X = [ np.array([door.pose.position.x,
-                            door.pose.position.y]) for door in self.door_locations]
+        self.mark_all_doors()
 
-            print(X)
-            if (len(self.door_locations) > 1):
 
-                y_pred = AgglomerativeClustering(linkage='ward',distance_threshold=self.DOOR_WIDTH_THRESH, n_clusters=None).fit_predict(X)
-                
-                print(y_pred)
-                ind = np.argsort(y_pred)
-                
-                sorted_X = X[ind]
-                self.mark_all_doors(X)
-            else:
-                self.mark_all_doors(X)
 
+        
 
 
         
@@ -196,12 +299,12 @@ class MapExplorer:
             marker.pose.orientation.x = 0.0
             marker.pose.orientation.y = 0.0
             marker.pose.orientation.z = 0.0
-            marker.pose.orientation.w =1
-            marker.scale.x =  self.REGION_EXPLORED_THRESHOLD
-            marker.scale.y = self.REGION_EXPLORED_THRESHOLD
+            marker.pose.orientation.w = 1
+            marker.scale.x =  self.grid.cell_size * self.grid.resolution
+            marker.scale.y = self.grid.cell_size * self.grid.resolution
             marker.scale.z = 0.1
             marker.color.a = 0.6
-            marker.color.r = 1.0
+            marker.color.r = 0.0
             marker.color.g = 1.0
             marker.color.b = 0.0
             marker.lifetime = rospy.Duration(0)
@@ -215,10 +318,10 @@ class MapExplorer:
         self.pub_visualization_marker.publish(markers)
 
     
-    def mark_all_doors(self, positions, orientations):
+    def mark_all_doors(self):
         markers = []
         id = 0
-        for i in range(0,len(positions)):
+        for door in self.door_locations:
             marker = Marker()
             marker.header.frame_id = "map"
             marker.header.stamp =  rospy.Time.now()
@@ -226,13 +329,13 @@ class MapExplorer:
             marker.id = id
             marker.type =0 #Sphere
             marker.action = 0 #add/modify
-            marker.pose.position.x = positions[i][0]
-            marker.pose.position.y = positions[i][1]
-            marker.pose.position.z = positions[i][2]
-            marker.pose.orientation.x = orientations[i][0]
-            marker.pose.orientation.y = orientations[i][1]
-            marker.pose.orientation.z = orientations[i][2]
-            marker.pose.orientation.w = orientations[i][3]
+            marker.pose.position.x = door.pose.position.x
+            marker.pose.position.y = door.pose.position.y
+            marker.pose.position.z = door.pose.position.z
+            marker.pose.orientation.x = door.pose.orientation.x
+            marker.pose.orientation.y = door.pose.orientation.y
+            marker.pose.orientation.z = door.pose.orientation.z
+            marker.pose.orientation.w = door.pose.orientation.w
             marker.scale.x = 0.1
             marker.scale.y = 0.1
             marker.scale.z = 0.1
@@ -240,7 +343,7 @@ class MapExplorer:
             marker.color.r = 1.0
             marker.color.g = 1.0
             marker.color.b = 0.0
-            marker.lifetime = rospy.Duration(50)
+            marker.lifetime = rospy.Duration(0)
 
             
             id+=1
@@ -251,6 +354,41 @@ class MapExplorer:
         self.pub_door_visualization_marker.publish(markers)
 
 
+    def mark_final_doors(self):
+        markers = []
+        id = 0
+        for door in self.door_locations:
+            marker = Marker()
+            marker.header.frame_id = "map"
+            marker.header.stamp =  rospy.Time.now()
+            marker.ns = "final door markers"
+            marker.id = id
+            marker.type =0 #Sphere
+            marker.action = 0 #add/modify
+            marker.pose.position.x = door.pose.position.x
+            marker.pose.position.y = door.pose.position.y
+            marker.pose.position.z = door.pose.position.z
+            marker.pose.orientation.x = door.pose.orientation.x
+            marker.pose.orientation.y = door.pose.orientation.y
+            marker.pose.orientation.z = door.pose.orientation.z
+            marker.pose.orientation.w = door.pose.orientation.w
+            marker.scale.x = 0.1
+            marker.scale.y = 0.1
+            marker.scale.z = 0.1
+            marker.color.a = 1.0
+            marker.color.r = 0.9
+            marker.color.g = 0.1
+            marker.color.b = 0.8
+            marker.lifetime = rospy.Duration(0)
+
+            
+            id+=1
+            markers.append(marker)
+            
+
+
+        self.pub_final_door_visualization_marker.publish(markers)
+
 
 
      
@@ -258,11 +396,14 @@ class MapExplorer:
     def find_doors_nearby(self):
         # wait for the initial orientation so we don't start with None
         rospy.wait_for_message('/odom', Odometry)
+  
+
 
         # original yaw angle
         startingYaw = self.yaw
 
         # Rotate for 5 degrees to begin with
+        rospy.loginfo("Rotating...")
         while (explore.angles_close(startingYaw, self.yaw, tolerance=5) \
                and not rospy.is_shutdown()): # makes sure script is killed on ctrl-c
             explore.initiate_rotation()
@@ -275,7 +416,8 @@ class MapExplorer:
                and not rospy.is_shutdown()):
             self.door_poses_sub = rospy.Subscriber('/door/pose', PoseStamped, callback=self.door_pose_callback)
 
-        
+        rospy.loginfo("Rotation stopped!")
+
         #print("Doors {}".format((self.door_locations)))
 
         #Run k-means
@@ -286,8 +428,7 @@ class MapExplorer:
         #print("startingYaw: {}\ncurrentYaw: {}\n".format(np.rad2deg(startingYaw), np.rad2deg(self.yaw)))
         explore.stop_in_place()
     
-    def spot_doors(self):
-        pass
+        
 
 
 if __name__ == "__main__":

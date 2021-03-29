@@ -182,7 +182,7 @@ TargetGenerator::generateTargetService(
   bool is_free;
 
   auto checkThresh = [&](double x, double y, double wx, double wy) {
-    return sqrt(pow(wx - x, 2) + pow(wy - y, 2)) <= DISTANCE_THRESHOLD_ ; //Must be lower than the threshold
+    return sqrt(pow(wx - x, 2) + pow(wy - y, 2)) >= DISTANCE_THRESHOLD_ && sqrt(pow(wx - x, 2) + pow(wy - y, 2)) <= DISTANCE_THRESHOLD_ + 1; //Must be lower than the threshold
   };
 
   auto printTarget = [](double wx, double wy) {
