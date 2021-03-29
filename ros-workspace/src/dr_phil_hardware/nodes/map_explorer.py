@@ -199,7 +199,7 @@ class MapExplorer:
                 
                 #Greedy approach
                 current_position = [self.robot_pose.position.x,self.robot_pose.position.y]
-                next_cell= self.plan.nearest_cell(self.grid,self.cells_to_visit,current_position)
+                next_cell = self.plan.nearest_cell(self.grid,self.cells_to_visit,current_position)
                 self.cells_to_visit.remove(next_cell)
 
                 print(self.cells_to_visit)
@@ -208,7 +208,7 @@ class MapExplorer:
                 self.twooptdistance += self.plan.euclidean(current_position,self.grid.unexplored_regions[next_cell].center)
                 
 
-                self.area_explored+=self.grid.cell_size*self.grid.resolution
+                self.area_explored+=self.grid.cell_size*(self.grid.resolution*self.grid.resolution)
                 goal_coordinates = self.grid.unexplored_regions[next_cell].update_and_return_central_point()
                 #Set goal
                 goal = MoveBaseGoal()

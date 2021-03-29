@@ -26,6 +26,11 @@ class Cell:
         self.coordinates.append(coord)
 
     def update_and_return_central_point(self):
+        """ Returns the central point and saves it
+
+        Returns:
+            [type]: [description]
+        """
         self.center = np.mean(np.array(self.coordinates),axis=0)
         return self.center
 
