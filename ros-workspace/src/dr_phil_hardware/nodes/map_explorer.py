@@ -105,10 +105,10 @@ class MapExplorer:
             self.plan = TSP.RoutePlanner([self.robot_pose.position.x, self.robot_pose.position.y], self.grid.unexplored_regions)
 
             self.cells_to_visit = [cell_num for cell_num,cell in  self.grid.unexplored_regions.items() if cell.is_free_space==True]
-            print(self.plan.calculateTourCost(self.plan.tourIndex))
-            # self.cells_to_visit = self.grid.unexplored_regions
-            self.cells_to_visit = self.plan.generateRoute()
-            print(self.plan.calculateTourCost(self.plan.tourIndex))
+            # print(self.plan.calculateTourCost(self.plan.tourIndex))
+            # # self.cells_to_visit = self.grid.unexplored_regions
+            # self.cells_to_visit = self.plan.generateRoute()
+            # print(self.plan.calculateTourCost(self.plan.tourIndex))
             self.initialise_map_once = False
             self.grid.mark_all_available_cells(self.pub_cell_visualization_marker)
     
@@ -191,7 +191,7 @@ class MapExplorer:
                 print("Two Opt Distance covered" + str(self.twooptdistance))
 
                 total_area_free_space = self.grid.total_area
-                print("Area explored- 0.3m:" + str(self.area_explored/total_area_free_space))
+                print("Area explored- 0.7m:" + str(self.area_explored/total_area_free_space))
                 rospy.signal_shutdown("Finished exploration")
         
             else:
@@ -199,11 +199,11 @@ class MapExplorer:
                 
                 #Greedy approach
                 current_position = [self.robot_pose.position.x,self.robot_pose.position.y]
-                self.plan.nearest_cell(self.grid,self.cells_to_visit,current_position)
-                # self.cells_to_visit.remove(next_cell)
+                next_cell= self.plan.nearest_cell(self.grid,self.cells_to_visit,current_position)
+                self.cells_to_visit.remove(next_cell)
 
                 print(self.cells_to_visit)
-                next_cell = self.cells_to_visit.pop(0)
+                # next_cell = self.cells_to_visit.pop(0)
 
                 self.twooptdistance += self.plan.euclidean(current_position,self.grid.unexplored_regions[next_cell].center)
                 
@@ -232,40 +232,24 @@ class MapExplorer:
 
             self.mark_all_explored_regions()
 
-    # #If we've been near one of the random points generated, return true
-    # def was_explored(self, goal):
-    #     for pixel in self.explored_regions:
-    #         # pixels = (1/self.map_resolution)*self.REGION_EXPLORED_THRESHOLD
-    #         # print(pixels)
-    #         explored_x = pixel.target_pose.pose.position.x 
-    #         goal_x = goal.target_pose.pose.position.x
 
-    #         explored_y = pixel.target_pose.pose.position.y
-    #         goal_y = goal.target_pose.pose.position.y
-
-
-
-    #         if abs(explored_x - goal_x) <  self.REGION_EXPLORED_THRESHOLD and abs(explored_y - goal_y) < self.REGION_EXPLORED_THRESHOLD:
-    #             return True
-    #     return False
-
-    def get_map_area_and_resolution(self):
-        rospy.loginfo("Waiting for static_map")
-        rospy.wait_for_service("static_map")
-        try:
-            map_service = rospy.ServiceProxy('static_map', GetMap)
-            rospy.loginfo("Map Info retrieved")
-            response = map_service()
-            map_size_x = response.map.info.width
-            map_size_y = response.map.info.height
-            self.map_resolution = response.map.info.resolution
-            # self.total_area = len([x for x in response.map.data if x!=-1])
-            print((self.total_area))
-            print(self.map_resolution)
+    # def get_map_area_and_resolution(self):
+    #     rospy.loginfo("Waiting for static_map")
+    #     rospy.wait_for_service("static_map")
+    #     try:
+    #         map_service = rospy.ServiceProxy('static_map', GetMap)
+    #         rospy.loginfo("Map Info retrieved")
+    #         response = map_service()
+    #         map_size_x = response.map.info.width
+    #         map_size_y = response.map.info.height
+    #         self.map_resolution = response.map.info.resolution
+    #         # self.total_area = len([x for x in response.map.data if x!=-1])
+    #         print((self.total_area))
+    #         print(self.map_resolution)
 
 
-        except rospy.ServiceException as e:               
-            rospy.logerr("Could not retrieve map info: %s"%e)
+    #     except rospy.ServiceException as e:               
+    #         rospy.logerr("Could not retrieve map info: %s"%e)
     
     def custom_spin(self):
         # goal = explore.get_test_goal(self.robot_pose)
