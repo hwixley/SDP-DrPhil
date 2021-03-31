@@ -6,7 +6,7 @@ import py_trees_ros
 from sensor_msgs.msg import Image,LaserScan,BatteryState
 from dr_phil_hardware.behaviour.leafs.general import CheckFileExists
 from dr_phil_hardware.behaviour.leafs.ros import TransformToBlackboard
-from dr_phil_hardware.behaviour.trees.trees import DrPhilStatus, ROBOT_STATE_TARGET, create_explore_frontier_and_save_map,create_disinfect_doors_in_map, create_localize_robot, create_check_on_according_to_schedule, create_preempt_return_base, create_update_app_state,create_wait_for_next_clean
+from dr_phil_hardware.behaviour.trees.trees import DrPhilStatus, ROBOT_STATE_TARGET, create_explore_frontier_and_save_map,create_disinfect_doors_in_map, create_find_handles, create_localize_robot, create_check_on_according_to_schedule, create_preempt_return_base, create_update_app_state,create_wait_for_next_clean
 import functools 
 import os
 import json 
@@ -14,6 +14,7 @@ from rospy.exceptions import ROSException
 from geometry_msgs.msg import PoseArray,PoseStamped,PoseWithCovarianceStamped
 import sys
 from dr_phil_hardware.msg import CleaningSchedule
+from visualization_msgs.msg import MarkerArray
 
 class Controller:
     """ the controller responsible for dictating behaviours to dr-phil. Every node is to be controlled via this script and no node should command behaviours without going through the controller """
@@ -24,6 +25,8 @@ class Controller:
     MAP_TO_ROB_TRANSFORM_SOURCE="tf/map/robot"
     ROBOT_POSE_SOURCE="robot/pose"
     BATTERY_SOURCE="battery_state"
+    FINAL_DOOR_SOURCE="/door/final_markers"
+    FINAL_DOOR_POSES_SOURCE="/door/pose_array"
 
     def __init__(self,ignore_schedule=False):
 
@@ -144,6 +147,11 @@ class Controller:
                                                         topic_type=BatteryState,
                                                         blackboard_variables={Controller.BATTERY_SOURCE:None})
         
+        doors2bb= py_trees_ros.subscribers.ToBlackboard(name="doors2bb",
+                                                        topic_name=Controller.FINAL_DOOR_SOURCE,
+                                                        topic_type=MarkerArray,
+                                                        blackboard_variables={Controller.FINAL_DOOR_SOURCE:None})
+        
         update_app_state = py_trees.composites.Sequence(children=[
             py_trees.timers.Timer(duration=20),
             create_update_app_state(Controller.BATTERY_SOURCE)
@@ -152,14 +160,14 @@ class Controller:
         if ignore_schedule:
             update_app_state = py_trees.behaviours.Running()
 
-        topics2bb.add_children([camera2bb,scan2bb,target2bb,handle2bb,schedule2bb,pose2bb,battery2bb,update_app_state])
+        topics2bb.add_children([camera2bb,scan2bb,target2bb,handle2bb,schedule2bb,pose2bb,battery2bb,update_app_state,doors2bb])
 
 
         # priorities  branch for main tasks, the rest of the tree is to go here
 
         priorities = py_trees.composites.Selector("priorities")
 
-        pre_empt_check = create_preempt_return_base(Controller.SCHEDULE_SOURCE,Controller.HANDLE_POSE_SOURCE)
+        pre_empt_check = create_preempt_return_base(Controller.SCHEDULE_SOURCE,Controller.HANDLE_POSE_SOURCE)        
         if ignore_schedule:
             pre_empt_check = py_trees.behaviours.Failure()
 
@@ -183,6 +191,13 @@ class Controller:
         map_guard.add_children([map_doesnt_exist,run_mapper])
 
 
+        handle_explore_guard = py_trees.composites.Sequence()
+        map_exists =  CheckFileExists("mapExists",map_path + ".pgm")
+
+        explore_handles = create_find_handles(map_path,Controller.FINAL_DOOR_SOURCE,Controller.FINAL_DOOR_POSES_SOURCE)
+
+        handle_explore_guard.add_children([map_exists,explore_handles])
+
         disinfect_guard = py_trees.composites.Sequence()
 
         map_exists =  CheckFileExists("mapExists",map_path + ".pgm")
@@ -202,7 +217,7 @@ class Controller:
 
         disinfection_sequence.add_children([on_schedule,disinfect_guard])
 
-        non_preempt_tasks.add_children([disinfection_sequence])
+        non_preempt_tasks.add_children([handle_explore_guard,disinfection_sequence])
    
         priorities.add_children([pre_empt_check,non_preempt_tasks])
         priorities = py_trees.decorators.SuccessIsRunning(priorities)

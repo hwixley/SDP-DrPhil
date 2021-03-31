@@ -56,6 +56,8 @@ class Lidar:
                 n: number of neighbours to use in smoothing (on each side), if 0 no smoothing 
                 noise_factor: the maximum std deviation of samples from the average when sampling neighbours
         """
+        assert(type(camera_ray) is Ray )
+
         angle = data.angle_min
 
         camera_ray.length = data.range_max * 2
@@ -96,6 +98,10 @@ class Lidar:
             return ray1,ray2 
         else:
 
+            # on no data return nones
+            if ray1_idx == -1:
+                return ray1,ray2
+
             # collect neighbours 
             start_idx = (ray1_idx - n) % 360
             end_idx = (ray2_idx + n) % 360
@@ -128,6 +134,7 @@ class Lidar:
             r.fit(x_mat,y_mat)
             
             reg_line = (r.estimator_.coef_[0],r.estimator_.intercept_)
+
 
             cart_line1 = utils.cartesian_line_from_ray(ray1)
             cart_line2 = utils.cartesian_line_from_ray(ray2)

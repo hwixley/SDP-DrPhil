@@ -10,6 +10,7 @@ from dr_phil_hardware.behaviour.decorators import HoldStateForDuration
 import operator
 from geometry_msgs.msg import Twist, PoseArray, Pose, PoseStamped,PoseWithCovarianceStamped
 import os
+import py_trees_ros
 from std_msgs.msg import Float64MultiArray,Float64
 from py_trees.common import BlackBoxLevel, Status
 import rospy 
@@ -23,6 +24,7 @@ from dr_phil_hardware.srv import SetRobotStatus,SetRobotStatusRequest
 from sensor_msgs.msg import BatteryState
 from std_msgs.msg import Float32
 from enum import IntEnum
+from visualization_msgs.msg import MarkerArray,Marker
 
 ROBOT_STATE_TARGET = "robot/state"
 APP_RESET_RETURN_TOPIC = "app/reset_return"
@@ -36,6 +38,8 @@ class DrPhilStatus(IntEnum):
     RETURNING_TO_BASE = 2,
     STUCK = 3,
     EXECUTING_HALT_PROCEDURE = 4,
+
+
 
 
 
@@ -451,6 +455,65 @@ def create_open_door(handle_pose_src,map_path,pose_frame="map",name="openDoorSeq
     
     return parallel
 
+def create_find_handles(map_path,final_door_src,pose_array_target):
+
+    assert(not ".yaml" in map_path  or not ".pgm" in map_path)
+
+
+
+    sequence = py_trees.composites.Sequence(name="mainSequence")
+
+    parallel = py_trees.composites.Parallel("findHandles",policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
+    load_map = create_load_map(map_path=map_path + ".yaml")
+    
+    killkey = "/find_handles/kill"
+
+    start_nodes = RunRos(name="runExplorationNodes",
+        blackboard_alive_key="/find_handles/alive",
+        blackboard_kill_trigger_key=killkey,
+        launch_file="handle_find_task.launch",
+        package="dr_phil_hardware"
+    )
+
+    seq2 = py_trees.composites.Sequence()
+    def get_result():
+        final : MarkerArray = Blackboard().get(final_door_src)
+        if final is not None:
+
+            pa = PoseArray()
+            for m in final.markers:
+                pa.poses.append(m.pose)
+
+            if len(final.markers) > 0:
+                pa.header.frame_id = final.markers[0].header.frame_id
+                pa.header.stamp = rospy.Time.now()
+
+            Blackboard().set(pose_array_target,pa)
+            return Status.SUCCESS
+        else:
+            return Status.RUNNING
+
+    wait_for_result = Lambda("waitForResult",get_result)
+
+    kill_nodes = py_trees.blackboard.SetBlackboardVariable(variable_name=killkey,variable_value=True)
+    wait = py_trees.timers.Timer(duration=1)
+
+    seq2.add_children([wait_for_result,wait,kill_nodes])
+    parallel.add_children([load_map,start_nodes,seq2])
+
+
+
+    set_disinfect = create_set_robot_status(DrPhilStatus.CLEANING)
+
+    reset_arm = create_set_positions_arm(ARM_TRAVELING_STATE,name="resetArm")
+
+    localize = create_localize_robot()
+
+    sequence.add_children([set_disinfect,reset_arm,localize,parallel])
+
+
+    return sequence
+
 def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,pose_frame="map",map_path=None,distance_from_door=0.1,spray_time=0.1,name="disinfectDoors"):
     """[summary]
 
@@ -483,27 +546,6 @@ def create_disinfect_doors_in_map(handle_pose_src,spray_path_src,pose_frame="map
 
     sequence = py_trees.composites.Sequence(name="mainSequence")
     sequence.blackbox_level = BlackBoxLevel.BIG_PICTURE
-
-
-    # # TEMPORARY \
-    # from move_base_msgs.msg import MoveBaseGoal
-    # m = MoveBaseGoal()
-    # ps = PoseStamped()
-    # ps.header.frame_id = "map"
-    # ps.header.stamp = rospy.Time.now()
-    # ps.pose.position.x,ps.pose.position.y,ps.pose.position.z = 0.87,0.87 - 1.5,0.24
-    # ps.pose.orientation.x,ps.pose.orientation.y,ps.pose.orientation.z,ps.pose.orientation.w = quat_from_yaw(-math.pi/2 * 3)
-    
-    # m.target_pose = ps 
-
-    # set_goal=py_trees.blackboard.SetBlackboardVariable(variable_name="/temp/pose",variable_value=m)
-    # temp_move = create_move_base_to_reach_pose(
-    #     target_pose_src="/temp/pose")
-
-
-    # temp_move_to_handle = py_trees.Sequence()
-    # temp_move_to_handle.add_children([set_goal,temp_move])
-    # # TEMPORARY /
 
     set_disinfect = create_set_robot_status(DrPhilStatus.CLEANING)
 
@@ -716,24 +758,6 @@ def create_move_base_to_reach_pose(target_pose_src,name="reachTargetPos"):
 def create_try_various_arm_plans(pose_frame):
     plan = py_trees.composites.Selector()
 
-    # create_trajectory_plan = CreateMoveitTrajectoryPlan("planTrajectory",
-    #     MoveGroup.ARM,0.9,
-    #     pose_frame=pose_frame,
-    #     pose_target_include_only_idxs=[0],
-    #     )
-
-    # create_lenient_trajectory_plan = CreateMoveitTrajectoryPlan("planTrajectoryLenient",
-    #     MoveGroup.ARM,0.5,
-    #     pose_frame=pose_frame,
-    #     pose_target_include_only_idxs=[0],
-    #     )
-
-    # create_p2p_plan = CreateMoveItMove("planP2PMove",
-    #     MoveGroup.ARM,
-    #     pose_frame=pose_frame,
-    #     goal_tolerance=0.01,
-    #     )
-
     create_p2p_plan_lenient = CreateMoveItMove("planP2PMove",
         MoveGroup.ARM,
         pose_frame=pose_frame,
@@ -879,9 +903,6 @@ def create_move_in_front_of_current_spray_pose(spray_poses_src,distance_from_pos
         variable_value=lambda : process_pose(distance_from_pose),
         name="moveTarget2BB")
 
-    # disable_costmap_1 = DynamicReconfigure("disableGlobalCostmap","move_base/local_costmap/inflation_layer",{
-    #     "inflation_radius":0.05
-    # })
 
     disable_costmap_2 = DynamicReconfigure("disableLocalCostmap","/move_base/TebLocalPlannerROS",{
         "min_obstacle_dist":0.05,
@@ -894,10 +915,6 @@ def create_move_in_front_of_current_spray_pose(spray_poses_src,distance_from_pos
                                 blackboard_target="//trash")
 
     move_base = create_move_base_to_reach_pose(target_pose_src=bb2target)
-
-    # enable_costmap_1 = DynamicReconfigure("enableGlobalCostmap","move_base/local_costmap/inflation_layer",{
-    #     "inflation_radius":0.22
-    # })
 
     enable_costmap_2 = DynamicReconfigure("enableLocalCostmap","/move_base/TebLocalPlannerROS",{
         "min_obstacle_dist":0.22,
@@ -985,7 +1002,7 @@ def create_move_in_front_of_door(handle_pose_src,distance_from_door=0.1,name="mo
 def create_localize_robot(name="localizeRobot"):
     """ generates random walk for 10 seconds and initializes from unknown location using amcl, requires the navigation stack to be running"""
 
-    bb2target = "{}/".format(name)
+    # bb2target = "{}/".format(name)
 
     sequence = py_trees.composites.Sequence(name)
 
@@ -999,27 +1016,6 @@ def create_localize_robot(name="localizeRobot"):
     # walk_sequence = py_trees.composites.Sequence()
 
 
-    # def process_response(x : GenerateTargetResponse):
-    #     if x.success:
-    #         return x.goal
-    #     else:
-    #         raise Exception("Target was not generated") 
-
-    # get_random_pos = CallService("getRandomTarget",
-    #     service_topic="/target_generator/generate_nav_target",
-    #     service_type=GenerateTarget,
-    #     service_content=GenerateTargetRequest(),
-    #     blackboard_target=bb2target,
-    #     pre_process_callable=process_response)
-
-    # def get_pose():
-    #     return py_trees.Blackboard().get(bb2target)
-
-    # reach_pose = ActionClientConnectOnInit(name,
-    #                         MoveBaseAction,
-    #                         get_pose,
-    #                         action_namespace="/move_base",
-    #                         override_feedback_message_on_running="moving to reach target")
 
     # walk_sequence.add_children([get_random_pos,reach_pose])
 

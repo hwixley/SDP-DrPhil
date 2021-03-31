@@ -12,6 +12,7 @@ from typing import Tuple
 
 def cartesian_line_from_ray(ray : Ray):
     """ returns tuple (m,c) with m being gradient and c y-interecept"""
+    assert(type(ray) is Ray)
     mx = ray.dir[0,0]
     my = ray.dir[1,0]
     bx = ray.origin[0,0]

@@ -77,7 +77,7 @@ class MapExplorer:
         self.pub_final_door_visualization_marker = rospy.Publisher('/door/final_markers', MarkerArray, queue_size=10)
 
         self.twooptdistance=0
-
+        self.finished = False
 
 
 
@@ -161,6 +161,10 @@ class MapExplorer:
         self.door_locations = new_door_locations
 
     def spin(self):
+
+        if self.finished:
+            return 
+
         self.custom_spin()
         if self.cells_to_visit is not None:
             if len(self.cells_to_visit)<1:
@@ -192,8 +196,8 @@ class MapExplorer:
 
                 total_area_free_space = self.grid.total_area
                 print("Area explored- 0.7m:" + str(self.area_explored/total_area_free_space))
-                rospy.signal_shutdown("Finished exploration")
-        
+                self.finished = True 
+
             else:
               
                 
@@ -333,8 +337,6 @@ class MapExplorer:
             id+=1
             markers.append(marker)
             
-
-
         self.pub_door_visualization_marker.publish(markers)
 
 
@@ -422,6 +424,18 @@ if __name__ == "__main__":
     mapExplorer = MapExplorer()
     rate = rospy.Rate(10)
 
+    found = False
     while not rospy.is_shutdown():
         mapExplorer.spin()
+        if mapExplorer.finished:
+            found = True
+            break 
+
         rate.sleep()
+
+    if found:
+        while not rospy.is_shutdown():
+            mapExplorer.mark_final_doors()
+            rate.sleep()
+    
+    explore.stop_motors()

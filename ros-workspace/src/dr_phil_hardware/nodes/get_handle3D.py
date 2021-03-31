@@ -386,6 +386,7 @@ class Handle3DTransformation:
             else:
                 point2d = np.array([[point2D_box.x + (point2D_box.width/2)],[point2D_box.y + (point2D_box.height/2)]])   
 
+            
             (point3d,normal) = localize_pixel(point2d,
                     self.camera,
                     self.lidar,
