@@ -9,15 +9,18 @@ Panels:
         - /Grid1
         - /Axes1
         - /LaserScan1
+        - /RobotModel1
         - /DepthCloud1/Auto Size1
         - /Map1
         - /Polygon1
         - /Map2
         - /Marker1
-        - /Marker1/Status1
         - /MarkerArray1
-        - /Marker2
+        - /Pose1
         - /MarkerArray2
+        - /MarkerArray2/Status1
+        - /MarkerArray3
+        - /MarkerArray4
       Splitter Ratio: 0.6029411554336548
     Tree Height: 883
   - Class: rviz/Selection
@@ -50,7 +53,7 @@ Visualization Manager:
       Cell Size: 1
       Class: rviz/Grid
       Color: 160; 160; 164
-      Enabled: true
+      Enabled: false
       Line Style:
         Line Width: 0.029999999329447746
         Value: Lines
@@ -63,7 +66,7 @@ Visualization Manager:
       Plane: XY
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
-      Value: true
+      Value: false
     - Alpha: 1
       Class: rviz/Axes
       Enabled: false
@@ -102,7 +105,7 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
-    - Alpha: 1
+    - Alpha: 0
       Class: rviz/RobotModel
       Collision Enabled: false
       Enabled: true
@@ -210,6 +213,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        px100/led_link1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         px100/left_finger_link:
           Alpha: 1
           Show Axes: false
@@ -272,7 +279,6 @@ Visualization Manager:
       Unreliable: false
       Value: false
       Visibility:
-        "": true
         Axes: true
         DepthCloud: true
         Grid: true
@@ -280,8 +286,10 @@ Visualization Manager:
         Map: true
         Marker: true
         MarkerArray: true
+        MotionPlanning: true
         Odometry: true
         Polygon: true
+        Pose: true
         RobotModel: true
         TF: true
         Value: true
@@ -384,34 +392,21 @@ Visualization Manager:
       Draw Behind: true
       Enabled: true
       Name: Map
-      Topic: /move_base/local_costmap/costmap
+      Topic: /move_base/global_costmap/costmap
       Unreliable: false
       Use Timestamp: false
       Value: true
     - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /spray_path_visualisation
+      Enabled: false
+      Marker Topic: /turtlepi_navigate/visualization_marker
       Name: Marker
       Namespaces:
-        spray positions: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /spray_direction_visualisation
-      Name: MarkerArray
-      Namespaces:
-        Goal-0: true
-        Goal-1: true
-        Goal-2: true
-        Goal-3: true
-        Goal-4: true
-        Goal-5: true
-      Queue Size: 100
-      Value: true
+        {}
+      Queue Size: 10
+      Value: false
     - Acceleration_Scaling_Factor: 0.1
       Class: moveit_rviz_plugin/MotionPlanning
-      Enabled: false
+      Enabled: true
       Move Group Namespace: ""
       MoveIt_Allow_Approximate_IK: true
       MoveIt_Allow_External_Program: false
@@ -541,6 +536,10 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          px100/led_link1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
           px100/left_finger_link:
             Alpha: 1
             Show Axes: false
@@ -714,6 +713,10 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          px100/led_link1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
           px100/left_finger_link:
             Alpha: 1
             Show Axes: false
@@ -747,23 +750,55 @@ Visualization Manager:
         Robot Alpha: 1
         Show Robot Collision: false
         Show Robot Visual: true
-      Value: false
+      Value: true
       Velocity_Scaling_Factor: 0.1
-    - Class: rviz/Marker
+    - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: /door_visualisation
-      Name: Marker
+      Marker Topic: /explored_regions
+      Name: MarkerArray
       Namespaces:
-        door positions: true
+        {}
+      Queue Size: 100
+      Value: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.10000000149011612
+      Class: rviz/Pose
+      Color: 255; 25; 0
+      Enabled: false
+      Head Length: 0.30000001192092896
+      Head Radius: 0.10000000149011612
+      Name: Pose
+      Queue Size: 10
+      Shaft Length: 1
+      Shaft Radius: 0.05000000074505806
+      Shape: Arrow
+      Topic: /door/pose
+      Unreliable: false
+      Value: false
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /door/final_markers
+      Name: MarkerArray
+      Namespaces:
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /handle_feature/camera_points
+      Enabled: false
+      Marker Topic: /door/markers
       Name: MarkerArray
       Namespaces:
-        handle_features: true
+        {}
       Queue Size: 100
+      Value: false
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /marked_cells
+      Name: MarkerArray
+      Namespaces:
+        {}
+      Queue Size: 400
       Value: true
   Enabled: true
   Global Options:
@@ -793,7 +828,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 3.5151278972625732
+      Distance: 15.251688957214355
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -801,17 +836,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 3.6581404209136963
-        Y: -3.556198835372925
-        Z: 0.5021024346351624
+        X: 0.38832563161849976
+        Y: 0.059405066072940826
+        Z: 1.4572793245315552
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.28979775309562683
+      Pitch: 1.33479642868042
       Target Frame: map
-      Yaw: 1.4418293237686157
+      Yaw: 0.0036482810974121094
     Saved: ~
 Window Geometry:
   Camera:
@@ -823,9 +858,9 @@ Window Geometry:
   Hide Right Dock: false
   MotionPlanning:
     collapsed: false
-  MotionPlanning - Slider:
+  MotionPlanning - Trajectory Slider:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000002c8000003bafc020000000cfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006e00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c0061007900730100000047000003ba000000f100fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d006500720061000000013f000001600000001900fffffffb0000000c00430061006d00650072006101000001f6000001aa0000000000000000fb000000280020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000001900000019fb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e0067000000022a000001d7000001cb00ffffff000000010000010f000003bafc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a005600690065007700730100000047000003ba000000c200fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000073800000040fc0100000002fb0000000800540069006d00650100000000000007380000037100fffffffb0000000800540069006d0065010000000000000450000000000000000000000353000003ba00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000034d000003bafc020000000dfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006e00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c0061007900730100000047000003ba000000f100fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d006500720061000000013f000001600000001900fffffffb0000000c00430061006d00650072006101000001f6000001aa0000000000000000fb000000280020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000000000000000fb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e0067000000022a000001d7000001cb00fffffffb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000004d00ffffff000000010000010f000003bafc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a005600690065007700730100000047000003ba000000c200fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000073800000040fc0100000002fb0000000800540069006d00650100000000000007380000037100fffffffb0000000800540069006d00650100000000000004500000000000000000000002ce000003ba00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:

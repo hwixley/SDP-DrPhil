@@ -3,19 +3,19 @@ import rospy
 from sensor_msgs.msg import Image as ImageMSG
 from cv_bridge import CvBridge, CvBridgeError
 import sys
-import time
 import cv2
 import numpy as np
 from sensor_msgs.msg import CameraInfo, LaserScan
 from std_msgs.msg import Float64MultiArray
 import tf
+import time
 from geometry_msgs.msg import PointStamped,Point,PoseArray,Pose,PoseStamped
 from visualization_msgs.msg import Marker,MarkerArray
 from tf2_msgs.msg import TFMessage
 
 #Library to process the image and try to find the bounding box of a handle
 from dr_phil_hardware.ML.models import yolov3, DEFAULT_WEIGHTS, DEFAULT_CONFIGURATION, DEFAULT_OBJ_NAMES, visualise_results, load_network_and_classes
-
+from dr_phil_hardware.ML.models import YOLOBoundingBox
 
 from dr_phil_hardware.vision.localisation import *
 from dr_phil_hardware.vision.camera import Camera
@@ -24,11 +24,12 @@ from dr_phil_hardware.vision.ray import Ray
 from dr_phil_hardware.vision.localisation import localize_pixel
 from dr_phil_hardware.vision.utils import invert_homog_mat, quat_from_yaw
 
-
-
-
 from dr_phil_hardware.vision.vision_handle_axis_algorithm import define_handle_features_heursitic as get_center
+from dr_phil_hardware.vision.vision_handle_axis_algorithm import Handle
+
 from dr_phil_hardware.disinfection.spray_path import get_spray_path_poses
+
+import traceback
 
 """
 #The purpose of this node: 
@@ -62,17 +63,21 @@ class Handle3DTransformation:
         self.tranform_listener = tf.TransformListener()
         self.rob2map = None 
         self.camera = None
-        self.handle_box = None
         self.image_stamp = None
         self.scan = None 
+
+        #Contains YOLO results in an object of type BoundingBox 
+        self.handle_box = None
+        self.door_box = None
+
 
         self.camera_info_sub = rospy.Subscriber("/camera_info",CameraInfo,callback=self.camera_info_callback)
         self.image_sub = rospy.Subscriber("image", ImageMSG, self.yolo_callback)
         self.scan_sub = rospy.Subscriber("/scan_filtered",LaserScan,callback=self.scan_callback)
 
         #Initialise image publisher to send the calculated 3D world coordinates of handles from a camera image as well as normal to a vertical surface
-        self.normal_pub = rospy.Publisher("/handle_feature/normal",Float64MultiArray,queue_size=10)
         self.handle_pose_pub = rospy.Publisher("/handle_feature/pose",PoseStamped,queue_size=10)
+        self.door_pose_pub = rospy.Publisher("/door/pose",PoseStamped,queue_size=10)
         self.spray_path_pub = rospy.Publisher("/spray_path/target_points",PoseArray,queue_size=10)
         self.markers_pub = rospy.Publisher("/handle_feature/camera_points",MarkerArray,queue_size=10)
 
@@ -82,6 +87,10 @@ class Handle3DTransformation:
         # we need to store the time of the image, to know where the robot was 
         # at that time
         self.image_stamp = rgb_msg.header.stamp
+
+        #Reset
+        self.handle_box = None
+        self.door_box = None
 
         try:
             self.rgb_image = self.bridge.imgmsg_to_cv2(rgb_msg, desired_encoding="bgr8")
@@ -101,6 +110,8 @@ class Handle3DTransformation:
             #Get the first handle result
             if box.label=="handle":
                 self.handle_box = box
+            if box.label =="door":
+                self.door_box = box
             
 
     def scan_callback(self,scan : LaserScan):
@@ -269,35 +280,45 @@ class Handle3DTransformation:
 
 
 
-    def publish(self,point3d, normal : Ray):
+    def publish(self,point3d, normal : Ray, publisher:rospy.Publisher):
         """publishes the given point3d and normal, assuming they are given in the self.map_frame frame
 
         Args:
-            point3d ([type]): handle point in 3d self.map_frame frame
+            point3d ([type]): point in 3d self.map_frame frame
             normal (Ray): normal in 3d in self.map_frame frame
+            publisher (rospy.Publisher): provide the topic to publish to of type rospy.Publisher
         """
         if point3d is not None and normal is not None: # normal and point3d are either None together or actual numbers
 
-            spray_origin_poses = get_spray_path_poses(point3d,normal.dir,self.map_frame)
+            # publish pose (facing inwards)
+            ps = PoseStamped()
+            ps.header.frame_id = self.map_frame
+            ps.header.stamp = self.image_stamp
+            p = Pose()
+            ps.pose = p
 
-            # publish target poses
-            self.spray_path_pub.publish(spray_origin_poses)
-
-            # publish handle pose (facing inwards)
-            hps = PoseStamped()
-            hps.header.frame_id = self.map_frame
-            hps.header.stamp = self.image_stamp
-            hp = Pose()
-            hps.pose = hp
-
-            hp.position.x,hp.position.y,hp.position.z = point3d[0:3]
-            hp.orientation.x,hp.orientation.y,hp.orientation.z,hp.orientation.w = quat_from_yaw(
+            p.position.x,p.position.y,p.position.z = point3d[0:3]
+            p.orientation.x, p.orientation.y, p.orientation.z, p.orientation.w = quat_from_yaw(
                 -angle_between_pi(
                     normal.get_vec(),
                     np.array([[1],[0],[0]]),
                     plane_normal=np.array([[0],[0],[1]])))
 
-            self.handle_pose_pub.publish(hps)
+            publisher.publish(ps)
+    
+    def publish_spray_poses(self,point3d, normal):
+        """ publishes the spray origin poses around the handle once it calculates them given the point and the normal in map frame
+            Args:
+                point3d ([type]): handle point in 3d self.map_frame frame
+                normal (Ray): normal in 3d in self.map_frame frame
+        """
+        if point3d is not None and normal is not None:
+            spray_origin_poses = get_spray_path_poses(point3d,normal.dir,self.map_frame)
+
+            # publish target poses
+            self.spray_path_pub.publish(spray_origin_poses)
+    
+        
         
 
     def spin(self):
@@ -306,24 +327,76 @@ class Handle3DTransformation:
         self.lookup_transforms()
 
 
-        if self.camera and self.handle_box and self.scan and self.rob2map is not None:
-            point_handle = np.array([[self.handle_box.x + (self.handle_box.width/2)],[self.handle_box.y + (self.handle_box.height/2)]])
-            try:
-                (point3d,normal) = localize_pixel(point_handle,
+        if self.camera and self.scan and self.rob2map is not None:
+            #Handle
+            if self.handle_box is not None:
+                (point2d,point3d,normal) = self.convert_to_3D(self.handle_box, is_handle=True)
+                try:
+                    #Trasform to map frame
+                    point3d_map = self.rob2map @ np.append(point3d,[[1]],axis=0)
+                    normal_map = normal.get_transformed(self.rob2map)
+                    self.publish(point3d_map,normal_map,self.handle_pose_pub)
+                    #Visualise the handle results
+                    self.visualise(point2d,point3d_map,normal_map)
+                    #Publish spray path poses
+                    self.publish_spray_poses(point3d_map,normal_map)
+                except Exception as e:
+                    rospy.logerr(e)
+                    #print(traceback.format_exc())
+
+            #Door
+            if self.door_box is not None:
+                (point2d,point3d,normal) = self.convert_to_3D(self.door_box)
+                try:
+                    #Trasform the 3d point into map frame
+                    point3d_map = self.rob2map @ np.append(point3d,[[1]],axis=0)
+                    normal_map = normal.get_transformed(self.rob2map)
+                    self.publish(point3d_map,normal_map,self.door_pose_pub)
+                    #Visualise the door results
+                    self.visualise(point2d,point3d_map,normal_map)
+                except Exception as e:
+                    rospy.logerr(e)
+                    #print(traceback.format_exc())
+
+            
+       
+    #TODO: Currently supports returning one feature from the door handle, to the type of Pull doors. In future development care must be taken in determining
+    #how many more features will be returned (eg. a lever type of handle would require knowing the point where the force is applied to open the door as well as identifying the point which lever rotates around)
+    def convert_to_3D(self, point2D_box:YOLOBoundingBox, is_handle=False, handle_type:Handle=Handle.PULL_DOOR):
+        """Given information of a Bounding Box Object enclosing an object and information on camera, lidar, and scan, 
+        localise the pixel from the 2d point and output the results of that point in 3D with respect to the robot frame. 
+        Outputs the normal to the vertical surface as well as the point originally in 2D.
+
+        
+        Args:
+            point2D_box (YOLOBoundingBox):  Describes the bounding box of the object passed to it
+        """
+        (point2d, point3d, normal) = None, None, None
+
+        if point2D_box is not None:
+            if (is_handle and handle_type == Handle.PULL_DOOR and self.rgb_image is not None):
+                rotation_point, force_location = get_center(image=self.rgb_image,
+                                     top_left=[point2D_box.x, point2D_box.y],
+                                     width=point2D_box.width,
+                                     height=point2D_box.height,
+                                     handle_type = handle_type,
+                                     simplistic=True)
+
+                point2d = np.array([force_location])
+            else:
+                point2d = np.array([[point2D_box.x + (point2D_box.width/2)],[point2D_box.y + (point2D_box.height/2)]])   
+
+            (point3d,normal) = localize_pixel(point2d,
                     self.camera,
                     self.lidar,
                     self.scan,
                     smoothing_neighbours=25)
 
-                point3d_map = self.rob2map @ np.append(point3d,[[1]],axis=0)
-                normal_map = normal.get_transformed(self.rob2map)
-                self.publish(point3d_map,normal_map)
-                self.visualise(point_handle,point3d_map,normal_map)
-            except Exception as e:
-                import traceback
-                
-                rospy.logerr(traceback.format_exc())
-       
+        return (point2d,point3d,normal)
+    
+
+        
+
 
 
 
@@ -358,8 +431,8 @@ def main(args):
         while not rospy.is_shutdown():
                 camera_parser.spin()
                 rate.sleep()
-    except Exception as _:
-        pass
+    except Exception as e:
+        print(traceback.format_exc())
     cv2.destroyAllWindows()
 
 # run the code if the node is called

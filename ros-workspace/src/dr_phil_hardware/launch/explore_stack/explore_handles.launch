@@ -1,0 +1,3 @@
+<launch>
+    <node pkg= "dr_phil_hardware" name="handle_explorer" type="map_explorer.py" output="screen"/>
+</launch>

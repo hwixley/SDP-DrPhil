@@ -35,7 +35,6 @@ handle to apply the heuristic function successfully.
  Default Type of Handle: Handle.PULL_DOOR
  
 """
-
  #TODO: The function currently uses preconfigured constants for each type of door handle. However, you can choose to have simplistic= False in order to use the outline of the handle to determine its location (Implemented for Pull doors only)
  # --- Still in BETA STAGE: Make sure contours depict the shape of the handle and nothing else. Seems to work somewhat well in simulation. However, fails to work in images with high texture or complex handle structure.
  

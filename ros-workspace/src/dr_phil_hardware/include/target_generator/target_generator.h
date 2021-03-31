@@ -58,8 +58,13 @@ public:
   setParams();
 
   /// Initialize the cost map.
-  bool
-  costMapInit();
+  void
+  costMapInit(const nav_msgs::OccupancyGrid costmap);
+
+  /// Initalise local costmap data.
+  void
+  localCostMapInit(const nav_msgs::OccupancyGrid local_costmap);
+
 
   /// Map to world conversion.
   void
@@ -77,6 +82,22 @@ public:
     const double world_x,
     const double world_y) const;
 
+  /// World to local costmap conversion.
+  void
+  worldToLocalMap(
+    uint32_t& map_x,
+    uint32_t& map_y,
+    const double world_x,
+    const double world_y) const;
+
+
+  ///If possible, checks in 2x2 square the pixels surrounding (x,y) coordinates, starting from "top-left"
+  bool
+  check_local_surrounding(uint32_t localmap_x, uint32_t localmap_y);
+
+  bool 
+  check_global_surrounding(uint32_t map_x, uint32_t map_y);
+
    /// Creates and publishes a marker.
   void
   targetMarker(const double x, const double y) const;
@@ -86,12 +107,15 @@ private:
   ros::NodeHandle nh_;
   ros::Publisher pub_visualization_marker_;
   ros::Subscriber sub_turtlepi_location_;
+  ros::Subscriber sub_costmap;
+  ros::Subscriber sub_local_costmap;
   ros::ServiceServer srv_generate_target_;
   tf2_ros::Buffer tfBuffer_;
   tf2_ros::TransformListener listener_{ tfBuffer_ };
   std::vector<int8_t> map_data_;
   std::unordered_set<uint32_t> free_space_;
   geometry_msgs::PoseWithCovarianceStamped current_position_;
+
 
   uint32_t map_size_x_;
   uint32_t map_size_y_;
@@ -100,6 +124,17 @@ private:
   double map_origin_y_;
   double theta_;
   bool init_;
+
+  //local costmap
+  uint32_t local_map_size_x_;
+  uint32_t local_map_size_y_;
+  float local_map_resolution_;
+  double local_map_origin_x_;
+  double local_map_origin_y_;
+  std::vector<int8_t> local_map_data_;
+ 
+
+
 
   double DISTANCE_THRESHOLD_;
   double PI_;

@@ -164,7 +164,7 @@ def visualise_results(frame, results, starting_time=None, frame_id=None):
         cv2.putText(frame, "FPS:"+str(round(fps, 2)),
                     (10, 50), font, 2, (0, 0, 0), 1)
 
-    cv2.imshow("Object Detection Results", frame)
+    # cv2.imshow("Object Detection Results", frame)
     # wait 1ms the loop will start again and we will process the next frame
     key = cv2.waitKey(1)
 
