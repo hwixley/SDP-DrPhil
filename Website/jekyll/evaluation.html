@@ -38,9 +38,9 @@ title: Home
                           
 
                             <h2>Spray coverage test</h2>
-                        <p>The disinfecting behaviour has to perform excellently, as a improperly disinfected door would still potentially be dangerous. Gazebo doesn't have a "spray" plugin where we can measure the coverage easily. Therefore, we had to use a depth camera on the arm where the nozzle is. The depth camera generates a cloud of points when it hits an object. The camera specification is modified so the view has the same shape as the nozzle spray. We then combine all of the pixels generated over the course of disinfection and compare it to the base handle to get an estimate of the total coverage. We used this estimate to get an idea of the quality of our arm/disinfectant planning.</p>
-                        <img class="images" style="width: 70%;" src="images/evaluation/doorhandlecov.png">
-                        <p>Originally, we didn't have very good results; the simulation showed that the spray only reached 6% of the points we wanted it to, although it has good side and front coverage, as shown above. ########### improvements to test in latest demo ##############</p>
+                        <p>The disinfecting behaviour has to perform excellent, as a improperly disinfected door would still potentially be dangerous. Gazebo doesn't have a "spray" plugin where we can measure the coverage easily. Therefore, we had to use a depth camera on the arm where the nozzle is. The depth camera generates a cloud of points when it hits an object. The camera specification is modified so the view has the same shape as the nozzle spray. We then combine all of the pixels generated over the course of disinfection and compare it to the base handle to get an estimate of the total coverage. We used this estimate to get an idea of the quality of our arm/disinfectant planning.</p>
+                        <img class="images" style="width: 70%;" src="images/evaluation/coverage-demo-4.png">
+                        <p>We found that Dr. Phil was able to disinfect approximately 85% of the surface of interest in our tests, when only accounting for direct spraying area (no drippage), the true coverage would likely be above this value.</p>
 
 
                         <h2>User studies</h2>
