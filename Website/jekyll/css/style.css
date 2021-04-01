@@ -325,3 +325,7 @@ h4 {
 .navitem {
   text-decoration: none;
 }
+
+.card-img-left {
+  width:7.5vw;
+}

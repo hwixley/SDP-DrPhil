@@ -49,13 +49,16 @@ title: Home
                           <a href="https://www.gamasutra.com/blogs/ChrisSimpson/20140717/221339/Behavior_trees_for_AI_How_they_work.php">Chris Simpson's guide</a></p>	
 	                    
                         <p>The general structure of the project was designed to promote re-use of sub-trees and test-ability of individual components.</p>
-  
+                      <h2 id="Software-Hardware">Software-Hardware abstraction</h2>
+                      <p>Due to the pandemic most of the work was performed in simulation. In order to ensure everything worked both in simulation and hardware as expected,
+                        a ROS package was specifically developed to mimic the hardware interface of the robot, and enabled us to run the exact same code on the hardware as within the simulation.
+                      </p>
 
                     <h2 id="navigation">Navigation</h2>
 
                     <h5><b>a. Exploration</b></h5>	
                     <p>The navigation system uses SLAM for mapping the robots environment, specifically, the gmapping package since it had the best performance during testing and it is relatively lightweight and customisable. The explore_lite and frontier_exploration package allows the robot to roam a space and create an occupancy map without human input.</p>	
-
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/1xZ8Nk0dMUA?start=12" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     <h5><b>b. Door Handle Localisation</b></h5>	
                     <i><h4></h4></i>	
                     <p>The door handle localisation algorithm uses geometry, the correspondence between lidar and camera rays to find out the 3D coordinates of the handle features within the image. We select the point of interest on our image, generate a 3D ray from the camera corresponding to all points mapping to that pixel, then perform intersection checks between this ray and the line segments formed by each consecutive lidar hit point. 	
@@ -81,12 +84,12 @@ title: Home
 
                         
                         <br>
-                        <p>The disinfection stack is primarily hardware based. We have a pump which pumps water from the base of the turtlebot  to the nozzle located at the top of the arm. This is necessary because the liquid storage tank is heavy and would unbalance the arm if installed on it. As the tank is directly on top of the turtlebot, any spillage would be disastrous. Therefore the tank has a screw cap so it won't spill during normal operation whilst still being easy to remove and refill. </p>
+                        <p>The disinfection stack is primarily hardware based. We have a pump which pumps water from the base of the turtlebot  to the nozzle located at the top of the arm. As the tank is directly on top of the turtlebot, any spillage would be disastrous. Therefore the tank has a screw cap so it won't spill during normal operation whilst still being easy to remove and refill. </p>
 
                         <h4>a. The Nozzles</h4>
                         <img class="images" style="width: 70%" src="images/nozzleCAD.png">
                         <figcaption><i>Nozzle in CAD</i></figcaption>
-                        <p>To spray the disinfectant onto contact points, we ultimately decided to use three 60 degree full-cone nozzles, which evenly distributes the disinfectant inside their spray areas. We needed three nozzles as one wasn't enough to cover the handle fully. A full-cone nozzle is important to ensure the spray will cover contact points efficently and accurately as seen in the <a href="./evaluation.html">evaluation</a> section. A further benefit is that the spray simulation we created in gazebo has similar properties to the full cone (namely a even and full spread) so we can be sure that it's a good representation of the real functionality. </p>
+                        <p>To spray the disinfectant onto contact points, we ultimately decided to use three 60 degree full-cone nozzles, which evenly distributes the disinfectant inside their spray areas. We needed three nozzles as one wasn't enough to cover the handle fully. A full-cone nozzle is important to ensure the spray will cover contact points efficently and accurately as seen in the <a href="./evaluation.html">evaluation</a> section. A further benefit is that the spray simulation we created in gazebo has similar properties to the full cone (namely a even and full spread) so we can be sure that it's a good representation of real life. </p>
 
                         
                         
@@ -94,7 +97,7 @@ title: Home
                         <figcaption>Three nozzles in simulation.</figcaption>
 
                         <h4>b. Control</h4>
-                        <p>Dr. Phil controls the pump via the 12V openCR board on the turtlebot, which is itself connected to a motor board. This is so there's enough power for the pump to lift the water up to door handle height. We also have a LED strip which was used to simulate when spraying was happening, which is useful for informing nearby people about the status of Dr.Phil.</p>
+                        <p>Dr. Phil controls the pump via the 12V openCR board on the turtlebot, which is itself connected to a motor board. We also have a LED strip which was used to simulate when spraying was happening, which is used for informing nearby people about the status of Dr.Phil.</p>
 
                         <p>As seen in the image, we also had to create fixings to keep everything still, as the robot might accidentally dislodge components when moving.</p>
                     <h2 id="armcontrol">Arm control</h2>
@@ -180,6 +183,9 @@ title: Home
                     <p>A proof of concept door opening method was developed, and can be seen in action below:</p>
                     <iframe width="560" height="315" src="https://www.youtube.com/embed/l1wfURd9jC8?start=27" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     
+                    <br/>
+                    <br/>
+
 
                 </div>	
             </div>
