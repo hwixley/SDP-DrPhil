@@ -8,42 +8,48 @@ title: Home
                     <h1 style="text-align: center;"><b><u>How does our System Work?</u></b></h1>
 
                     <figure>
-                        <img class="images" src="images/components.png">
+                        <img class="images" src="images/comms.png">
                         <figcaption style="text-align: center;"><i>Main Dr.Phil components</i></figcaption>
                     </figure>
                     
 
-                    <p>Dr. Phil consists of 5 interconnected sections:
+                    <p>Dr. Phil is made up of 5 interconnected subsystems:
                         <ul class="beginInd">
-                            <li><a href="#navigation">A navigation stack </a> which maps the environment and moves the robot to it's objectives.</li>
-                            <li><a href="#disinfection">A disinfecting stack </a> that pumps disinfectant to nozzles located at the top of the arm.</li>
-                            <li><a href="#armcontrol">An arm movement stack </a>that can grip doors as well as move for maximum spray coverage.</li>
-                            <li><a href="#app">An iOS app </a> that allows users to controls the robot at a high level.</li>
-                            <li><a href="#vision">A vision stack</a> which can detect door handles.</li>
+                            <li><a href="#navigation">Navigation systems </a> - movement, 2D motion planning, pathfinding, dyanmic obstacle avoidance</li>
+                            <li><a href="#disinfection">Disinfection systems </a> - control of disinfectant pumps</li>
+                            <li><a href="#armcontrol">Arm control </a> - arm motion planning </li>
+                            <li><a href="#app">IOS App </a> - scheduling, user control of the robot</li>
+                            <li><a href="#vision">Vision</a> - localization of handles in 3D, detection of handles and doors</li>
                         </ul>
                       </p>
 
-                        <p>The whole system is implemented in ROS, where each thread is implemented as a node. This is all ran on a Raspberry Pi, which also handles communications between the various sensors and the app. To control the behaviour of the robot and manage the individual stacks together, we implemented a <a href="#behaviour">behaviour tree </a> behaviour tree as a single node which is ran when a cleaning routine is started.
-                        </p>
-                    
+                    <p>The whole system is built in ROS (Robot Operating System), where features are separated into different nodes which communicate with each other using messages.
+                       All nodes are run on the Raspberry Pi, which also handles communications between the various sensors, encoders etc. as well as the remote PC which itself communicates with the App via ssh tunnel. 
+                       The execution flow is managed by a behaviour tree, which ties all of the available functionality together in a compact modular and extensible framework.
+                    </p>
+                
                     
 
-
+<!-- 
                     <p>Here is a sequence diagram which shows an example use case, this process would be planned and controlled by the behaviour tree node.</p>
-                    <img class="images" src="images/sequence_diagram.png">
-                    <h2 id="behaviour">Behaviour tree</h2>
-                    <p>To tie all the robot tasks, behaviour trees were employed. This is due to the need for modular behaviour composition, and reactivity,
-                      modularity, as well as ease of maintenance and readability. Alternatives considered, were finite state machines and their variations - but those were dismissed on account of the vast number of transitions required and the difficulty in maintaining,testing and growing complex behaviours as we go.
+                    <img class="images" src="images/sequence_diagram.png"> -->
+                    <h2 id="behaviour">Behaviour trees</h2>
+                    <p>To tie all the robot functionality together, behaviour trees were employed. This is due to the need for modular behaviour composition, and reactivity,
+                      modularity, as well as ease of maintenance and readability. Alternatives considered, were finite state machines and their variations - 
+                      but those were dismissed on account of the vast number of transitions required and the difficulty in maintaining,testing and growing complex behaviours as we go.</p>
                         <img class="images" style="max-width: 70%;" src="images/create_explore_frontier_and_save_map.png">
                         <figcaption>Behaviour tree for exploring a room and saving the map</figcaption>
-                        <p>The general structure of the project was designed to promote re-use of sub-trees of various sizes and test-ability of individual components.
-
-                            We used the py_trees and py_trees_ros ROS packages as the basic behaviour tree frameworks, both of which provide excellent documentation, backward compatibility and flexibility for extension.</p>
-
-                            <p>So, behaviour trees are a tree shaped model of execution flow. Each leaf in the tree describes an action to be per-formed, which when "ticked" returns one state out of "FAILURE","RUNNING", "SUCCESS", and then execution flow is modified appropriately by parent nodes.	
-		
-	                            Composite nodes can have multiple children and allow for the combination of multiple actions into a plan. An example of such node is the "Sequence" node which ticks all of its children in order. It does that until one returns with "FAILURE", at which point it prop-agates this state up the tree, or until all of its children return with"SUCCESS" at which point the Sequence propagates "SUCCESS"up the tree instead. Every time a child node is "RUNNING", so is the parent. For more information on behaviour trees please visit <a href="https://www.gamasutra.com/blogs/ChrisSimpson/20140717/221339/Behavior_trees_for_AI_How_they_work.php">Chris Simpson's guide</a></p>	
+                        <br/>
+                        <p>Behaviour trees are a tree-based model of execution flow. Each leaf in the tree describes an action to be per-formed, 
+                          which when "ticked" returns one state out of "FAILURE","RUNNING", "SUCCESS", and then execution flow is modified appropriately by parent nodes.	
+                          Composite nodes can have multiple children and allow for the combination of multiple actions into a plan. 
+                          An example of such node is the "Sequence" node which ticks all of its children in order. It does that until one returns with "FAILURE", 
+                          at which point it prop-agates this state up the tree, or until all of its children return with "SUCCESS" at which point the Sequence propagates "SUCCESS"
+                          up the tree instead. Every time a child node is "RUNNING", so is the parent. For more information on behaviour trees visit 
+                          <a href="https://www.gamasutra.com/blogs/ChrisSimpson/20140717/221339/Behavior_trees_for_AI_How_they_work.php">Chris Simpson's guide</a></p>	
 	                    
+                        <p>The general structure of the project was designed to promote re-use of sub-trees and test-ability of individual components.</p>
+  
 
                     <h2 id="navigation">Navigation</h2>
 
@@ -53,10 +59,18 @@ title: Home
                     <h5><b>b. Door Handle Localisation</b></h5>	
                     <i><h4></h4></i>	
                     <p>The door handle localisation algorithm uses geometry, the correspondence between lidar and camera rays to find out the 3D coordinates of the handle features within the image. We select the point of interest on our image, generate a 3D ray from the camera corresponding to all points mapping to that pixel, then perform intersection checks between this ray and the line segments formed by each consecutive lidar hit point. 	
-                    The algorithm assumes the door is a plane perpendicular to the floor, and that the handle feature is placed roughly 4cm away from the door. Once the algorithm computes the coordinates, the robot can then localise itself infront of the door so it is ready to disinfect the handle.</p>	
+                    The algorithm assumes the door is a plane perpendicular to the floor, and that the handle feature is placed roughly 4cm away from the door. Once the algorithm computes the coordinates, the robot can then localise itself infront of the door so it is ready to disinfect the handle.
+                    </p>
+                    <p>Robust linear regression is performed using the neighbouring laser readings to produce smoother readings due to noise</p>	
                     
                     <h5><b>c. Obstacle Avoidance</b></h5>	
+                    <p>
+                    The local planner used performs analysis on the lidar data and tries to identify basic shapes in their structure, such as lines points and polygons. 
+                    These are then observed over time to identify dynamic obstacles and modify plans so as to anticipate the motion of those obstacles. </p>
                     <iframe width="560" height="315" src="https://www.youtube.com/embed/14wAEholVJc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    
+                    <br/>
+                    <br/>
 
 
                     <h2 id="disinfection">Disinfection</h2>
@@ -89,18 +103,27 @@ title: Home
 		
 		
 	                      <h4>b. Sanitisation Path Planning</h4>
-	                      <p>The sanitisation path planning script uses the coordinates of the center of the handle and the vector normal to the door as inputs. The center of handle is found through object detection and getting the center of the image of the bounding box generated. These inputs are then used to calculate output coordinates on 3 different x-y axes which ensures each angle of the handle is covered, and are all 10cm away from the handle to maximise spray efficiency. Our spray diameter is currently larger than the width of our custom handle so only a single spray on the given x-z axes is required. In the future, we can adapt the distance of spraying to account for wider handles. After this, the z coordinates for these set of x,y points are calculated, this is done by considering the height of the door handle, and replicating these x,y points at multiple heights, described by the z coordinate. These set of 3d coordinates ensure the door handle is fully disinfectant and the whole handle has been covered.</p>    
-
+	                      <p>The sanitisation path planning script uses the coordinates of the center of the handle and the vector normal to the door as inputs. 
+                          The center of handle is found through object detection and getting the center of the image of the bounding box generated. 
+                          These inputs are then used to calculate output coordinates on 3 different x-y axes which ensures each angle of the handle is covered, 
+                          and are all 10cm away from the handle to maximise spray efficiency. 
+                          Our spray diameter is currently larger than the width of our custom handle so only a single spray on the given x-z axes is required. 
+                          In the future, we can adapt the distance of spraying to account for wider handles. 
+                          After this, the z coordinates for these set of x,y points are calculated, 
+                          this is done by considering the height of the door handle, and replicating these x,y points at multiple heights, 
+                          described by the z coordinate. These set of 3d coordinates ensure the door handle is fully disinfected and the whole handle has been covered.</p>
+                          <p>The disinfection path can be seen being executed below (red arrows within PIP are parts of the path)</p>    
+                        <iframe width="560" height="315" src="https://www.youtube.com/embed/QwFmh-6q3Y0?start=5" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
                     <h2 id="vision">Vision</h2>
                     <p>For our image recognition system we decided to use a version of YOLOv3, a neural network model used for real-time object detection (inc link), due to its fast and accurate output. More specifically, we decided to use YOLOv3-Tiny-PRN (PRN stands for Partial Residual Network) since it is faster in computation speed compared to other versions.	
 		
                       To train our model, we made a custom dataset of doors and door handles from footage of the robot exploring various Gazebo worlds. This was done since online datasets were not suitable for our mini door model we created in simulation. We extracted the frames at 10 fps and had to manually label the bounding boxes for the doors and handles. We trained the YOLO models using the darknet repository maintained by AlexeyAB (inc link from demo 2).</p>	
   
-                    <p>To carry out the door and door handle recognition algortihm, we use a Raspberry Pi camera is used along with the recognition model, here is a video which showcases the door recognition in action:</p>
-                      <video class="images" controls>
-                        <source src="images/doorvision.mp4">
-                      </video>
+                    <p>To carry out the door and door handle recognition algortihm, we use a Raspberry Pi camera along with the recognition model, 
+                      here is a video which showcases the door recognition in action:</p>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/Nu1slnQ2hZw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
                       <figcaption>Door & handle detection</figcaption>
                     <h2 id="app">App</h2>
                         <p>The iOS app is the preferred method of communicating with Dr.Phil. We decided to develop for iOS first because it has a market majority in the UK. We decided to use firebase, a cloud based noSQL storage solution, to bridge the connection between the two. We chose Firebase primarily as it's easily accessible from any platform, and our immediate goals involve developing an android/web app so Dr. Phil can be controlled on anything. Firebase was integrated into the app via cocoapods, and Dr.Phil via python libraries. The app was built using Swift.</p>
@@ -154,7 +177,7 @@ title: Home
 
                         
                     <h2 id="Door Opening"> Door Opening</h2>
-
+                    <p>A proof of concept door opening method was developed, and can be seen in action below:</p>
                     <iframe width="560" height="315" src="https://www.youtube.com/embed/l1wfURd9jC8?start=27" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     
 
