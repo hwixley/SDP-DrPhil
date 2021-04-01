@@ -206,7 +206,16 @@ title: How it works
 
                         
                     <h2 id="Door Opening"> Door Opening</h2>
-                    <p>A proof of concept door opening method was developed, and can be seen in action below:</p>
+                    <p>A proof of concept door opening method was developed, and can be seen in action below.</p>
+                    <p> The door opening is modeled as a behaviour tree, which positions performs the following steps:</p>
+                      <ol>
+                          <li><p>Position the robot in front of the door</p></li>
+                          <li><p>Approach the handle to be able to reach it with the arm</p></li>
+                          <li><p>Plan the arm motion to position the gripper over the handle and execute this plan</p></li>
+                          <li><p>Tighten the grippers</p></li>
+                          <li><p>Move backwards and left slowly</p></li>
+                          <li><p>Swing the arm left, open the grippers and retreat</p></li>
+                      </ol>
                     <div style="text-align: center;">
                     <iframe width="560" height="315" src="https://www.youtube.com/embed/l1wfURd9jC8?start=27" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                   </div>
