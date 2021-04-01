@@ -5,31 +5,36 @@ title: System
 
                <h1 style="text-align: center;"><u><b>The System</b></u></h1>
                 <h3><b>Concept</b></h3>
-<p>DR.PHIL is a autonomous robot that sanitises points of contact in buildings. It's able to automatically navigate through rooms on a schedule or manually, and spray disinfectant on high priority contact points.</p>
+<p>Dr.Phil is a fully autonomous robot which sanitises points of contact in buildings.</p> 
+   
+<p> Dr.Phil automatically navigates through around floors on a schedule set via companion App, and sprays disinfectant on high priority contact points.</p>
 
-<p>Dr.Phil would be perfect would be for hospitals, businesses or even homes with large floorplans that want more a sanitary environment. </p>
+<p>Dr.Phil is perfect for hospitals, businesses or even homes with large floorplans, especially those requiring more sterile environments. </p>
 
-<p>Our goal with Dr.Phil is to increase the efficiency of janitors and at the same time reduce their risk of contacting possible contaminants. It will help create a safe environment where employees, customers or patients won't need to worry about their health being compromised.</p>
+<p>Our goal with Dr.Phil is to increase the efficiency of janitors and at the same time reduce their risk of contacting possible contaminants.</p>
+   
+<p>We can help you create a safe environment where employees, customers or patients won't need to worry about their health being compromised.</p>
 
-<p>Some use cases include:</p>
+<h4><b>Use cases</b></h4>
 <ul style="margin-bottom: 0rem;">
    
    <li><p>As an office manager I want to schedule a sanitisation run every hour to reduce the number of cleaning shifts and save money.</p></li>
    <li><p>As a cleaner I want to be able to come to work when there is real work to be done so I don't have to sit idle until my shift is over. I also want to minimise physical contact with surfaces that are touched by many people.</p></li>
    <Li><p>As an employee in a busy office I want to be able to work in the midst of a pandemic knowing there is little risk of infection if i touch things I need to use over the course of a day</p></Li>
 </ul>
+
 <h3><b>Functionality</b></h3>
-<p>Dr.Phil is built on a turtlebot, which allows it to move around and has a LIDAR sensor for <b>automatic mapping</b> of it's environment.
-It can move around a floor by itself without manual intervention, opening doors via a robotic arm. Dr.Phil is <b>quick to setup</b> and moveable as a result.
+<p>The Dr.Phil prototype is built on top of a turtlebot, it is able to fully <b>map out</b> unknown environments using its LIDAR sensor.
+It can travel around a floor by itself without manual intervention, and manipulate its environment using its robotic arm. Dr.Phil is <b>quick to setup</b> and portable as a result.
 </p>
 <p>
-It detects and then <b>disinfects</b> door handles using an easily refillable spray, minimising physical contact.
-Dr. Phil can be controlled via an <b>easy-to-use</b> app, where one can set cleaning <b>schedules</b> as well as take manual control from <b>anywhere.</b>
-The app also shows Lifetime statistics and detailed current information. 
+Dr.Phil creates a map of its environment, detects all of the surfaces of interest (currently door handles) and saves their locations, and then <b>disinfects</b> these surfaces using an easily refillable spray, minimising physical contact.
+Dr.Phil can be controlled via an <b>easy-to-use</b> app, where one can set cleaning <b>schedules</b> as well as take manual control from <b>anywhere.</b>
+The app also shows Lifetime statistics and current status. 
 </p>
 
 <p>
-   For safety, an <b>emergency halt procedure</b> has been implemented so the robot can quickly return to it's station. The app also allows the user to immediately stop the robot wirelessly. An LED strip has also been installed which clearly shows it's current state of operation to nearby people.
+   For safety, an <b>emergency halt procedure</b> has been implemented so the robot can quickly return to it's station. The app also allows the user to immediately stop the robot wirelessly. An LED strip has also been installed to clearly convey its current state of operation to nearby people.
 </p>
 <figure>
 <video class="images" controls>
@@ -51,13 +56,13 @@ The app also shows Lifetime statistics and detailed current information.
 
 <img class="competitor" src="images/stepnpull.png"">
 <br>
-<p>These have the benefit of being cheaper (at only £33 per handle) and easier to install/maintain. However, they're not easily moveable and can't sanitise anything other than doors. StepNpull also wouldn't work for wheelchair users. Dr.Phil is easily transportable to different buildings and in extensions support cleaning different types of contact points.</p>
+<p>These have the benefit of being cheaper (at only £33 per handle) and easier to install/maintain. However, while these help to prevent the spread of disease and germs through doors, they still do not eliminate this possibility entirely and are not applicable to different types of surfaces. StepNpull also wouldn't work for wheelchair users. Dr.Phil is easily transportable to different buildings and in future extensions can support cleaning different types of contact points.</p>
 
 <p>A more comparable solution would be the Ultraviolet(UV) roller robots, such as those by <a href = "https://www.uvd-robots.com/">UVD robots</a>. </p>
 
 <img class="competitor" src="images/uvdrobots.png">
 <br>
-<p>UV is an excellent method of killing micro-organisms, however <a href="https://www.fda.gov/radiation-emitting-products/tanning/ultraviolet-uv-radiation#UVCrisks">UV is also dangerous to humans </a>, meaning it can't be used in currently occupied rooms. Dr. Phil uses a 70% alcohol disinfectant spray which effectively kills pathogens and has a low chance of affecting humans even on contact, allowing it to be used under these scenarios.</p>
+<p>UV is an excellent method of killing micro-organisms, however <a href="https://www.fda.gov/radiation-emitting-products/tanning/ultraviolet-uv-radiation#UVCrisks">UV is also dangerous to humans </a>, meaning it can't be used in currently occupied rooms. Dr. Phil uses a 70% alcohol disinfectant spray which effectively kills pathogens and has no chance of affecting humans even on contact, allowing it to be used under these scenarios.</p>
 
 <p>In relation to janitors, they themselves are possible transmission vectors, have limited working hours, and cost on average £20000 per year according to glassdoor. Our product is an opportunity for companies to add automation to their sanitisation protocols. As a result, this will cut costs and make disinfectant routines would be more efficient.</p>
 
@@ -67,20 +72,32 @@ The app also shows Lifetime statistics and detailed current information.
 <p>We found a number of potential improvements to Dr. Phil, mostly revolving around sanitising more places and more things.</p>
 <ul>
    <li><p><b>Door opening:</b>
-      We've made significant progress with door opening, as shown in the <a href="howitworks.html">How it works</a> section. We are confident that this feature is achievable if we had more time. As part of our original minimum viable product, a door-opening Dr. Phil means doors won't have to be left open for it to be able to disinfect the floor.
-   </p></li>
-
+      We've made significant progress with door opening, as shown below. We are confident this future can be fully developed as part of a full prototype. As part of our original minimum viable product, a door-opening Dr. Phil means doors won't have to be left open for it to be able to disinfect the floor.
+   </p>
+   <iframe style="text-align: center" width="560" height="315" src="https://www.youtube.com/embed/NKtOQwqVrPU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+   </li>
    <li>
-      <p><b>Accessing different floors via elevator:</b> Dr.Phil currently can only navigate one floor. Using vision, Dr.Phil can locate lifts and use them to traverse floors safely. This would mean a single robot could potentially be responsible for multiple floors/small multi-storey buildings. This would require a similar development process to door opening ; locating the lift/panels , pressing the buttons, going in and out. The arm would also need to be modified so it can press the floor buttons accurately.</p>
+      <p><b>Accessing different floors via elevator:</b> Dr.Phil currently can only navigate one floor. Using vision, 
+         Dr.Phil could locate lifts and use them to traverse floors safely. 
+         This would mean a single robot could potentially be responsible for multiple floors/small multi-storey buildings. 
+         Our team has made considerable progress with vision, and extensions using the Yolo network could easilly be applied to detect lift interfaces. With a full prototype with a larger, more accurate arm, we could easilly incorporate this feature</p>
 
+   <iframe width="560" height="315" src="https://www.youtube.com/embed/Nu1slnQ2hZw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
    </li>
 
    <li>
-      <p><b>Sanitising more kinds of door handles/contact points:</b> Dr.Phil currently can only disinfect lever door handles. By training more types of handles/contact points, Dr.Phil will be able to recognise these in buildings and disinfect those as well, increasing it's productivity. This will require more AI as well as improved grippers for navigating different types of doors (perhaps as an extension.)</p>
+      <p><b>Sanitising more kinds of door handles/contact points:</b> 
+         Dr.Phil currently can only disinfect simple door handles. 
+         By training more types of handles/contact points, Dr.Phil will be able to recognise these in buildings and disinfect those as well. 
+         All of our algorithms were designed to be extensible in this regard.</p>
    </li>
 
    <li>
-      <p><b>Monitoring social distancing guidelines:</b>By detecting the number of people and their proximity to each other, as well as whether they were wearing masks or not, Dr.Phil will be able to help people adhere to social distancing guidelines. This can be done by extending it's vision capabilities to recognise masks and calculate distances between people. The data stored will have to be carefully handled to account for privacy concerns.</p>
+      <p><b>Vacuum cleaning functionality</b> 
+         Dr. Phil could be easilly extended with a vacuum cleaning module to vastly increase its applications. We have already designed algorithms allowing Dr. Phil to travel every square inch of a floor as shown below.</p>
+         <video controls>
+            <source src="images/vacuum-ok.mp4">
+         </video>
    </li>
 
 </ul>
