@@ -36,7 +36,7 @@
                   </a>
             </div>
             <div id="menu" style="margin: auto;background-color: grey; height:max-content;">
-               <div id="wrap">
+               <div id="wrap" class="col-md-8">
                   <ul style="justify-content: space-between;display: flex;">
                      <li class="link navitem" id="welcome.html"> <a href="./index.html" style="display: block; overflow: auto;">Welcome     </a></li>
                      <li class="link navitem" id="system.html"    > <a href="./system.html"    >System      </a></li>
@@ -44,6 +44,7 @@
                      <li class="link navitem" id="evaluation.html"> <a href="./evaluation.html">Evaluation  </a></li>
                      <li class="link navitem" id="budget.html"    > <a href="./budget.html"    >Budget      </a></li>
                      <li class="link navitem" id="team.html"      > <a href="./team.html"      >Team        </a></li>
+                     <li class="link navitem" id="faq.html"      > <a href="./faq.html"      >FAQ        </a></li>
                   </ul>
                </div>
             </div>
@@ -112,12 +113,12 @@
 
                         
                         <br>
-                        <p>The disinfection stack is primarily hardware based. We have a pump which pumps water from the base of the turtlebot  to the nozzle located at the top of the arm. This is necessary because the liquid storage tank is heavy and would unbalance the arm if installed on it. As the tank is directly on top of the turtlebot, any spillage would be disastrous. Therefore the tank has a screw cap so it won't spill during normal operation whilst still being easy to remove and refill. </p>
+                        <p>The disinfection stack is primarily hardware based. We have a pump which pumps water from the base of the turtlebot  to the nozzle located at the top of the arm. As the tank is directly on top of the turtlebot, any spillage would be disastrous. Therefore the tank has a screw cap so it won't spill during normal operation whilst still being easy to remove and refill. </p>
 
                         <h4>a. The Nozzles</h4>
                         <img class="images" style="width: 70%" src="images/nozzleCAD.png">
                         <figcaption><i>Nozzle in CAD</i></figcaption>
-                        <p>To spray the disinfectant onto contact points, we ultimately decided to use three 60 degree full-cone nozzles, which evenly distributes the disinfectant inside their spray areas. We needed three nozzles as one wasn't enough to cover the handle fully. A full-cone nozzle is important to ensure the spray will cover contact points efficently and accurately as seen in the <a href="./evaluation.html">evaluation</a> section. A further benefit is that the spray simulation we created in gazebo has similar properties to the full cone (namely a even and full spread) so we can be sure that it's a good representation of the real functionality. </p>
+                        <p>To spray the disinfectant onto contact points, we ultimately decided to use three 60 degree full-cone nozzles, which evenly distributes the disinfectant inside their spray areas. We needed three nozzles as one wasn't enough to cover the handle fully. A full-cone nozzle is important to ensure the spray will cover contact points efficently and accurately as seen in the <a href="./evaluation.html">evaluation</a> section. A further benefit is that the spray simulation we created in gazebo has similar properties to the full cone (namely a even and full spread) so we can be sure that it's a good representation of real life. </p>
 
                         
                         
@@ -125,7 +126,7 @@
                         <figcaption>Three nozzles in simulation.</figcaption>
 
                         <h4>b. Control</h4>
-                        <p>Dr. Phil controls the pump via the 12V openCR board on the turtlebot, which is itself connected to a motor board. This is so there's enough power for the pump to lift the water up to door handle height. We also have a LED strip which was used to simulate when spraying was happening, which is useful for informing nearby people about the status of Dr.Phil.</p>
+                        <p>Dr. Phil controls the pump via the 12V openCR board on the turtlebot, which is itself connected to a motor board. We also have a LED strip which was used to simulate when spraying was happening, which is used for informing nearby people about the status of Dr.Phil.</p>
 
                         <p>As seen in the image, we also had to create fixings to keep everything still, as the robot might accidentally dislodge components when moving.</p>
                     <h2 id="armcontrol">Arm control</h2>
