@@ -65,7 +65,7 @@ title: How it works
                     <h5><b>b. Door Handle Localisation</b></h5>	
                     <i><h4></h4></i>	
                     <p>The door handle localisation algorithm uses geometry, the correspondence between lidar and camera rays to find out the 3D coordinates of the handle features within the image. We select the point of interest on our image, generate a 3D ray from the camera corresponding to all points mapping to that pixel, then perform intersection checks between this ray and the line segments formed by each consecutive lidar hit point. 	
-                    The algorithm assumes the door is a plane perpendicular to the floor, and that the handle feature is placed roughly 4cm away from the door. Once the algorithm computes the coordinates, the robot can then localise itself infront of the door so it is ready to disinfect the handle.
+                    The algorithm assumes the door is a plane perpendicular to the floor, and that the handle feature is placed roughly 4cm away from the door. Once the algorithm computes the coordinates, the robot can then localise itself in front of the door so it is ready to disinfect the handle.
                     </p>
                     
                     <p>Robust linear regression is done utilising the neighbouring laser readings to produce smoother readings due to noise.</p>	
@@ -97,7 +97,7 @@ title: How it works
                         <h4>a. The Nozzles</h4>
                         <img class="images" style="width: 70%" src="images/nozzleCAD.png">
                         <figcaption><i>Nozzle in CAD</i></figcaption>
-                        <p>To spray the disinfectant onto contact points, we ultimately decided to use three 60 degree full-cone nozzles, which evenly distributes the disinfectant inside their spray areas. We needed three nozzles as one wasn't enough to cover the handle fully. A full-cone nozzle is important to ensure the spray will cover contact points efficently and accurately as seen in the <a href="./evaluation.html">evaluation</a> section. A further benefit is that the spray simulation we created in gazebo has similar properties to the full cone (namely a even and full spread) so we can be sure that it's a good representation of real life. </p>
+                        <p>To spray the disinfectant onto contact points, we ultimately decided to use three 60 degree full-cone nozzles, which evenly distributes the disinfectant inside their spray areas. We needed three nozzles as one wasn't enough to cover the handle fully. A full-cone nozzle is important to ensure the spray will cover contact points efficiently and accurately as seen in the <a href="./evaluation.html">evaluation</a> section. A further benefit is that the spray simulation we created in gazebo has similar properties to the full cone (namely a even and full spread) so we can be sure that it's a good representation of real life. </p>
 
                         
                         
@@ -146,7 +146,7 @@ title: How it works
                         <iframe width="560" height="315" src="https://www.youtube.com/embed/QwFmh-6q3Y0?start=5" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                       </div>
                     <h2 id="vision">Vision</h2>
-                    <p>Using cutting-edge Machine Learning technology, our image recognition system does performingly well at identifying the objects we're interested in. It adopts a version of <a href="https://pjreddie.com/media/files/papers/yolo_1.pdf">YOLOv3 (Joseph Redmon et al., 2016)</a>, a neural network model used for real-time object detection, called YOLOv3-Tiny-PRN (for Partial Residual Network) due to its faster computation speed <a href="https://openaccess.thecvf.com/content_ICCVW_2019/papers/LPCV/Wang_Enriching_Variety_of_Layer-Wise_Learning_Information_by_Gradient_Combination_ICCVW_2019_paper.pdf">(Chien-Yao Wang1 et al., 2019)</a>. While the tinier version detoriorates from accuracy compared to its stronger but slower model, it enables us to pack the power of ML in a small computer board such as the Raspberry Pi due to its significant faster computation speed without any GPU requirements. </p>
+                    <p>Using cutting-edge Machine Learning technology, our image recognition system does performingly well at identifying the objects we're interested in. It adopts a version of <a href="https://pjreddie.com/media/files/papers/yolo_1.pdf">YOLOv3 (Joseph Redmon et al., 2016)</a>, a neural network model used for real-time object detection, called YOLOv3-Tiny-PRN (for Partial Residual Network) due to its faster computation speed <a href="https://openaccess.thecvf.com/content_ICCVW_2019/papers/LPCV/Wang_Enriching_Variety_of_Layer-Wise_Learning_Information_by_Gradient_Combination_ICCVW_2019_paper.pdf">(Chien-Yao Wang1 et al., 2019)</a>. While the tinier version deteriorates from accuracy compared to its stronger but slower model, it enables us to pack the power of ML in a small computer board such as the Raspberry Pi due to its significant faster computation speed without any GPU requirements. </p>
                       		
                     <p>Our model was trained on a custom dataset of doors and door handles that was manually labeled by our team. The first two iterations involved us creating synthetic datasets, images of various obstacles surrounded by extreme static noise. However, we realised that this did not work during deployment. Eventually, we gathered footage of the robot exploring various worlds from Gazebo, a 3D robotics Simulator, including a few images gathered from the real world dataset. This was done since online datasets were not suitable for our mini door model we created in simulation due to the texture differences found in a simulation. We trained the YOLO models using the darknet repository maintained by <a href="https://pjreddie.com/darknet/yolo/">AlexeyAB</a>.</p>	
   
@@ -166,7 +166,7 @@ title: How it works
                       <figcaption>Results of handle exploration, green cells are explored cells, and markers showcase the positions of door detections</figcaption>
                     </figure>
                     <p><i>Privacy concerns</i>: <br>
-                      To carry out the door and handle recognition algortihm, we use a Raspberry Pi camera along with the recognition model. The camera is only used to process data on its surroundings. In our system, it also helps us in the disinfection process as we determine the direction perpendicular to a surface, which enables our robot to face the door in front of it. We do not store any images once we process them, as Dr.Phil and its crew understand the concerns this might raise of having a camera around.
+                      To carry out the door and handle recognition algorithm, we use a Raspberry Pi camera along with the recognition model. The camera is only used to process data on its surroundings. In our system, it also helps us in the disinfection process as we determine the direction perpendicular to a surface, which enables our robot to face the door in front of it. We do not store any images once we process them, as Dr.Phil and its crew understand the concerns this might raise of having a camera around.
                   
                     <h2 id="app">App</h2>
                         <p>The iOS app is the preferred method of communicating with Dr.Phil. We decided to develop for iOS first because it has a market majority in the UK. We decided to use firebase, a cloud based noSQL storage solution, to bridge the connection between the two. We chose Firebase primarily as it's easily accessible from any platform, and our immediate goals involve developing an android/web app so Dr. Phil can be controlled on anything. Firebase was integrated into the app via cocoapods, and Dr.Phil via python libraries. The app was built using Swift.</p>
@@ -199,7 +199,7 @@ title: How it works
                             </div>
                           </div>
                         
-                        <p>Changing settings in the app would then push those settings to firebase. A local server regularly reads the firebase settings and sends those to Dr.Phil, which then updates itself accordingly. Firebase would easily allow an user to connect to to more than one Dr.Phil at a time, and minimises setup necessary to pair up the app and the bot.</p>
+                        <p>Changing settings in the app would then push those settings to firebase. A local server regularly reads the firebase settings and sends those to Dr.Phil, which then updates itself accordingly. Firebase would easily allow an user to connect to more than one Dr.Phil at a time, and minimises setup necessary to pair up the app and the bot.</p>
                         <div class="container-fluid">
                             <div class="row">
                               <div class="col-md-6">
@@ -226,7 +226,7 @@ title: How it works
                         
                     <h2 id="Door Opening"> Door Opening</h2>
                     <p>A proof of concept door opening method was developed, and can be seen in action below.</p>
-                    <p> The door opening is modeled as a behaviour tree, which positions performs the following steps:</p>
+                    <p> The door opening is modelled as a behaviour tree, which positions performs the following steps:</p>
                       <ol>
                           <li><p>Position the robot in front of the door</p></li>
                           <li><p>Approach the handle to be able to reach it with the arm</p></li>

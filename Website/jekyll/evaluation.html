@@ -42,14 +42,14 @@ title: Evaluation
                         <p>Our initial plan was to use Logistic Regression to classify whether an image frame contained a door. If the classifier predicts the possibility of a door in an image, we would process it to detect where that object is. This was done with the intention to maximise efficiency; however, while the classification evaluation results reveal more accuracy (higher mAP) and higher recall (most of the relevant results are returned to us) than YOLOv3, they performed poorly upon classifying doors from afar in implementation testing. This may be attributed to being overfit to the closer samples in our dataset, unlike YOLOv3 which combats it through techniques such as batch normalisation and weight decay. Thus we chose to opt for one of the YOLO models.</p>
                         <p>Hence, since efficiency is important to us as the Raspberry Pi isn't very powerful and the recognition has to be real time, we decided to trade off accuracy for speed. In fact, from the research papers, we also identified that YOLOv3 and its tinier versions are still relatively fast compared to Convolutional NNs due to it's implementation.</p>
                         <h3 style="font-size:large"><b>YOLO Performance?</b></h3>
-                        <p>When we evaluated the performance, we noticed a very low number on recall for handles, since we thought dividing the recall instead of averaging them would tell us more about the behaviour of the model. The lower f1 score for the tiny version of YOLO versus the YOLO model further demonstrates the imbalance between precision and recall. Upon reflection, these numbers quantify what we were  seeing in our implementation testing, in that it had difficulty in detecing handles from a distance. A possible explanation could be that the input size 416x416 is still very little  for  Tiny  YOLO  to  infer accurately and may perform poorly on small sized objects.  Snippets at a particular distance using different versions of the model is shown in the figure below.</p>
+                        <p>When we evaluated the performance, we noticed a very low number on recall for handles, since we thought dividing the recall instead of averaging them would tell us more about the behaviour of the model. The lower f1 score for the tiny version of YOLO versus the YOLO model further demonstrates the imbalance between precision and recall. Upon reflection, these numbers quantify what we were  seeing in our implementation testing, in that it had difficulty in detecting handles from a distance. A possible explanation could be that the input size 416x416 is still very little  for  Tiny  YOLO  to  infer accurately and may perform poorly on small sized objects.  Snippets at a particular distance using different versions of the model is shown in the figure below.</p>
                         <figure>
                           <img class="images" style="width: 70%;" src="images/evaluation/yolocomparison.png">
                           <figcaption>Input Image size passed to the models: a) 416x416 b) 416x416 c)192x192; On OpenCV-DNN (CPU only), 16 GB RAM - Macbook Pro-2015. The numbers next to the class names are confidence scores.</figcaption>
                         </figure>
                           <p>Ultimately, the low recall is not an issue because if we can essentially detect the  door with a confidence value of 0.30 and higher, then we could get closer to the door, and the model will have more pixel information to determine where the handle is in the door. </p>
                           <ul>Other alternatives that the model could proceed in the future: 
-                          <li><i>Choosing YOLOv3 with lower input size</i>: We could look into ways of accelerating the performance by using a <a href="https://coral.ai/docs/accelerator/get-started/">USB accelerator</a>. The main issue with the YOLOv3 model was that the FPS (frames per second) was very low, ~0.5 FPS at the same 416x416 resolution, depsite returning much better results. So, getting a tool that can help accelerate the ML models would help us get the power of both accuracy and increasing speed. This will involve converting our current models to a Tensorflow or the appropriate type.</li>
+                          <li><i>Choosing YOLOv3 with lower input size</i>: We could look into ways of accelerating the performance by using a <a href="https://coral.ai/docs/accelerator/get-started/">USB accelerator</a>. The main issue with the YOLOv3 model was that the FPS (frames per second) was very low, ~0.5 FPS at the same 416x416 resolution, despite returning much better results. So, getting a tool that can help accelerate the ML models would help us get the power of both accuracy and increasing speed. This will involve converting our current models to a Tensorflow or the appropriate type.</li>
                           <li><i>Further improving detection results on handles</i>: This can be done by training it with more examples of what handles look like from afar and reduce more instances of overfitting in the dataset.</li>
                           </ul>
 
@@ -72,7 +72,7 @@ title: Evaluation
 
                         <p>We gathered our participants from another SDP group, and received 7 responses in total. Although this is a relatively low number, as stated in the accessibility workshop only 5 participants is enough to capture the super-majority of obvious problems.</p>
 
-                        <p>We asked the particpants what they would do to perform an emergency halt from relevant app screen, as well as reading scheduling information from the app. We also asked them to rate the design/consistency of the UI out of 5, and open-ended questions about parts of the UI that they felt were not clear.</p>
+                        <p>We asked the participants what they would do to perform an emergency halt from relevant app screen, as well as reading scheduling information from the app. We also asked them to rate the design/consistency of the UI out of 5, and open-ended questions about parts of the UI that they felt were not clear.</p>
 
                         <table class="table table-striped table-light">
                             <thead class="table-dark">
@@ -137,7 +137,7 @@ title: Evaluation
                             </tbody>
                         </table>
 
-                        <p>From the user study, we found that the return screen was ambigious in it's meaning. The app was also not particularly visually appealing, but this is something easily improveable before launch. </p>
+                        <p>From the user study, we found that the return screen was ambiguous in it's meaning. The app was also not particularly visually appealing, but this is something easily improvable before launch. </p>
                         <div class="row" style="text-align: center;">
                           <div class="inline-block col-md-6">
                             <img class="images" src ="images/evaluation/oldreturn.png" style="width: 50%;">
@@ -164,13 +164,13 @@ title: Evaluation
                         <hr/>
                         <h4>Brief Explanation on the terminology used:</h4>
                         <ul>
-                            <li><i>IoU</i>: Abbreviation for Intersection over union.  A measurementthat signifies the overlap between 2 boundaries. Used to determine what constitutes as a true positive if the measurement retrieved by evaluating the area between the bounding boxes predicted by the model and the bounding boxes from the ground truth (manually annotated labels).</li>
-                            <li><i>Confidence Score</i>:   The  probability  that  an  object  (eg.of class=handle) exists in the bounding box predicted the algorithm (i.e From the name, it tells you how confident it is that this is an object of a certain class).</li>
+                            <li><i>IoU</i>: Abbreviation for Intersection over union.  A measurement that signifies the overlap between 2 boundaries. Used to determine what constitutes as a true positive if the measurement retrieved by evaluating the area between the bounding boxes predicted by the model and the bounding boxes from the ground truth (manually annotated labels).</li>
+                            <li><i>Confidence Score</i>:   The  probability  that  an  object  (eg. of class=handle) exists in the bounding box predicted the algorithm (i.e From the name, it tells you how confident it is that this is an object of a certain class).</li>
                             <li><i>AP</i>: From <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html">sckit-learn</a>, Average Precision "summarizes a precision-recall curve as the weighted mean of precisions achieved at each threshold, with the increase in recall from the previous threshold used as the weight".</li>
-                            <li><i>mAP</i>:The average of the APs calculated for each class. Used as indiciation of the accuracy performance of the object detection models. </li>
-                            <li><i>Precision</i>: Frequency with which retrieved predictions are relevantor correct.</li>
+                            <li><i>mAP</i>:The average of the APs calculated for each class. Used as indication of the accuracy performance of the object detection models. </li>
+                            <li><i>Precision</i>: Frequency with which retrieved predictions are relevant or correct.</li>
                             <li><i>Recall</i>: Fraction of relevant instances that were retrieved.</li>
-                            <li> <i>F1-Score</i>:Used to statistically analyse a test’s accuracy, which is aweighted average of precision and recall.</li>
+                            <li> <i>F1-Score</i>:Used to statistically analyse a test’s accuracy, which is a weighted average of precision and recall.</li>
                             <li> <i>FPS</i>: Frames per second.  Used in testing to note the speed of the model in a device, though the numbers themselves on the data do not reflect the speed on the raspberry pi as each device could be faster or slower depending on their specifications. However, it is used to give relative intuition of its computational speed on the same machine.</li> 
                             <li> <i>FLOPS</i>:Floating  Point  Operations  per  Second.   A  measure  of computer  CPU  load  -  number  of  floating-point  operations  per second.  Higher FLOPs indicate more expensive computational power;hence why usually training Neural network models has to be done through GPU.</li>
                         </ul>
