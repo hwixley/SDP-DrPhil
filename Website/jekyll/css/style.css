@@ -15,9 +15,16 @@ img { border: none; }
 a { color: #57626a; text-decoration: none; }
 a:hover { text-decoration: underline; color : #000; }
 
-#wrap {
-margin: 0 auto;
-width: 900px;
+
+.main{
+  margin: 0 auto;
+  width: 90%;
+}
+
+.top{
+  align-content: center;
+  margin:auto;
+  width: 54%;
 }
 
 #header { 
@@ -52,6 +59,7 @@ line-height: 40px;
 background: #57626a no-repeat;
 text-transform: uppercase;
 }
+
 #menu ul {
 padding-left: 10px;
 list-style-type: none;
@@ -115,9 +123,6 @@ text-decoration: none;
 padding: 20px 0px;
 }
 
-#corps_central {
-
-}
 
 
 
@@ -181,6 +186,11 @@ padding: 10px;
   border-bottom: 1px solid black;
 }
 
+#navbar{
+  margin: 0 auto;
+  width: 60%;
+}
+
 .blog-header-logo{
   font-size: 5rem;
   font-weight: bolder;
@@ -189,6 +199,7 @@ padding: 10px;
 }
 
 .top{
+  margin:auto;
   padding-bottom: 1rem;
 }
 
