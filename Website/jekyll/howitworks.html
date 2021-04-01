@@ -145,9 +145,16 @@ title: How it works
                     </div>
                       <figcaption>Door & handle detection</figcaption>
                       <br>
-
+                    
+                    <h4>Handle exploration</h4>
+                    <p>Once a map of the environment is present, the Dr. Phil employs its vision and navigation abilities, to scan the entire floorplan for doors. The area is split into fully unoccupied cells of a set size,
+                    and the robot ordered to travel to each and rotate in place slowly. Detections are recorded in the occupancy map, and at the very end clustered using hierarchical clustering. Outliers/False positives are removed based on cluster size (true doors will have much larger amounts of detections)</p>
+                    <figure>
+                      <img class="images" src="images/big-room-door-explore.png">
+                      <figcaption>Results of handle exploration, green cells are explored cells, and markers showcase the positions of door detections</figcaption>
+                    </figure>
                     <p><i>Privacy concerns</i>: <br>
-                      To carry out the door and handle recognition algortihm, we use a Raspberry Pi camera along with the recognition model. The camera is only used to process data on its surroundings. In our system, it also helps us in the disinfection process as we determine the direction perpendicular to a surface, which enables our robot to face the door in front of it. We do not store the data once we process them, as Dr.Phil and its crew understand the concerns this might raise of having a camera around.
+                      To carry out the door and handle recognition algortihm, we use a Raspberry Pi camera along with the recognition model. The camera is only used to process data on its surroundings. In our system, it also helps us in the disinfection process as we determine the direction perpendicular to a surface, which enables our robot to face the door in front of it. We do not store any images once we process them, as Dr.Phil and its crew understand the concerns this might raise of having a camera around.
                   
                     <h2 id="app">App</h2>
                         <p>The iOS app is the preferred method of communicating with Dr.Phil. We decided to develop for iOS first because it has a market majority in the UK. We decided to use firebase, a cloud based noSQL storage solution, to bridge the connection between the two. We chose Firebase primarily as it's easily accessible from any platform, and our immediate goals involve developing an android/web app so Dr. Phil can be controlled on anything. Firebase was integrated into the app via cocoapods, and Dr.Phil via python libraries. The app was built using Swift.</p>
