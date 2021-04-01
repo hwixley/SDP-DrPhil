@@ -66,5 +66,9 @@ Thumbs.db
 # IDE files
 .vscode
 
+
+# Jekyll
+**_site
 # Local rules #
 ###############
+
