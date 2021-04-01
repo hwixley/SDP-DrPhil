@@ -1,6 +1,7 @@
 ./_site/*
+_site
 Website/jekyll/_site/feed.xml
-
+_site/*
 .sass-cache
 .jekyll-cache
 .jekyll-metadata
