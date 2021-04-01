@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Home
+title: How it works
 ---
                 
                 <div id="corps_central"> 
@@ -132,7 +132,7 @@ title: Home
                         <iframe width="560" height="315" src="https://www.youtube.com/embed/QwFmh-6q3Y0?start=5" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                       </div>
                     <h2 id="vision">Vision</h2>
-                    <p>Using cutting-edge Machine Learning technology, our image recognition system does performingly well at identifying the objects we're interested in. It adopts a version of <a href="https://pjreddie.com/media/files/papers/yolo_1.pdf">YOLOv3</a> (Joseph Redmon et al., 2016), a neural network model used for real-time object detection, called YOLOv3-Tiny-PRN (for Partial Residual Network) due to its faster computation speed. While the tinier version detoriorates from accuracy compared to its stronger but slower model, it enables us to pack the power of ML in a small computer board such as the Raspberry Pi due to its significant faster computation speed without any GPU requirements. </p>
+                    <p>Using cutting-edge Machine Learning technology, our image recognition system does performingly well at identifying the objects we're interested in. It adopts a version of <a href="https://pjreddie.com/media/files/papers/yolo_1.pdf">YOLOv3 (Joseph Redmon et al., 2016)</a>, a neural network model used for real-time object detection, called YOLOv3-Tiny-PRN (for Partial Residual Network) due to its faster computation speed <a href="https://openaccess.thecvf.com/content_ICCVW_2019/papers/LPCV/Wang_Enriching_Variety_of_Layer-Wise_Learning_Information_by_Gradient_Combination_ICCVW_2019_paper.pdf">(Chien-Yao Wang1 et al., 2019)</a>. While the tinier version detoriorates from accuracy compared to its stronger but slower model, it enables us to pack the power of ML in a small computer board such as the Raspberry Pi due to its significant faster computation speed without any GPU requirements. </p>
                       		
                     <p>Our model was trained on a custom dataset of doors and door handles that was manually labeled by our team. The first two iterations involved us creating synthetic datasets, images of various obstacles surrounded by extreme static noise. However, we realised that this did not work during deployment. Eventually, we gathered footage of the robot exploring various worlds from Gazebo, a 3D robotics Simulator, including a few images gathered from the real world dataset. This was done since online datasets were not suitable for our mini door model we created in simulation due to the texture differences found in a simulation. We trained the YOLO models using the darknet repository maintained by <a href="https://pjreddie.com/darknet/yolo/">AlexeyAB</a>.</p>	
   
@@ -150,11 +150,14 @@ title: Home
                     <h2 id="app">App</h2>
                         <p>The iOS app is the preferred method of communicating with Dr.Phil. We decided to develop for iOS first because it has a market majority in the UK. We decided to use firebase, a cloud based noSQL storage solution, to bridge the connection between the two. We chose Firebase primarily as it's easily accessible from any platform, and our immediate goals involve developing an android/web app so Dr. Phil can be controlled on anything. Firebase was integrated into the app via cocoapods, and Dr.Phil via python libraries. The app was built using Swift.</p>
 
-                      <video class="images" controls>
-                        <source src="images/app_user_example.mp4">
-                          
-                      </video>
+                      <p> Here is a video showcasing how the app works:</p>
+                     <div style="text-align: center;">
+                     <iframe class="images" width="560" height="315" src="https://youtube.com/embed/lDQDpcgaOjw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                      </div>
+                      
+                      
                       <figcaption>Updating firebase from app</figcaption>
+                      <p></p>
                         <p>For the user to actually communicate, they would first securely login to the app, establishing a connection with firebase.</p>
                         <div class="container-fluid">
                             <div class="row">

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Home
+title: Evaluation
 ---
                 <div id="corps_central"> 
             
@@ -11,6 +11,8 @@ title: Home
 
                         <p>
                         We ran a number of tests in simulation to demonstrate the effectiveness of Dr.Phil's components, as well as to make decisions on the best method to use based on empirical evidence.
+                        <p>At the end of the section, we provide a brief explanation of the terminologies at the bottom of the page to help with understanding the process </p>
+
                         </p>
                         <h2>SLAM navigation testing</h2>
                         <p>We used three different worlds to evaluate the effectiveness of the SLAM mapping stack and see if it sufficiently maps out a normal working environment.</p>
@@ -23,19 +25,36 @@ title: Home
 
                         <p>The probability of a collision of the robot with a blind pre-programmed agent was estimated at ~1/3 in another experiment where maps generated were given to the robot while it was tasked to follow a pre-recorded trajectory (3 times), twice, once with un-mapped static and dynamic obstacles (moving back and forth through the robot's path at 0.5 m/s). Note that only collisions in which the robot did not attempt to avoid the obstacle were counted. The true and localized path was also measured, no correlation between localization error and the presence of obstacles was found. The absolute localization error per measurement was on average 0.03m in arena and house worlds and 0.3m in c-room. This is to be expected since the c-room map did not preserve the area or length of the room, otherwise the robot localized very accurately using reasonable maps.</p>
                         <h2>Door handle recognition</h2>
-                        <p>The door handle recognition algorithm had to be fast enough to process the video feed from the camera, but also detect all of the door handles that are seen (high recall). After generating our door handle dataset, we decided to train some different models to test their performance on classification.</p>
-
-                        <img class="images" style="width: 70%;" src="images/evaluation/recognitioncomp.png">
-
-                        <p>We initially chose Linear regression and SVM due to their speed and familiarity, which is important as the Raspberry Pi isn't very powerful and the recognition has to be real time. From research papers, we also identified YOLOv3 as a contender. Although YOLOv3 uses neural networks, it's still relatively fast compared to CNNs due to it's implementation.
-                        </p>
-                        <p>
-                            Despite the better recall shown for the Logistic Regression and SVM models, they performed poorly upon classifying doors from afar in implementation testing. This can be attributed to being overfit to the closer samples in our dataset. Thus we chose to opt for the YOLO models as they are less prone to overfitting as shown by adding real world doors samples to the dataset.
-                        </p>
-                        <img class="images" style="width: 70%;" src="images/evaluation/yolocomparison.png">
-                        <p>The main issue with the YOLOv3 model was that the FPS was very low, ~0.5 fps at the same 416x416 resolution, although it had better performance. Even though Tiny-PRN has poor recall on the handle, we realised that lowering the confidence score (the amount of certainty the model has that the door is present) allows us to detect and move to doors more optimistically, and once Dr.Phil gets closer the resolution on the door handle will increase, making it more likely to be detected. In the end, we chose the YOLOv3-Tiny-PRN model as lowering the confidence score partially compensated for the low recall issue.</p>
+                        <p>The door handle recognition algorithm had to be fast enough to process the video feed from the camera, but also detect all of the door handles that are seen (higher recall). After generating our final door handle dataset, we decided to train some different models to test their performance on classification.</p>
+                        <div style="display: block; margin:2px; width: 100%; overflow: hidden;">
+                          <div style="width: 50%; float: left; display:block">
+                            <img class="images" src="images/evaluation/recognitioncomp.png">
+                          </div>
+                          <div style="width: 37%; float: right; display:block;">
+                          <figure>
+                            <img class="images" src="images/evaluation/Performance-of-tiny-YOLOv3-and-YOLOv3-on-the-COCO-Dataset-Redmon-2020.ppm(1).png">
+                            <figcaption>YOLO and its other versions' performances compared to other Neural Network models. Trained on Microsoft COCO dataset - Image taken from the <a href="https://pjreddie.com/darknet/yolo/">authors of YOLO's work</a></figcaption>
+                          </figure>
+                          </div>
+                        </div>
+              
+                        <h3 style="font-size:large"><b>Comparing the different models</b></h3>
+                        <p>Our initial plan was to use Logistic Regression to classify whether an image frame contained a door. If the classifier predicts the possibility of a door in an image, we would process it to detect where that object is. This was done with the intention to maximise efficiency; however, while the classification evaluation results reveal more accuracy (higher mAP) and higher recall (most of the relevant results are returned to us) than YOLOv3, they performed poorly upon classifying doors from afar in implementation testing. This may be attributed to being overfit to the closer samples in our dataset, unlike YOLOv3 which combats it through techniques such as batch normalisation and weight decay. Thus we chose to opt for one of the YOLO models.</p>
+                        <p>Hence, since efficiency is important to us as the Raspberry Pi isn't very powerful and the recognition has to be real time, we decided to trade off accuracy for speed. In fact, from the research papers, we also identified that YOLOv3 and its tinier versions are still relatively fast compared to Convolutional NNs due to it's implementation.</p>
+                        <h3 style="font-size:large"><b>YOLO Performance?</b></h3>
+                        <p>When we evaluated the performance, we noticed a very low number on recall for handles, since we thought dividing the recall instead of averaging them would tell us more about the behaviour of the model. The lower f1 score for the tiny version of YOLO versus the YOLO model further demonstrates the imbalance between precision and recall. Upon reflection, these numbers quantify what we were  seeing in our implementation testing, in that it had difficulty in detecing handles from a distance. A possible explanation could be that the input size 416x416 is still very little  for  Tiny  YOLO  to  infer accurately and may perform poorly on small sized objects.  Snippets at a particular distance using different versions of the model is shown in the figure below.</p>
+                        <figure>
+                          <img class="images" style="width: 70%;" src="images/evaluation/yolocomparison.png">
+                          <figcaption>Input Image size passed to the models: a) 416x416 b) 416x416 c)192x192; On OpenCV-DNN (CPU only), 16 GB RAM - Macbook Pro-2015. The numbers next to the class names are confidence scores.</figcaption>
+                        </figure>
+                          <p>Ultimately, the low recall is not an issue because if we can essentially detect the  door with a confidence value of 0.30 and higher, then we could get closer to the door, and the model will have more pixel information to determine where the handle is in the door. </p>
+                          <ul>Other alternatives that the model could proceed in the future: 
+                          <li><i>Choosing YOLOv3 with lower input size</i>: We could look into ways of accelerating the performance by using a <a href="https://coral.ai/docs/accelerator/get-started/">USB accelerator</a>. The main issue with the YOLOv3 model was that the FPS (frames per second) was very low, ~0.5 FPS at the same 416x416 resolution, depsite returning much better results. So, getting a tool that can help accelerate the ML models would help us get the power of both accuracy and increasing speed. This will involve converting our current models to a Tensorflow or the appropriate type.</li>
+                          <li><i>Further improving detection results on handles</i>: This can be done by training it with more examples of what handles look like from afar and reduce more instances of overfitting in the dataset.</li>
+                          </ul>
 
                           
+                        
 
                             <h2>Spray coverage test</h2>
                         <p>The disinfecting behaviour has to perform excellent, as a improperly disinfected door would still potentially be dangerous. Gazebo doesn't have a "spray" plugin where we can measure the coverage easily. Therefore, we had to use a depth camera on the arm where the nozzle is. The depth camera generates a cloud of points when it hits an object. The camera specification is modified so the view has the same shape as the nozzle spray. We then combine all of the pixels generated over the course of disinfection and compare it to the base handle to get an estimate of the total coverage. We used this estimate to get an idea of the quality of our arm/disinfectant planning.</p>
@@ -141,6 +160,22 @@ title: Home
                         </div>
                         <figcaption>Old & new login screen.</figcaption>
                         </div>
+
+                        <hr/>
+                        <h4>Brief Explanation on the terminology used:</h4>
+                        <ul>
+                            <li><i>IoU</i>: Abbreviation for Intersection over union.  A measurementthat signifies the overlap between 2 boundaries. Used to determine what constitutes as a true positive if the measurement retrieved by evaluating the area between the bounding boxes predicted by the model and the bounding boxes from the ground truth (manually annotated labels).</li>
+                            <li><i>Confidence Score</i>:   The  probability  that  an  object  (eg.of class=handle) exists in the bounding box predicted the algorithm (i.e From the name, it tells you how confident it is that this is an object of a certain class).</li>
+                            <li><i>AP</i>: From <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html">sckit-learn</a>, Average Precision "summarizes a precision-recall curve as the weighted mean of precisions achieved at each threshold, with the increase in recall from the previous threshold used as the weight".</li>
+                            <li><i>mAP</i>:The average of the APs calculated for each class. Used as indiciation of the accuracy performance of the object detection models. </li>
+                            <li><i>Precision</i>: Frequency with which retrieved predictions are relevantor correct.</li>
+                            <li><i>Recall</i>: Fraction of relevant instances that were retrieved.</li>
+                            <li> <i>F1-Score</i>:Used to statistically analyse a test’s accuracy, which is aweighted average of precision and recall.</li>
+                            <li> <i>FPS</i>: Frames per second.  Used in testing to note the speed of the model in a device, though the numbers themselves on the data do not reflect the speed on the raspberry pi as each device could be faster or slower depending on their specifications. However, it is used to give relative intuition of its computational speed on the same machine.</li> 
+                            <li> <i>FLOPS</i>:Floating  Point  Operations  per  Second.   A  measure  of computer  CPU  load  -  number  of  floating-point  operations  per second.  Higher FLOPs indicate more expensive computational power;hence why usually training Neural network models has to be done through GPU.</li>
+                        </ul>
+                        
+
                     </div>	
                 </div>
 
