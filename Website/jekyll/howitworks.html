@@ -55,7 +55,7 @@ title: Home
 
                     <h5><b>a. Exploration</b></h5>	
                     <p>The navigation system uses SLAM for mapping the robots environment, specifically, the gmapping package since it had the best performance during testing and it is relatively lightweight and customisable. The explore_lite and frontier_exploration package allows the robot to roam a space and create an occupancy map without human input.</p>	
-
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/1xZ8Nk0dMUA?start=12" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     <h5><b>b. Door Handle Localisation</b></h5>	
                     <i><h4></h4></i>	
                     <p>The door handle localisation algorithm uses geometry, the correspondence between lidar and camera rays to find out the 3D coordinates of the handle features within the image. We select the point of interest on our image, generate a 3D ray from the camera corresponding to all points mapping to that pixel, then perform intersection checks between this ray and the line segments formed by each consecutive lidar hit point. 	
