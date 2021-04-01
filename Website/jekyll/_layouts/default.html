@@ -14,7 +14,11 @@
       <meta http-equiv="Content-Language" content="English" />
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
       <link rel="stylesheet" type="text/css" href="./css/style.css" media="screen" />
-      
+      <link rel="stylesheet" type="text/css" href="./css/future-works.css" media="screen"/>
+      {% if page.style %}
+         <link rel="stylesheet" type="text/css" href="{{ page.style }}" media="screen"/>
+      {% endif %}
+            
    <body style="background-color: #b19cd9;">
     <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button> 
       <div style="align-content: center;">
@@ -36,7 +40,7 @@
                   </a>
             </div>
             <div id="menu" style="margin: auto;background-color: grey; height:max-content;">
-               <div id="wrap">
+               <div id="navbar">
                   <ul style="justify-content: space-between;display: flex;">
                      <li class="link navitem" id="welcome.html"> <a href="./index.html" style="display: block; overflow: auto;">Welcome     </a></li>
                      <li class="link navitem" id="system.html"    > <a href="./system.html"    >System      </a></li>
@@ -49,7 +53,7 @@
             </div>
          </div>
          <br>
-         <div id="wrap">
+         <div class="main" id="wrap">
             <div id="content" style="background-color:white; border-radius: 25px;">
                {{content}}
             </div>
