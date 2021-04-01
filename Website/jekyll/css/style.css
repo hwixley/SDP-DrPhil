@@ -329,3 +329,8 @@ h4 {
 .card-img-left {
   width:7.5vw;
 }
+
+a {
+  font-weight: bold;
+  color: purple;
+}

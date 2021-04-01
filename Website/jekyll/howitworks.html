@@ -15,7 +15,7 @@ title: Home
 
                     <p>Dr. Phil is made up of 5 interconnected subsystems:
                         <ul class="beginInd">
-                            <li><a href="#navigation">Navigation systems </a> - movement, 2D motion planning, pathfinding, dyanmic obstacle avoidance</li>
+                            <li><a href="#navigation">Navigation systems </a> - movement, 2D motion planning, pathfinding, dynamic obstacle avoidance</li>
                             <li><a href="#disinfection">Disinfection systems </a> - control of disinfectant pumps</li>
                             <li><a href="#armcontrol">Arm control </a> - arm motion planning </li>
                             <li><a href="#app">IOS App </a> - scheduling, user control of the robot</li>
@@ -58,7 +58,10 @@ title: Home
 
                     <h5><b>a. Exploration</b></h5>	
                     <p>The navigation system uses SLAM for mapping the robots environment, specifically, the gmapping package since it had the best performance during testing and it is relatively lightweight and customisable. The explore_lite and frontier_exploration package allows the robot to roam a space and create an occupancy map without human input.</p>	
-                    <iframe width="560" height="315" src="https://www.youtube.com/embed/1xZ8Nk0dMUA?start=12" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <div style="text-align: center;">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/1xZ8Nk0dMUA?start=12" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+                    </iframe>
+                    </div>
                     <h5><b>b. Door Handle Localisation</b></h5>	
                     <i><h4></h4></i>	
                     <p>The door handle localisation algorithm uses geometry, the correspondence between lidar and camera rays to find out the 3D coordinates of the handle features within the image. We select the point of interest on our image, generate a 3D ray from the camera corresponding to all points mapping to that pixel, then perform intersection checks between this ray and the line segments formed by each consecutive lidar hit point. 	
@@ -70,8 +73,9 @@ title: Home
                     <p>
                     The local planner used performs analysis on the lidar data and tries to identify basic shapes in their structure, such as lines points and polygons. 
                     These are then observed over time to identify dynamic obstacles and modify plans so as to anticipate the motion of those obstacles. </p>
+                    <div style="text-align: center;">
                     <iframe width="560" height="315" src="https://www.youtube.com/embed/14wAEholVJc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                    
+                    </div>
                     <br/>
                     <br/>
 
@@ -116,8 +120,9 @@ title: Home
                           this is done by considering the height of the door handle, and replicating these x,y points at multiple heights, 
                           described by the z coordinate. These set of 3d coordinates ensure the door handle is fully disinfected and the whole handle has been covered.</p>
                           <p>The disinfection path can be seen being executed below (red arrows within PIP are parts of the path)</p>    
+                          <div style="text-align: center;">
                         <iframe width="560" height="315" src="https://www.youtube.com/embed/QwFmh-6q3Y0?start=5" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
+                      </div>
                     <h2 id="vision">Vision</h2>
                     <p>Using cutting-edge Machine Learning technology, our image recognition system does performingly well at identifying the objects we're interested in. It adopts a version of <a href="https://pjreddie.com/media/files/papers/yolo_1.pdf">YOLOv3</a> (Joseph Redmon et al., 2016), a neural network model used for real-time object detection, called YOLOv3-Tiny-PRN (for Partial Residual Network) due to its faster computation speed. While the tinier version suffers from accuracy its stronger but slower model, it enables us to pack the power of ML in a small computer board such as the Raspberry Pi due to its significant faster computation speed. </p>
                       		
@@ -125,8 +130,9 @@ title: Home
   
                     <p>To carry out the door and door handle recognition algortihm, we use a Raspberry Pi camera along with the recognition model, 
                       here is a video which showcases the door recognition in action:</p>
+                      <div style="text-align: center;">
                     <iframe width="560" height="315" src="https://www.youtube.com/embed/Nu1slnQ2hZw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
+                  </div>
                       <figcaption>Door & handle detection</figcaption>
                     <h2 id="app">App</h2>
                         <p>The iOS app is the preferred method of communicating with Dr.Phil. We decided to develop for iOS first because it has a market majority in the UK. We decided to use firebase, a cloud based noSQL storage solution, to bridge the connection between the two. We chose Firebase primarily as it's easily accessible from any platform, and our immediate goals involve developing an android/web app so Dr. Phil can be controlled on anything. Firebase was integrated into the app via cocoapods, and Dr.Phil via python libraries. The app was built using Swift.</p>
@@ -181,8 +187,9 @@ title: Home
                         
                     <h2 id="Door Opening"> Door Opening</h2>
                     <p>A proof of concept door opening method was developed, and can be seen in action below:</p>
+                    <div style="text-align: center;">
                     <iframe width="560" height="315" src="https://www.youtube.com/embed/l1wfURd9jC8?start=27" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                    
+                  </div>
                     <br/>
                     <br/>
 
