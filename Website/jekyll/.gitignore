@@ -1,4 +1,5 @@
 ./_site/*
+_site
 Website/jekyll/_site/feed.xml
 
 .sass-cache
