@@ -8,7 +8,7 @@ title: Home
                     <h1 style="text-align: center;"><b><u>How does our System Work?</u></b></h1>
 
                     <figure>
-                        <img class="images" src="images/comms.png">
+                        <img class="images" src="images/components.png">
                         <figcaption style="text-align: center;"><i>Main Dr.Phil components</i></figcaption>
                     </figure>
                     
@@ -34,8 +34,9 @@ title: Home
                     <p>Here is a sequence diagram which shows an example use case, this process would be planned and controlled by the behaviour tree node.</p>
                     <img class="images" src="images/sequence_diagram.png"> -->
                     <h2 id="behaviour">Behaviour trees</h2>
-                    <p>To tie all the robot functionality together, behaviour trees were employed. This is due to the need for modular behaviour composition, and reactivity,
-                      modularity, as well as ease of maintenance and readability. Alternatives considered, were finite state machines and their variations - 
+                    <p>To tie all the robot functionality together, behaviour trees were employed. This is due to the need for <i>modular behaviour composition</i>, and <i>reactivity</i>,
+                      <i>modularity</i>, as well as <i>ease of maintenance</i> and <i>readability</i>. </p>
+                      <p>Alternatives considered were finite state machines and their variations - 
                       but those were dismissed on account of the vast number of transitions required and the difficulty in maintaining,testing and growing complex behaviours as we go.</p>
                         <img class="images" style="max-width: 70%;" src="images/create_explore_frontier_and_save_map.png">
                         <figcaption>Behaviour tree for exploring a room and saving the map</figcaption>
@@ -124,7 +125,7 @@ title: Home
                         <iframe width="560" height="315" src="https://www.youtube.com/embed/QwFmh-6q3Y0?start=5" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                       </div>
                     <h2 id="vision">Vision</h2>
-                    <p>Using cutting-edge Machine Learning technology, our image recognition system does performingly well at identifying the objects we're interested in. It adopts a version of <a href="https://pjreddie.com/media/files/papers/yolo_1.pdf">YOLOv3</a> (Joseph Redmon et al., 2016), a neural network model used for real-time object detection, called YOLOv3-Tiny-PRN (for Partial Residual Network) due to its faster computation speed. While the tinier version detoriorates from accuracy compared to its stronger but slower model, it enables us to pack the power of ML in a small computer board such as the Raspberry Pi due to its significant faster computation speed without any GPU requirements. </p>
+                    <p>Using cutting-edge Machine Learning technology, our image recognition system does performingly well at identifying the objects we're interested in. It adopts a version of <a href="https://pjreddie.com/media/files/papers/yolo_1.pdf">YOLOv3 (Joseph Redmon et al., 2016)</a>, a neural network model used for real-time object detection, called YOLOv3-Tiny-PRN (for Partial Residual Network) due to its faster computation speed <a href="https://openaccess.thecvf.com/content_ICCVW_2019/papers/LPCV/Wang_Enriching_Variety_of_Layer-Wise_Learning_Information_by_Gradient_Combination_ICCVW_2019_paper.pdf">(Chien-Yao Wang1 et al., 2019)</a>. While the tinier version detoriorates from accuracy compared to its stronger but slower model, it enables us to pack the power of ML in a small computer board such as the Raspberry Pi due to its significant faster computation speed without any GPU requirements. </p>
                       		
                     <p>Our model was trained on a custom dataset of doors and door handles that was manually labeled by our team. The first two iterations involved us creating synthetic datasets, images of various obstacles surrounded by extreme static noise. However, we realised that this did not work during deployment. Eventually, we gathered footage of the robot exploring various worlds from Gazebo, a 3D robotics Simulator, including a few images gathered from the real world dataset. This was done since online datasets were not suitable for our mini door model we created in simulation due to the texture differences found in a simulation. We trained the YOLO models using the darknet repository maintained by <a href="https://pjreddie.com/darknet/yolo/">AlexeyAB</a>.</p>	
   
