@@ -39,8 +39,13 @@ title: Home
 
                             <h2>Spray coverage test</h2>
                         <p>The disinfecting behaviour has to perform excellent, as a improperly disinfected door would still potentially be dangerous. Gazebo doesn't have a "spray" plugin where we can measure the coverage easily. Therefore, we had to use a depth camera on the arm where the nozzle is. The depth camera generates a cloud of points when it hits an object. The camera specification is modified so the view has the same shape as the nozzle spray. We then combine all of the pixels generated over the course of disinfection and compare it to the base handle to get an estimate of the total coverage. We used this estimate to get an idea of the quality of our arm/disinfectant planning.</p>
+<!-- PLEASE DONT DELETE -->
+                        <p>Our tests showed our spray coverage was insufficient at the time, covering far less than 80% of the handle that would acceptable, with the back of the handle not being covered at all. </p>
+                        <img class="images" src="images/oldhandlestest.png">
+                        <figcaption>Original test results</figcaption>
+                        <p>After updating our motion planning algorithm, we re-ran the tests and found that Dr. Phil was able to disinfect approximately 85% of the surface of interest in our tests, when only accounting for direct spraying area (no drippage), the true coverage would likely be above this value.</p>
                         <img class="images" style="width: 70%;" src="images/evaluation/coverage-demo-4.png">
-                        <p>We found that Dr. Phil was able to disinfect approximately 85% of the surface of interest in our tests, when only accounting for direct spraying area (no drippage), the true coverage would likely be above this value.</p>
+                        <figcaption>Current test results. The bottom image is from one handle, showing the back is covered as well.</figcaption>
 
 
                         <h2>User studies</h2>
@@ -113,9 +118,29 @@ title: Home
                             </tbody>
                         </table>
 
-                        <p>From the user study, we found some users had issues with submitting the stop request as the button is not in an obvious location. We also found that the word select appeared too much like a pressable option. The app was also not particularly visually appealing, but this is something easily improveable before launch. </p>
+                        <p>From the user study, we found that the return screen was ambigious in it's meaning. The app was also not particularly visually appealing, but this is something easily improveable before launch. </p>
+                        <div class="row" style="text-align: center;">
+                          <div class="inline-block col-md-6">
+                            <img class="images" src ="images/evaluation/oldreturn.png" style="width: 50%;">
+                          </div>
+                          <!-- <figcaption>Old return screen.</figcaption> -->
+                        <div class="inline-block col-md-6">
+                            <img class="images" src ="images/evaluation/7,2-return(1).png" style="width: 50%;"> 
+                        </div>
+                        <figcaption>Old & new return screen.</figcaption>
+                        </div>
+                        <p>Users also said that buttons should be more centralised, so we moved important ones to the middle.</p>
 
-
+                        <div class="row" style="text-align: center;">
+                          <div class="inline-block col-md-6">
+                            <img class="images" src ="images/evaluation/questionnairelogin(1).png" style="width: 50%;">
+                          </div>
+                          <!-- <figcaption>Old return screen.</figcaption> -->
+                        <div class="inline-block col-md-6">
+                            <img class="images" src ="images/evaluation/4-login(1).png" style="width: 50%;"> 
+                        </div>
+                        <figcaption>Old & new login screen.</figcaption>
+                        </div>
                     </div>	
                 </div>
 

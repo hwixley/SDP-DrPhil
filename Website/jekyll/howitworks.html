@@ -8,7 +8,7 @@ title: Home
                     <h1 style="text-align: center;"><b><u>How does our System Work?</u></b></h1>
 
                     <figure>
-                        <img class="images" src="images/comms.png">
+                        <img class="images" src="images/components.png">
                         <figcaption style="text-align: center;"><i>Main Dr.Phil components</i></figcaption>
                     </figure>
                     
@@ -25,7 +25,7 @@ title: Home
 
                     <p>The whole system is built in ROS (Robot Operating System), where features are separated into different nodes which communicate with each other using messages.
                        All nodes are run on the Raspberry Pi, which also handles communications between the various sensors, encoders etc. as well as the remote PC which itself communicates with the App via ssh tunnel. 
-                       The execution flow is managed by a behaviour tree, which ties all of the available functionality together in a compact modular and extensible framework.
+                       The execution flow is managed by a behaviour tree, which ties all of the available functionality together in a compact, modular and extensible framework.
                     </p>
                 
                     
@@ -36,7 +36,7 @@ title: Home
                     <h2 id="behaviour">Behaviour trees</h2>
                     <p>To tie all the robot functionality together, behaviour trees were employed. This is due to the need for modular behaviour composition, and reactivity,
                       modularity, as well as ease of maintenance and readability. Alternatives considered, were finite state machines and their variations - 
-                      but those were dismissed on account of the vast number of transitions required and the difficulty in maintaining,testing and growing complex behaviours as we go.</p>
+                      but those were dismissed on account of the vast number of transitions required and the difficulty in maintaining, testing and growing complex behaviours as we go.</p>
                         <img class="images" style="max-width: 70%;" src="images/create_explore_frontier_and_save_map.png">
                         <figcaption>Behaviour tree for exploring a room and saving the map</figcaption>
                         <br/>
@@ -57,7 +57,7 @@ title: Home
                     <h2 id="navigation">Navigation</h2>
 
                     <h5><b>a. Exploration</b></h5>	
-                    <p>The navigation system uses SLAM for mapping the robots environment, specifically, the gmapping package since it had the best performance during testing and it is relatively lightweight and customisable. The explore_lite and frontier_exploration package allows the robot to roam a space and create an occupancy map without human input.</p>	
+                    <p>The navigation system uses a SLAM algorithm (Simultaneous localization and mapping) for mapping the robot's environment and it's position in that environment. Specifically, we used the gmapping package since it had the best performance during testing and it is relatively lightweight and customisable. The explore_lite and frontier_exploration package allows the robot to roam a space and create an occupancy map without human input.</p>	
                     <div style="text-align: center;">
                     <iframe width="560" height="315" src="https://www.youtube.com/embed/1xZ8Nk0dMUA?start=12" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
                     </iframe>
@@ -67,11 +67,15 @@ title: Home
                     <p>The door handle localisation algorithm uses geometry, the correspondence between lidar and camera rays to find out the 3D coordinates of the handle features within the image. We select the point of interest on our image, generate a 3D ray from the camera corresponding to all points mapping to that pixel, then perform intersection checks between this ray and the line segments formed by each consecutive lidar hit point. 	
                     The algorithm assumes the door is a plane perpendicular to the floor, and that the handle feature is placed roughly 4cm away from the door. Once the algorithm computes the coordinates, the robot can then localise itself infront of the door so it is ready to disinfect the handle.
                     </p>
-                    <p>Robust linear regression is performed using the neighbouring laser readings to produce smoother readings due to noise</p>	
+                    
+                    <p>Robust linear regression is done utilising the neighbouring laser readings to produce smoother readings due to noise.</p>	
+
+
+                    
                     
                     <h5><b>c. Obstacle Avoidance</b></h5>	
                     <p>
-                    The local planner used performs analysis on the lidar data and tries to identify basic shapes in their structure, such as lines points and polygons. 
+                    The local planner performs analysis on the lidar data and tries to identify basic shapes in their structure, such as lines points and polygons. 
                     These are then observed over time to identify dynamic obstacles and modify plans so as to anticipate the motion of those obstacles. </p>
                     <div style="text-align: center;">
                     <iframe width="560" height="315" src="https://www.youtube.com/embed/14wAEholVJc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -119,6 +123,10 @@ title: Home
                           After this, the z coordinates for these set of x,y points are calculated, 
                           this is done by considering the height of the door handle, and replicating these x,y points at multiple heights, 
                           described by the z coordinate. These set of 3d coordinates ensure the door handle is fully disinfected and the whole handle has been covered.</p>
+                          <img class="images" src="images/sani-door.png">
+                          <figcaption>Bird's eye view of the xy axes coordinates and spray vectors</figcaption>
+      
+
                           <p>The disinfection path can be seen being executed below (red arrows within PIP are parts of the path)</p>    
                           <div style="text-align: center;">
                         <iframe width="560" height="315" src="https://www.youtube.com/embed/QwFmh-6q3Y0?start=5" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -187,6 +195,8 @@ title: Home
                             </div>
                           </div>
                         <p> Dr.Phil also pushes statistics to firebase via it's python library, which is then viewable on the app. </p>
+
+
 
 
                         
