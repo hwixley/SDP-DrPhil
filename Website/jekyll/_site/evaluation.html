@@ -1,0 +1,245 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+   <head>
+      <title>Evaluation</title>
+      <link rel="shortcut icon" href="/favicon.ico">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+      
+        <link href="https://fonts.googleapis.com/css?family=Merriweather:400,900,900i" rel="stylesheet">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+      <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+      <meta http-equiv="Content-Language" content="English" />
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <link rel="stylesheet" type="text/css" href="./css/style.css" media="screen" />
+      <link rel="stylesheet" type="text/css" href="./css/future-works.css" media="screen"/>
+      
+            
+   <body style="background-color: #b19cd9;">
+    <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button> 
+      <div style="align-content: center;">
+         <div id="topcolour" style="background-color:lightyellow; width: 100%;">
+            <div id="wrap" class="top">
+                  <div class="row align-items-center">
+                     <div class="col-4">
+                        <a href="index.html">
+                        <img  class="avatar-img" src="./images/logotop.png" alt="Group Name" style="width: 50%; margin: auto;display: block;"/>
+                        </a>
+                     </div>
+                     </a>
+                     <div class="col-8 pt-3">
+                        <a href="index.html" style="text-decoration: none;">
+                           <h1 class="blog-header-logo">Dr. Phil</h1>
+                        </a>
+                     </div>
+                  </div>
+                  </a>
+            </div>
+            <div id="menu" style="margin: auto;background-color: grey; height:max-content;">
+               <div id="navbar">
+                  <ul style="justify-content: space-between;display: flex;">
+                     <li class="link navitem" id="welcome.html"> <a href="./index.html" style="display: block; overflow: auto;">Welcome     </a></li>
+                     <li class="link navitem" id="system.html"    > <a href="./system.html"    >System      </a></li>
+                     <li class="link navitem" id="howitworks.html"> <a href="./howitworks.html">How it works</a></li>
+                     <li class="link navitem" id="evaluation.html"> <a href="./evaluation.html">Evaluation  </a></li>
+                     <li class="link navitem" id="budget.html"    > <a href="./budget.html"    >Budget      </a></li>
+                     <li class="link navitem" id="team.html"      > <a href="./team.html"      >Team        </a></li>
+                     <li class="link navitem" id="faq.html"      > <a href="./faq.html"      >FAQ        </a></li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+         <br>
+         <div class="main" id="wrap">
+            <div class="row">
+               <div class="col-lg-2"></div>
+            <div class="col-lg-8" id="content" style="background-color:white; border-radius: 25px;">
+                               <div id="corps_central"> 
+            
+                    <div id="corps_central"> 
+                        <h1 style="text-align: center;"><u><b>Evaluation</b></u></h1>
+
+
+
+                        <p>
+                        We ran a number of tests in simulation to demonstrate the effectiveness of Dr.Phil's components, as well as to make decisions on the best method to use based on empirical evidence.
+                        <p>At the end of the section, we provide a brief explanation of the terminologies at the bottom of the page to help with understanding the process </p>
+
+                        </p>
+                        <h2>SLAM navigation testing</h2>
+                        <p>We used three different worlds to evaluate the effectiveness of the SLAM mapping stack and see if it sufficiently maps out a normal working environment.</p>
+                        <img class="images" style="width: 70%" src="images/evaluation/diffrooms.png">
+
+                        <p>We ran the mapping behaviour of Dr.Phil in each world, and compared the results to a ground truth occupancy map we generated for each map. A confusion matrix was generated like for a binary classifier where positives signified occupied cells and negatives the free cells.</p>
+
+                        <img class="images" style="width: 70%" src="images/evaluation/mappingresults.png">
+                        <p>As seen above, Dr.Phil performed best in Arena, and was good in House as well. The issue with C-room was that it's spacious and feature-less, so SLAM struggled to capture the true area. However the shape was still mostly correct. As most offices and hospital rooms are feature-rich, we believe our mapping will perform well in our main target markets.</p>
+
+                        <p>The probability of a collision of the robot with a blind pre-programmed agent was estimated at ~1/3 in another experiment where maps generated were given to the robot while it was tasked to follow a pre-recorded trajectory (3 times), twice, once with un-mapped static and dynamic obstacles (moving back and forth through the robot's path at 0.5 m/s). Note that only collisions in which the robot did not attempt to avoid the obstacle were counted. The true and localized path was also measured, no correlation between localization error and the presence of obstacles was found. The absolute localization error per measurement was on average 0.03m in arena and house worlds and 0.3m in c-room. This is to be expected since the c-room map did not preserve the area or length of the room, otherwise the robot localized very accurately using reasonable maps.</p>
+                        <h2>Door handle recognition</h2>
+                        <p>The door handle recognition algorithm had to be fast enough to process the video feed from the camera, but also detect all of the door handles that are seen (higher recall). After generating our final door handle dataset, we decided to train some different models to test their performance on classification.</p>
+                        <div style="display: block; margin:2px; width: 100%; overflow: hidden;">
+                          <div style="width: 50%; float: left; display:block">
+                            <img class="images" src="images/evaluation/recognitioncomp.png">
+                          </div>
+                          <div style="width: 37%; float: right; display:block;">
+                          <figure>
+                            <img class="images" src="images/evaluation/Performance-of-tiny-YOLOv3-and-YOLOv3-on-the-COCO-Dataset-Redmon-2020.ppm(1).png">
+                            <figcaption>YOLO and its other versions' performances compared to other Neural Network models. Trained on Microsoft COCO dataset - Image taken from the <a href="https://pjreddie.com/darknet/yolo/">authors of YOLO's work</a></figcaption>
+                          </figure>
+                          </div>
+                        </div>
+              
+                        <h3 style="font-size:large"><b>Comparing the different models</b></h3>
+                        <p>Our initial plan was to use Logistic Regression to classify whether an image frame contained a door. If the classifier predicts the possibility of a door in an image, we would process it to detect where that object is. This was done with the intention to maximise efficiency; however, while the classification evaluation results reveal more accuracy (higher mAP) and higher recall (most of the relevant results are returned to us) than YOLOv3, they performed poorly upon classifying doors from afar in implementation testing. This may be attributed to being overfit to the closer samples in our dataset, unlike YOLOv3 which combats it through techniques such as batch normalisation and weight decay. Thus we chose to opt for one of the YOLO models.</p>
+                        <p>Hence, since efficiency is important to us as the Raspberry Pi isn't very powerful and the recognition has to be real time, we decided to trade off accuracy for speed. In fact, from the research papers, we also identified that YOLOv3 and its tinier versions are still relatively fast compared to Convolutional NNs due to it's implementation.</p>
+                        <h3 style="font-size:large"><b>YOLO Performance?</b></h3>
+                        <p>When we evaluated the performance, we noticed a very low number on recall for handles, since we thought dividing the recall instead of averaging them would tell us more about the behaviour of the model. The lower f1 score for the tiny version of YOLO versus the YOLO model further demonstrates the imbalance between precision and recall. Upon reflection, these numbers quantify what we were  seeing in our implementation testing, in that it had difficulty in detecting handles from a distance. A possible explanation could be that the input size 416x416 is still very little  for  Tiny  YOLO  to  infer accurately and may perform poorly on small sized objects.  Snippets at a particular distance using different versions of the model is shown in the figure below.</p>
+                        <figure>
+                          <img class="images" style="width: 70%;" src="images/evaluation/yolocomparison.png">
+                          <figcaption>Input Image size passed to the models: a) 416x416 b) 416x416 c)192x192; On OpenCV-DNN (CPU only), 16 GB RAM - Macbook Pro-2015. The numbers next to the class names are confidence scores.</figcaption>
+                        </figure>
+                          <p>Ultimately, the low recall is not an issue because if we can essentially detect the  door with a confidence value of 0.30 and higher, then we could get closer to the door, and the model will have more pixel information to determine where the handle is in the door. </p>
+                          <ul>Other alternatives that the model could proceed in the future: 
+                          <li><i>Choosing YOLOv3 with lower input size</i>: We could look into ways of accelerating the performance by using a <a href="https://coral.ai/docs/accelerator/get-started/">USB accelerator</a>. The main issue with the YOLOv3 model was that the FPS (frames per second) was very low, ~0.5 FPS at the same 416x416 resolution, despite returning much better results. So, getting a tool that can help accelerate the ML models would help us get the power of both accuracy and increasing speed. This will involve converting our current models to a Tensorflow or the appropriate type.</li>
+                          <li><i>Further improving detection results on handles</i>: This can be done by training it with more examples of what handles look like from afar and reduce more instances of overfitting in the dataset.</li>
+                          </ul>
+
+                          
+                        
+
+                            <h2>Spray coverage test</h2>
+                        <p>The disinfecting behaviour has to perform excellent, as a improperly disinfected door would still potentially be dangerous. Gazebo doesn't have a "spray" plugin where we can measure the coverage easily. Therefore, we had to use a depth camera on the arm where the nozzle is. The depth camera generates a cloud of points when it hits an object. The camera specification is modified so the view has the same shape as the nozzle spray. We then combine all of the pixels generated over the course of disinfection and compare it to the base handle to get an estimate of the total coverage. We used this estimate to get an idea of the quality of our arm/disinfectant planning.</p>
+<!-- PLEASE DONT DELETE -->
+                        <p>Our tests showed our spray coverage was insufficient at the time, covering far less than 80% of the handle that would acceptable, with the back of the handle not being covered at all. </p>
+                        <img class="images" src="images/oldhandlestest.png">
+                        <figcaption>Original test results</figcaption>
+                        <p>After updating our motion planning algorithm, we re-ran the tests and found that Dr. Phil was able to disinfect approximately 85% of the surface of interest in our tests, when only accounting for direct spraying area (no drippage), the true coverage would likely be above this value.</p>
+                        <img class="images" style="width: 70%;" src="images/evaluation/coverage-demo-4.png">
+                        <figcaption>Current test results. The bottom image is from one handle, showing the back is covered as well.</figcaption>
+
+
+                        <h2>User studies</h2>
+                        <p>We performed a quick user study on the app. The tests were primarily to make sure that all of the app's functionality was clear, even to first-time users unfamiliar with the system. We also wanted to make sure the app was accessible and visually coherent. As we've only developed an iOS app, half of the testers would be likely be unable to use the app. With this in mind, we created a google form which showcased the main app screens.</p>
+
+                        <p>We gathered our participants from another SDP group, and received 7 responses in total. Although this is a relatively low number, as stated in the accessibility workshop only 5 participants is enough to capture the super-majority of obvious problems.</p>
+
+                        <p>We asked the participants what they would do to perform an emergency halt from relevant app screen, as well as reading scheduling information from the app. We also asked them to rate the design/consistency of the UI out of 5, and open-ended questions about parts of the UI that they felt were not clear.</p>
+
+                        <table class="table table-striped table-light">
+                            <thead class="table-dark">
+                              <tr>
+                                <th scope="col">Question</th>
+                                <th scope="col">User 1</th>
+                                <th scope="col">User 2</th>
+                                <th scope="col">User 3</th>
+                                <th scope="col">User 4</th>
+                                <th scope="col">User 5</th>
+                                <th scope="col">User 6</th>
+                                <th scope="col">User 7</th>
+                                <th scope="col">%/mean</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <th scope="row">How often does the Dr.Phil clean on weekends?</th>
+                                <td>Wrong</td>
+                                <td>Correct</td>
+                                <td>Correct</td>
+                                <td>Correct</td>
+                                <td>Correct</td>
+                                <td>Correct</td>
+                                <td>Correct</td>
+                                <td>6/7</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">What would you press to stop Dr.Phil from this page?</th>
+                                <td>Wrong</td>
+                                <td>Correct</td>
+                                <td>Correct</td>
+                                <td>Correct</td>
+                                <td>Correct</td>
+                                <td>Correct</td>
+                                <td>Wrong</td>
+                                <td>5/7</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">How visually consistent is the app?</th>
+                                    <td>5</td>
+                                    <td>5</td>
+                                    <td>5</td>
+                                    <td>5</td>
+                                    <td>4</td>
+                                    <td>5</td>
+                                    <td>5</td>
+                                    <td>4.8</td>>
+                              </tr>
+                              <tr>
+                                <th scope="row">How visually appealing is the app?</th>
+                                <td>3</td>
+                                <td>4</td>
+                                <td>3</td>
+                                <td>5</td>
+                                <td>3</td>
+                                <td>5</td>
+                                <td>5</td>
+                                <td>3.4</td>
+                              </tr>
+
+                            </tbody>
+                        </table>
+
+                        <p>From the user study, we found that the return screen was ambiguous in it's meaning. The app was also not particularly visually appealing, but this is something easily improvable before launch. </p>
+                        <div class="row" style="text-align: center;">
+                          <div class="inline-block col-md-6">
+                            <img class="images" src ="images/evaluation/oldreturn.png" style="width: 50%;">
+                          </div>
+                          <!-- <figcaption>Old return screen.</figcaption> -->
+                        <div class="inline-block col-md-6">
+                            <img class="images" src ="images/evaluation/7,2-return(1).png" style="width: 50%;"> 
+                        </div>
+                        <figcaption>Old & new return screen.</figcaption>
+                        </div>
+                        <p>Users also said that buttons should be more centralised, so we moved important ones to the middle.</p>
+
+                        <div class="row" style="text-align: center;">
+                          <div class="inline-block col-md-6">
+                            <img class="images" src ="images/evaluation/questionnairelogin(1).png" style="width: 50%;">
+                          </div>
+                          <!-- <figcaption>Old return screen.</figcaption> -->
+                        <div class="inline-block col-md-6">
+                            <img class="images" src ="images/evaluation/4-login(1).png" style="width: 50%;"> 
+                        </div>
+                        <figcaption>Old & new login screen.</figcaption>
+                        </div>
+
+                        <hr/>
+                        <h4>Brief Explanation on the terminology used:</h4>
+                        <ul>
+                            <li><i>IoU</i>: Abbreviation for Intersection over union.  A measurement that signifies the overlap between 2 boundaries. Used to determine what constitutes as a true positive if the measurement retrieved by evaluating the area between the bounding boxes predicted by the model and the bounding boxes from the ground truth (manually annotated labels).</li>
+                            <li><i>Confidence Score</i>:   The  probability  that  an  object  (eg. of class=handle) exists in the bounding box predicted the algorithm (i.e From the name, it tells you how confident it is that this is an object of a certain class).</li>
+                            <li><i>AP</i>: From <a href="https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html">sckit-learn</a>, Average Precision "summarizes a precision-recall curve as the weighted mean of precisions achieved at each threshold, with the increase in recall from the previous threshold used as the weight".</li>
+                            <li><i>mAP</i>:The average of the APs calculated for each class. Used as indication of the accuracy performance of the object detection models. </li>
+                            <li><i>Precision</i>: Frequency with which retrieved predictions are relevant or correct.</li>
+                            <li><i>Recall</i>: Fraction of relevant instances that were retrieved.</li>
+                            <li> <i>F1-Score</i>:Used to statistically analyse a test’s accuracy, which is a weighted average of precision and recall.</li>
+                            <li> <i>FPS</i>: Frames per second.  Used in testing to note the speed of the model in a device, though the numbers themselves on the data do not reflect the speed on the raspberry pi as each device could be faster or slower depending on their specifications. However, it is used to give relative intuition of its computational speed on the same machine.</li> 
+                            <li> <i>FLOPS</i>:Floating  Point  Operations  per  Second.   A  measure  of computer  CPU  load  -  number  of  floating-point  operations  per second.  Higher FLOPs indicate more expensive computational power;hence why usually training Neural network models has to be done through GPU.</li>
+                        </ul>
+                        
+
+                    </div>	
+                </div>
+
+
+            </div>
+            <div class="col-lg-2"></div>
+         </div>
+         </div>
+      </div>
+   </body>
+   <script src="./js/main.js"></script>
+</html>
+

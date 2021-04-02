@@ -1,0 +1,194 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+   <head>
+      <title>System</title>
+      <link rel="shortcut icon" href="/favicon.ico">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+      
+        <link href="https://fonts.googleapis.com/css?family=Merriweather:400,900,900i" rel="stylesheet">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+      <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+      <meta http-equiv="Content-Language" content="English" />
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <link rel="stylesheet" type="text/css" href="./css/style.css" media="screen" />
+      <link rel="stylesheet" type="text/css" href="./css/future-works.css" media="screen"/>
+      
+            
+   <body style="background-color: #b19cd9;">
+    <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button> 
+      <div style="align-content: center;">
+         <div id="topcolour" style="background-color:lightyellow; width: 100%;">
+            <div id="wrap" class="top">
+                  <div class="row align-items-center">
+                     <div class="col-4">
+                        <a href="index.html">
+                        <img  class="avatar-img" src="./images/logotop.png" alt="Group Name" style="width: 50%; margin: auto;display: block;"/>
+                        </a>
+                     </div>
+                     </a>
+                     <div class="col-8 pt-3">
+                        <a href="index.html" style="text-decoration: none;">
+                           <h1 class="blog-header-logo">Dr. Phil</h1>
+                        </a>
+                     </div>
+                  </div>
+                  </a>
+            </div>
+            <div id="menu" style="margin: auto;background-color: grey; height:max-content;">
+               <div id="navbar">
+                  <ul style="justify-content: space-between;display: flex;">
+                     <li class="link navitem" id="welcome.html"> <a href="./index.html" style="display: block; overflow: auto;">Welcome     </a></li>
+                     <li class="link navitem" id="system.html"    > <a href="./system.html"    >System      </a></li>
+                     <li class="link navitem" id="howitworks.html"> <a href="./howitworks.html">How it works</a></li>
+                     <li class="link navitem" id="evaluation.html"> <a href="./evaluation.html">Evaluation  </a></li>
+                     <li class="link navitem" id="budget.html"    > <a href="./budget.html"    >Budget      </a></li>
+                     <li class="link navitem" id="team.html"      > <a href="./team.html"      >Team        </a></li>
+                     <li class="link navitem" id="faq.html"      > <a href="./faq.html"      >FAQ        </a></li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+         <br>
+         <div class="main" id="wrap">
+            <div class="row">
+               <div class="col-lg-2"></div>
+            <div class="col-lg-8" id="content" style="background-color:white; border-radius: 25px;">
+                              <h1 style="text-align: center;"><u><b>The System</b></u></h1>
+               <h3><b>Overview</b></h3>
+               <div style="text-align: center;">
+                  <iframe width="560" height="315" src="https://www.youtube.com/embed/dabA6V4J13E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+               </div>
+
+                <h3><b>Concept</b></h3>
+<p>Dr.Phil is a fully autonomous robot which sanitises points of contact in buildings.</p> 
+   
+<p> Dr.Phil automatically navigates through around floors on a schedule set via companion App, and sprays disinfectant on high priority contact points.</p>
+
+<p>Dr.Phil is perfect for hospitals, businesses or even hotels, especially those requiring more sterile environments. </p>
+
+<p>Our goal with Dr.Phil is to increase the efficiency of janitors and at the same time reduce their risk of contacting possible contaminants.</p>
+   
+<p>We can help you create a safe environment where employees, customers or patients won't need to worry about their health being compromised.</p>
+
+<h4><b>Use cases</b></h4>
+<ul style="margin-bottom: 0rem;">
+   
+   <li><p>As an office manager I want to schedule a sanitisation run every hour to reduce the number of cleaning shifts and save money.</p></li>
+   <li><p>As a cleaner I want to be able to come to work when there is real work to be done so I don't have to sit idle until my shift is over. I also want to minimise physical contact with surfaces that are touched by many people.</p></li>
+   <Li><p>As an employee in a busy office I want to be able to work in the midst of a pandemic knowing there is little risk of infection if i touch things I need to use over the course of a day</p></Li>
+</ul>
+
+<h3><b>Functionality</b></h3>
+<p><b>>Mapping unknown environments</b>:The Dr.Phil prototype is built on top of a turtlebot, it is able to fully map out unknown environments using its LIDAR sensor, enabling us to build a map of the floor at the end. It can travel around a floor by itself without manual intervention, and manipulate its environment using its robotic arm. </p>
+   
+<p><b>>Quick Setup:</b> Dr.Phil's ease to setup makes it portable as a result. </p> 
+
+<p>
+<b>>Cutting-edge ML Vision System</b>: Dr.Phil creates a map of its environment, detects all of the surfaces of interest (currently door handles) and saves their locations, and then <i>disinfects</i> these surfaces using an easily refillable spray, minimising physical contact. The fast detections allows us to use this strong tool in small computer boards as well like Raspberry Pis! </p>
+
+<p><b>>Easy-to-use UI</b>: Dr.Phil can be controlled via an <i>easy-to-use</i> app, where one can set cleaning <i>schedules</i> as well as take manual control from <i>anywhere.</i> It is designed with maximum friction for users, and to provide the best experience of Dr.Phil. The app also shows Lifetime statistics and current status of Dr.Phil. 
+</p>
+
+<p>
+   <b>>Emergency halt procedure</b>: For safety, an emergency procedure has been implemented so the robot can quickly return to its station. The app allows the user to immediately stop the robot wirelessly. In addition, the installation of LED strip to Dr.Phil helps convey its current state of operation to nearby people.
+</p>
+<figure>
+   <div style="text-align: center;">
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/F04Pb3bANAY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+   </div>
+<figcaption>Dr.Phil mapping out a room</figcaption>
+</figure>
+<h3><b>User guide</b></h3>
+<p>Check out the user guide <a href="https://drive.google.com/file/d/18EYMpt9-z14kc0-lBB9VTjQH4JhNi1nJ/view?usp=sharing">here!</a></p>
+<h3><b>Market research</b></h3>
+<h5><b>a. The market</b></h5>
+<p>Whilst sanitation is of course important during the pandemic, market reports indicate disinfecting robots will still be in demand afterwards. <a href="https://www.globenewswire.com/news-release/2020/12/16/2146508/0/en/Global-Disinfectant-Robot-Market-Growth-Trends-and-Forecasts-2020-2025-A-USD-2325-4-Million-Market-by-2025.html">One report </a> (Research and Markets, 2020) estimates a annual growth rate of 36% for the disinfectant robot market between 2020-2025, from $341.3 million USD to $2325.4 million USD. Another <a href="https://www.prnewswire.co.uk/news-releases/disinfection-robot-market-set-to-surge-at-a-high-cagr-of-27-over-the-next-ten-years-expanding-10x-in-value-over-the-same-period-of-time-persistence-market-research-800864561.html">report </a> (Persistence Market Research, 2020) predicts a ten-fold increase in value of the market, with an annual compounded growth rate (CAGR) of 27%. </p> <p>We've also asked participants in our user study whether they'd be comfortable with having an autonomous robot in the workplace. 5/7 said yes, and 7/7 responded yes if safety features (such as emergency halting) were implemented. However, as the participants were from another SDP group, these results are not representative of society as a whole, although it demonstrates a need for a robust set of safety features.</p>
+
+<h5><b>b. Competition</b></h5>
+<p>There are a number of products, both robotic and more generic, which aim to tackle the problem of unsafe contact surfaces.</p>
+
+
+<p>A simple solution is given by <a href="https://www.stepnpull.co.uk/">StepNPull</a>, a "device which allows you to open a door
+   hands free by using your foot or even a walking stick,
+   avoiding any contact with door handles or surfaces." </p>
+
+<img class="competitor" src="images/stepnpull.png"">
+<br>
+<p>These have the benefit of being cheaper (at only £33 per handle) and easier to install/maintain. However, while these help to prevent the spread of disease and germs through doors, they still do not eliminate this possibility entirely and are not applicable to different types of surfaces. StepNpull also wouldn't work for wheelchair users. Dr.Phil is easily transportable to different buildings and in future extensions can support cleaning different types of contact points.</p>
+
+<p>A more comparable solution would be the Ultraviolet(UV) roller robots, such as those by <a href = "https://www.uvd-robots.com/">UVD robots</a>. </p>
+
+<img class="competitor" src="images/uvdrobots.png">
+<br>
+<p>UV is an excellent method of killing micro-organisms, however <a href="https://www.fda.gov/radiation-emitting-products/tanning/ultraviolet-uv-radiation#UVCrisks">UV is also dangerous to humans </a>, meaning it can't be used in currently occupied rooms. Dr. Phil uses a 70% alcohol disinfectant spray which effectively kills pathogens and has a low chance of affecting humans even on contact, allowing it to be used under these scenarios.</p>
+<p>Most disinfectant robots on the market are an order of magnitude more expensive then Dr. Phil, ranging from <a href="https://www.dailymail.co.uk/sciencetech/article-8159921/Chinese-company-unveils-40-000-hospital-robot-disinfectants-against-coronavirus-pathogens.html">£32650</a> to <a href="https://www.dailymail.co.uk/sciencetech/article-8478763/Robot-uses-short-wave-UV-light-kill-coronavirus-rupturing-DNA-developed-Bahrain.html">£53370. </a> Dr.Phil is currently projected to cost only £4000.</p>
+<p>In relation to janitors, they themselves are possible transmission vectors, have limited working hours, and cost on average £20000 per year according to glassdoor. Our product is an opportunity for companies to add automation to their sanitisation protocols. As a result, this will cut costs and make disinfectant routines would be more efficient.</p>
+
+
+<h3><b>Potential for future development</b></h3>
+
+<p>We found a number of potential improvements to Dr. Phil, mostly revolving around sanitising more places and more things.</p>
+<ul>
+   <li><p><b>Door opening:</b>
+      We've made significant progress with door opening, as shown below. We are confident this future can be fully developed as part of a full prototype. As part of our original minimum viable product, a door-opening Dr. Phil means doors won't have to be left open for it to be able to disinfect the floor.
+   </p>
+   <div style="text-align: center;">
+      <iframe style="text-align: center" class="image" width="560" height="315" src="https://www.youtube.com/embed/NKtOQwqVrPU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+   </div>
+   
+   </li>
+   <li>
+      <p><b>Accessing different floors via elevator:</b> Dr.Phil currently can only navigate one floor. Using vision, 
+         Dr.Phil could locate lifts and use them to traverse floors safely. 
+         This would mean a single robot could potentially be responsible for multiple floors/small multi-storey buildings. 
+         Our team has made considerable progress with vision, and extensions using the Yolo network could easily be applied to detect lift interfaces. With a full prototype with a larger, more accurate arm, we could easilly incorporate this feature</p>
+   <div style="text-align: center;">
+   <iframe width="560" height="315" src="https://www.youtube.com/embed/Nu1slnQ2hZw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+   </li>
+
+   <li>
+      <p><b>Sanitising more kinds of door handles/contact points:</b> 
+         Dr.Phil currently can only disinfect simple door handles. 
+         By training more types of handles/contact points, Dr.Phil will be able to recognise these in buildings and disinfect those as well. 
+         All of our algorithms were designed to be extensible in this regard.</p>
+   </li>
+
+   <li>
+      <p><b>Vacuum cleaning functionality:</b> 
+         Dr. Phil could be easily extended with a vacuum cleaning module to vastly increase its applications. With the ability to navigate around rooms and open doors through the handles it cleans, it would clear the floor from dust to provide extra hygiene and comfort. We have already designed algorithms allowing Dr. Phil to travel every square inch of a floor which would be perfect for this application.</p>
+         <p> The addition of this feature would mainly entail a hardware redesign of our prototype as we would need to allow for space to be able to take out and reinstall the garbage collection bag. Here's an early sketch of our vision of the robot:</p>
+         <!-- <video controls class="images" style="height: 500px">
+            <source src="images/vacuum-ok.mp4">
+         </video> -->
+         <figure>
+            <img class="vacuum" src="images/future-work/vacuum-powerup2.png">
+            <figcaption style="text-align: center;"><i>Vacuum Early Sketch. *does not depict the result of the final product, but merely showcasing the expected placement of the vacuum</i></figcaption>
+         </figure>
+   </li>
+
+
+   <li><b>More additions to User Interface:</b> 
+      <br>
+      > Users can see "live" data of the map on the app exploring every 5-10 seconds - to allow for easier troubleshooting and so you are more aware of much the robot has completed mapping the floor.
+      <br>
+      <br>
+      > Let's face it, no matter how good a system is, it's never 100% perfect. Once Dr.Phil maps out a room, we will introduce an optional editing functionality of the map to allow users to calibrate the location of the doors themselves with respect to the floor plan mapped by Dr.Phil, or to do the mapping of doors themselves. Dr.Phil doesn't need to know the exact locations; approximations is all it needs, and only needs to do this once at the beginning!
+   </li>
+
+</ul>
+            </div>
+         </div>
+
+            </div>
+            <div class="col-lg-2"></div>
+         </div>
+         </div>
+      </div>
+   </body>
+   <script src="./js/main.js"></script>
+</html>
+

@@ -1,0 +1,310 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+   <head>
+      <title>How it works</title>
+      <link rel="shortcut icon" href="/favicon.ico">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+      
+        <link href="https://fonts.googleapis.com/css?family=Merriweather:400,900,900i" rel="stylesheet">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+      <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+      <meta http-equiv="Content-Language" content="English" />
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <link rel="stylesheet" type="text/css" href="./css/style.css" media="screen" />
+      <link rel="stylesheet" type="text/css" href="./css/future-works.css" media="screen"/>
+      
+            
+   <body style="background-color: #b19cd9;">
+    <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button> 
+      <div style="align-content: center;">
+         <div id="topcolour" style="background-color:lightyellow; width: 100%;">
+            <div id="wrap" class="top">
+                  <div class="row align-items-center">
+                     <div class="col-4">
+                        <a href="index.html">
+                        <img  class="avatar-img" src="./images/logotop.png" alt="Group Name" style="width: 50%; margin: auto;display: block;"/>
+                        </a>
+                     </div>
+                     </a>
+                     <div class="col-8 pt-3">
+                        <a href="index.html" style="text-decoration: none;">
+                           <h1 class="blog-header-logo">Dr. Phil</h1>
+                        </a>
+                     </div>
+                  </div>
+                  </a>
+            </div>
+            <div id="menu" style="margin: auto;background-color: grey; height:max-content;">
+               <div id="navbar">
+                  <ul style="justify-content: space-between;display: flex;">
+                     <li class="link navitem" id="welcome.html"> <a href="./index.html" style="display: block; overflow: auto;">Welcome     </a></li>
+                     <li class="link navitem" id="system.html"    > <a href="./system.html"    >System      </a></li>
+                     <li class="link navitem" id="howitworks.html"> <a href="./howitworks.html">How it works</a></li>
+                     <li class="link navitem" id="evaluation.html"> <a href="./evaluation.html">Evaluation  </a></li>
+                     <li class="link navitem" id="budget.html"    > <a href="./budget.html"    >Budget      </a></li>
+                     <li class="link navitem" id="team.html"      > <a href="./team.html"      >Team        </a></li>
+                     <li class="link navitem" id="faq.html"      > <a href="./faq.html"      >FAQ        </a></li>
+                  </ul>
+               </div>
+            </div>
+         </div>
+         <br>
+         <div class="main" id="wrap">
+            <div class="row">
+               <div class="col-lg-2"></div>
+            <div class="col-lg-8" id="content" style="background-color:white; border-radius: 25px;">
+                               <div id="corps_central"> 
+            
+                    <h1 style="text-align: center;"><b><u>How does our System Work?</u></b></h1>
+
+                    <figure>
+                        <img class="images" src="images/components.png">
+                        <figcaption style="text-align: center;"><i>Main Dr.Phil components</i></figcaption>
+                    </figure>
+                    
+
+                    <p>Dr. Phil is made up of 5 interconnected subsystems:
+                        <ul class="beginInd">
+                            <li><a href="#navigation">Navigation systems </a> - movement, 2D motion planning, pathfinding, dynamic obstacle avoidance</li>
+                            <li><a href="#disinfection">Disinfection systems </a> - control of disinfectant pumps</li>
+                            <li><a href="#armcontrol">Arm control </a> - arm motion planning </li>
+                            <li><a href="#app">IOS App </a> - scheduling, user control of the robot</li>
+                            <li><a href="#vision">Vision</a> - localization of handles in 3D, detection of handles and doors</li>
+                        </ul>
+                      </p>
+
+                    <p>The whole system is built in ROS (Robot Operating System), where features are separated into different nodes which communicate with each other using messages.
+                       All nodes are run on the Raspberry Pi, which also handles communications between the various sensors, encoders etc. as well as the remote PC which itself communicates with the App via ssh tunnel. 
+                       The execution flow is managed by a behaviour tree, which ties all of the available functionality together in a compact, modular and extensible framework.
+                    </p>
+                
+                    
+
+<!-- 
+                    <p>Here is a sequence diagram which shows an example use case, this process would be planned and controlled by the behaviour tree node.</p>
+                    <img class="images" src="images/sequence_diagram.png"> -->
+                    <h2 id="behaviour">Behaviour trees</h2>
+                    <p>To tie all the robot functionality together, behaviour trees were employed. This is due to the need for modular behaviour composition, and reactivity,
+                      modularity, as well as ease of maintenance and readability. Alternatives considered, were finite state machines and their variations - 
+                      but those were dismissed on account of the vast number of transitions required and the difficulty in maintaining, testing and growing complex behaviours as we go.</p>
+                        <img class="images" style="max-width: 70%;" src="images/create_explore_frontier_and_save_map.png">
+                        <figcaption>Behaviour tree for exploring a room and saving the map</figcaption>
+                        <br/>
+                        <p>Behaviour trees are a tree-based model of execution flow. Each leaf in the tree describes an action to be per-formed, 
+                          which when "ticked" returns one state out of "FAILURE","RUNNING", "SUCCESS", and then execution flow is modified appropriately by parent nodes.	
+                          Composite nodes can have multiple children and allow for the combination of multiple actions into a plan. 
+                          An example of such node is the "Sequence" node which ticks all of its children in order. It does that until one returns with "FAILURE", 
+                          at which point it prop-agates this state up the tree, or until all of its children return with "SUCCESS" at which point the Sequence propagates "SUCCESS"
+                          up the tree instead. Every time a child node is "RUNNING", so is the parent. For more information on behaviour trees visit 
+                          <a href="https://www.gamasutra.com/blogs/ChrisSimpson/20140717/221339/Behavior_trees_for_AI_How_they_work.php">Chris Simpson's guide</a></p>	
+	                    
+                        <p>The general structure of the project was designed to promote re-use of sub-trees and test-ability of individual components.</p>
+                      <h2 id="Software-Hardware">Software-Hardware abstraction</h2>
+                      <p>Due to the pandemic most of the work was performed in simulation. In order to ensure everything worked both in simulation and hardware as expected,
+                        a ROS package was specifically developed to mimic the hardware interface of the robot, and enabled us to run the exact same code on the hardware as within the simulation.
+                      </p>
+
+                    <h2 id="navigation">Navigation</h2>
+
+                    <h5><b>a. Exploration</b></h5>	
+                    <p>The navigation system uses a SLAM algorithm (Simultaneous localization and mapping) for mapping the robot's environment and it's position in that environment. Specifically, we used the gmapping package since it had the best performance during testing and it is relatively lightweight and customisable. The explore_lite and frontier_exploration package allows the robot to roam a space and create an occupancy map without human input.</p>	
+                    <div style="text-align: center;">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/1xZ8Nk0dMUA?start=12" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+                    </iframe>
+                    </div>
+                    <h5><b>b. Door Handle Localisation</b></h5>	
+                    <i><h4></h4></i>	
+                    <p>The door handle localisation algorithm uses geometry, the correspondence between lidar and camera rays to find out the 3D coordinates of the handle features within the image. We select the point of interest on our image, generate a 3D ray from the camera corresponding to all points mapping to that pixel, then perform intersection checks between this ray and the line segments formed by each consecutive lidar hit point. 	
+                    The algorithm assumes the door is a plane perpendicular to the floor, and that the handle feature is placed roughly 4cm away from the door. Once the algorithm computes the coordinates, the robot can then localise itself in front of the door so it is ready to disinfect the handle.
+                    </p>
+                    
+                    <p>Robust linear regression is done utilising the neighbouring laser readings to produce smoother readings due to noise.</p>	
+
+
+                    
+                    
+                    <h5><b>c. Obstacle Avoidance</b></h5>	
+                    <p>
+                    The local planner performs analysis on the lidar data and tries to identify basic shapes in their structure, such as lines points and polygons. 
+                    These are then observed over time to identify dynamic obstacles and modify plans so as to anticipate the motion of those obstacles. </p>
+                    <div style="text-align: center;">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/14wAEholVJc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <br/>
+                    <br/>
+
+
+                    <h2 id="disinfection">Disinfection</h2>
+                        <figure>
+                            <img class="images" src="images/fixingslabelled(1).jpg">
+                            <figcaption style="text-align: center;"><i>Spray components</i></figcaption>
+                        </figure>
+
+                        
+                        <br>
+                        <p>The disinfection stack is primarily hardware based. We have a pump which pumps water from the base of the turtlebot  to the nozzle located at the top of the arm. As the tank is directly on top of the turtlebot, any spillage would be disastrous. Therefore the tank has a screw cap so it won't spill during normal operation whilst still being easy to remove and refill. </p>
+
+                        <h4>a. The Nozzles</h4>
+                        <img class="images" style="width: 70%" src="images/nozzleCAD.png">
+                        <figcaption><i>Nozzle in CAD</i></figcaption>
+                        <p>To spray the disinfectant onto contact points, we ultimately decided to use three 60 degree full-cone nozzles, which evenly distributes the disinfectant inside their spray areas. We needed three nozzles as one wasn't enough to cover the handle fully. A full-cone nozzle is important to ensure the spray will cover contact points efficiently and accurately as seen in the <a href="./evaluation.html">evaluation</a> section. A further benefit is that the spray simulation we created in gazebo has similar properties to the full cone (namely a even and full spread) so we can be sure that it's a good representation of real life. </p>
+
+                        
+                        
+                        <img class="images" style="width: 70%" src="images/threenozzles.png">
+                        <figcaption>Three nozzles in simulation.</figcaption>
+
+                        <h4>b. Control</h4>
+                        <p>Dr. Phil controls the pump via the 12V openCR board on the turtlebot, which is itself connected to a motor board. We also have a LED strip which was used to simulate when spraying was happening, which is used for informing nearby people about the status of Dr.Phil.</p>
+
+                        <p>As seen in the image, we also had to create fixings to keep everything still, as the robot might accidentally dislodge components when moving.</p>
+                    <h2 id="armcontrol">Arm control</h2>
+                    <h4>a. Motion Planning</h4>
+	                      <p>In order to move Dr. Phil's spray arm to disinfect doors handles, we use the MoveIt motion planning library which figures out the complex constraints and secondary goals of the arm.</p>	
+		
+		
+	                      <h4>b. Sanitisation Path Planning</h4>
+	                      <p>The sanitisation path planning script uses the coordinates of the center of the handle and the vector normal to the door as inputs. 
+                          The center of handle is found through object detection and getting the center of the image of the bounding box generated. 
+                          These inputs are then used to calculate output coordinates on 3 different x-y axes which ensures each angle of the handle is covered, 
+                          and are all 10cm away from the handle to maximise spray efficiency. 
+                          Our spray diameter is currently larger than the width of our custom handle so only a single spray on the given x-z axes is required. 
+                          In the future, we can adapt the distance of spraying to account for wider handles. 
+                          After this, the z coordinates for these set of x,y points are calculated, 
+                          this is done by considering the height of the door handle, and replicating these x,y points at multiple heights, 
+                          described by the z coordinate. These set of 3d coordinates ensure the door handle is fully disinfected and the whole handle has been covered.</p>
+                          <div classes="images" style="display: block; margin:2px; width: 100%; overflow: hidden;">
+                            <div style="width: 55%; float: left; display:block">
+                              <figure>
+                              <img class="images" src="images/sani-door.png">
+                              <figcaption>Bird's eye view of the xy axes coordinates and spray vectors</figcaption>
+
+                              </figure>
+                            </div>
+                            <div style="width: 45%; float: right; display:block;">
+                            <figure>
+                              <img class="images" src="images/sani-door-squares.png">
+                              <figcaption>Spray circle's inscribed squares used to ensure coverage in the z axis</figcaption>
+                            </figure>
+                            </div>
+                          </div>
+                          
+                          <p></p>
+		 	   <p></p>
+                          <p>The disinfection path can be seen being executed below (red arrows within PIP are parts of the path)</p>    
+                          <div style="text-align: center;">
+                        <iframe width="560" height="315" src="https://www.youtube.com/embed/QwFmh-6q3Y0?start=5" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                      </div>
+                    <h2 id="vision">Vision</h2>
+                    <p>Using cutting-edge Machine Learning technology, our image recognition system does performingly well at identifying the objects we're interested in. It adopts a version of <a href="https://pjreddie.com/media/files/papers/yolo_1.pdf">YOLOv3 (Joseph Redmon et al., 2016)</a>, a neural network model used for real-time object detection, called YOLOv3-Tiny-PRN (for Partial Residual Network) due to its faster computation speed <a href="https://openaccess.thecvf.com/content_ICCVW_2019/papers/LPCV/Wang_Enriching_Variety_of_Layer-Wise_Learning_Information_by_Gradient_Combination_ICCVW_2019_paper.pdf">(Chien-Yao Wang1 et al., 2019)</a>. While the tinier version deteriorates from accuracy compared to its stronger but slower model, it enables us to pack the power of ML in a small computer board such as the Raspberry Pi due to its significant faster computation speed without any GPU requirements. </p>
+                      		
+                    <p>Our model was trained on a custom dataset of doors and door handles that was manually labeled by our team. The first two iterations involved us creating synthetic datasets, images of various obstacles surrounded by extreme static noise. However, we realised that this did not work during deployment. Eventually, we gathered footage of the robot exploring various worlds from Gazebo, a 3D robotics Simulator, including a few images gathered from the real world dataset. This was done since online datasets were not suitable for our mini door model we created in simulation due to the texture differences found in a simulation. We trained the YOLO models using the darknet repository maintained by <a href="https://pjreddie.com/darknet/yolo/">AlexeyAB</a>.</p>	
+  
+
+                     <p> Here is a video which showcases the door recognition in action:</p>
+                     <div style="text-align: center;">
+                     <iframe class="images" width="560" height="315" src="https://www.youtube.com/embed/Nu1slnQ2hZw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                      <figcaption>Door & handle detection</figcaption>
+                      <br>
+                    
+                    <h4>Handle exploration</h4>
+                    <p>Once a map of the environment is present, the Dr. Phil employs its vision and navigation abilities, to scan the entire floorplan for doors. The area is split into fully unoccupied cells of a set size,
+                    and the robot ordered to travel to each and rotate in place slowly. Detections are recorded in the occupancy map, and at the very end clustered using hierarchical clustering. Outliers/False positives are removed based on cluster size (true doors will have much larger amounts of detections)</p>
+                    <figure>
+                      <img class="images" src="images/big-room-door-explore.png">
+                      <figcaption>Results of handle exploration, green cells are explored cells, and markers showcase the positions of door detections</figcaption>
+                    </figure>
+                    <p><i>Privacy concerns</i>: <br>
+                      To carry out the door and handle recognition algorithm, we use a Raspberry Pi camera along with the recognition model. The camera is only used to process data on its surroundings. In our system, it also helps us in the disinfection process as we determine the direction perpendicular to a surface, which enables our robot to face the door in front of it. We do not store any images once we process them, as Dr.Phil and its crew understand the concerns this might raise of having a camera around.
+                  
+                    <h2 id="app">App</h2>
+                        <p>The iOS app is the preferred method of communicating with Dr.Phil. We decided to develop for iOS first because it has a market majority in the UK. We decided to use firebase, a cloud based noSQL storage solution, to bridge the connection between the two. We chose Firebase primarily as it's easily accessible from any platform, and our immediate goals involve developing an android/web app so Dr. Phil can be controlled on anything. Firebase was integrated into the app via cocoapods, and Dr.Phil via python libraries. The app was built using Swift.</p>
+
+                      <p> Here is a video showcasing how the app works:</p>
+                     <div style="text-align: center;">
+                     <iframe class="images" width="560" height="315" src="https://youtube.com/embed/lDQDpcgaOjw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                      </div>
+                      
+                      
+                      <figcaption>Updating firebase from app</figcaption>
+                      <p></p>
+                        <p>For the user to actually communicate, they would first securely login to the app, establishing a connection with firebase.</p>
+                        <div class="container-fluid">
+                            <div class="row">
+                              <div class="col-md-6">
+                                
+                                <figure>
+                                    <img class="images" src="images/appregister.png">    
+                                    <figcaption>Register account</figcaption>
+                                </figure>
+                              </div>
+                              <div class="col-md-6">
+                                <figure>
+                                    <img class="images" src="images/approbotconn.png">
+                                    <figcaption>Connect to robot</figcaption>
+                                </figure>
+                              </div>
+                              
+                            </div>
+                          </div>
+                        
+                        <p>Changing settings in the app would then push those settings to firebase. A local server regularly reads the firebase settings and sends those to Dr.Phil, which then updates itself accordingly. Firebase would easily allow an user to connect to more than one Dr.Phil at a time, and minimises setup necessary to pair up the app and the bot.</p>
+                        <div class="container-fluid">
+                            <div class="row">
+                              <div class="col-md-6">
+                                
+                                <figure>
+                                    <img class="images" src="images/setschedule.png">    
+                                    <figcaption>Sets schedule for Dr.Phil</figcaption>
+                                </figure>
+                              </div>
+                              <div class="col-md-6">
+                                <figure>
+                                    <img class="images" src="images/stats.png">
+                                    <figcaption>Dr.Phil statistics</figcaption>
+                                </figure>
+                              </div>
+                              
+                            </div>
+                          </div>
+                        <p> Dr.Phil also pushes statistics to firebase via it's python library, which is then viewable on the app. </p>
+
+
+
+
+                        
+                    <h2 id="Door Opening"> Door Opening</h2>
+                    <p>A proof of concept door opening method was developed, and can be seen in action below.</p>
+                    <p> The door opening is modelled as a behaviour tree, which positions performs the following steps:</p>
+                      <ol>
+                          <li><p>Position the robot in front of the door</p></li>
+                          <li><p>Approach the handle to be able to reach it with the arm</p></li>
+                          <li><p>Plan the arm motion to position the gripper over the handle and execute this plan</p></li>
+                          <li><p>Tighten the grippers</p></li>
+                          <li><p>Move backwards and left slowly</p></li>
+                          <li><p>Swing the arm left, open the grippers and retreat</p></li>
+                      </ol>
+                    <div style="text-align: center;">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/l1wfURd9jC8?start=27" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                  </div>
+                    <br/>
+                    <br/>
+
+
+                </div>	
+            </div>
+
+
+            </div>
+            <div class="col-lg-2"></div>
+         </div>
+         </div>
+      </div>
+   </body>
+   <script src="./js/main.js"></script>
+</html>
+
